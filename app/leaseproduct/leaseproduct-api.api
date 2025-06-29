@@ -8,6 +8,49 @@ info (
 	version: "v1.0.0"
 )
 
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> leaseproduct-api -> leaseproduct.rpc -> redis 缓存产品信息 -> 数据库 leaseproduct (MySQL)
+//                                                                    -> other.rpc -> redis 缓存其他信息 -> 数据库 other (MySQL)
+// API 服务端口:10006
+// 无数据库、无缓存 直接调用rpc服务实现
+// consul 调用地址:consul.huinong.internal
+// rpc 端口:20006
+// rpc 服务名:leaseproductrpc.rpc
+// 服务职责(调用rpc服务实现):
+// 1. 租赁产品信息管理:产品创建、查询、修改、删除
+// 2. 产品状态管理:产品上下架状态控制
+// 3. 库存状态管理:库存数量查询和可用性检查
+// 4. 为C端提供产品查询接口，为B端提供产品管理接口
+
+// -- ----------------------------
+// 租赁产品表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `lease_products`;
+// CREATE TABLE `lease_products` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '产品ID',
+//   `product_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品编码',
+//   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品名称',
+//   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '租赁类型',
+//   `machinery` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '设备名称',
+//   `brand` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '品牌',
+//   `model` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '型号',
+//   `daily_rate` decimal(10,2) NOT NULL COMMENT '日租金',
+//   `deposit` decimal(10,2) DEFAULT 0.00 COMMENT '押金',
+//   `max_duration` int UNSIGNED DEFAULT 365 COMMENT '最大租期(天)',
+//   `min_duration` int UNSIGNED DEFAULT 1 COMMENT '最小租期(天)',
+//   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品描述',
+//   `inventory_count` int UNSIGNED DEFAULT 0 COMMENT '库存数量',
+//   `available_count` int UNSIGNED DEFAULT 0 COMMENT '可用数量',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:上架 2:下架',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_product_code` (`product_code`),
+//   KEY `idx_type` (`type`),
+//   KEY `idx_brand` (`brand`),
+//   KEY `idx_status` (`status`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租赁产品表';
+
 // ========== 基础数据结构 ==========
 type (
 	// 租赁产品信息
