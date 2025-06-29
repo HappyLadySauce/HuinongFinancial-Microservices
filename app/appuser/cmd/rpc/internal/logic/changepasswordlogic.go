@@ -2,8 +2,14 @@ package logic
 
 import (
 	"context"
+	"regexp"
+	"time"
 
+	"model"
 	"rpc/appuser"
+	"rpc/internal/pkg/constants"
+	"rpc/internal/pkg/logger"
+	"rpc/internal/pkg/utils"
 	"rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -23,8 +29,105 @@ func NewChangePasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 	}
 }
 
+// 用户认证管理
 func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*appuser.ChangePasswordResp, error) {
-	// todo: add your logic here and delete this line
+	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
+	log.Info("修改密码请求")
 
-	return &appuser.ChangePasswordResp{}, nil
+	// 参数验证
+	if in.Phone == "" || in.OldPassword == "" || in.NewPassword == "" {
+		log.Warn("修改密码参数不完整")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeInvalidParams,
+			Message: constants.GetMessage(constants.CodeInvalidParams),
+		}, nil
+	}
+
+	// 验证手机号格式
+	phoneRegex := `^1[3-9]\d{9}$`
+	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
+	if !matched {
+		log.Warn("手机号格式无效")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodePhoneInvalid,
+			Message: constants.GetMessage(constants.CodePhoneInvalid),
+		}, nil
+	}
+
+	// 验证新密码长度
+	if len(in.NewPassword) < 6 {
+		log.Warn("新密码长度不足")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeInvalidParams,
+			Message: "新密码长度不能少于6位",
+		}, nil
+	}
+
+	// 查找用户
+	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
+	if err != nil {
+		if err == model.ErrNotFound {
+			log.Warn("用户不存在")
+			return &appuser.ChangePasswordResp{
+				Code:    constants.CodeUserNotFound,
+				Message: constants.GetMessage(constants.CodeUserNotFound),
+			}, nil
+		}
+		log.WithError(err).Error("查询用户失败")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeInternalError,
+			Message: constants.GetMessage(constants.CodeInternalError),
+		}, nil
+	}
+
+	// 验证原密码
+	if !utils.CheckPassword(in.OldPassword, user.Password) {
+		log.Warn("原密码错误")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodePasswordError,
+			Message: "原密码错误",
+		}, nil
+	}
+
+	// 加密新密码
+	hashedNewPassword, err := utils.HashPassword(in.NewPassword)
+	if err != nil {
+		log.WithError(err).Error("新密码加密失败")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeInternalError,
+			Message: constants.GetMessage(constants.CodeInternalError),
+		}, nil
+	}
+
+	// 更新密码
+	updatedUser := &model.AppUsers{
+		Id:         user.Id,
+		Phone:      user.Phone,
+		Password:   hashedNewPassword,
+		Name:       user.Name,
+		Nickname:   user.Nickname,
+		Age:        user.Age,
+		Gender:     user.Gender,
+		Occupation: user.Occupation,
+		Address:    user.Address,
+		Income:     user.Income,
+		Status:     user.Status,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  time.Now(),
+	}
+
+	err = l.svcCtx.AppUserModel.Update(l.ctx, updatedUser)
+	if err != nil {
+		log.WithError(err).Error("更新密码失败")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeInternalError,
+			Message: constants.GetMessage(constants.CodeInternalError),
+		}, nil
+	}
+
+	log.WithField("user_id", user.Id).Info("修改密码成功")
+	return &appuser.ChangePasswordResp{
+		Code:    constants.CodeSuccess,
+		Message: constants.GetMessage(constants.CodeSuccess),
+	}, nil
 }

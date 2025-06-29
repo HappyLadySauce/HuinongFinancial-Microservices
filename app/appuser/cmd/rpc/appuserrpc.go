@@ -10,12 +10,15 @@ import (
 	"rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"
+	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
-	"github.com/zeromicro/go-zero/core/logx"
+
+	// SkyWalking Go Agent 集成
+	_ "github.com/apache/skywalking-go"
 )
 
 var configFile = flag.String("f", "etc/appuserrpc.yaml", "the config file")
@@ -35,13 +38,17 @@ func main() {
 		}
 	})
 
+	// 将本服务注册到 Consul
 	err := consul.RegisterService(c.ListenOn, c.Consul)
 	if err != nil {
-		logx.Errorf("consul register service %s", err)
+		logx.Errorf("consul register service error: %s", err)
+	} else {
+		logx.Infof("consul register service success: %s", c.Consul.Key)
 	}
 
 	defer s.Stop()
 
-	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
+	fmt.Printf("Starting AppUser RPC server at %s...\n", c.ListenOn)
+	fmt.Printf("SkyWalking Agent: Enabled (Auto-instrumentation)\n")
 	s.Start()
 }

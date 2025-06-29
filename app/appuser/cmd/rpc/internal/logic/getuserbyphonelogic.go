@@ -3,7 +3,10 @@ package logic
 import (
 	"context"
 
+	"model"
 	"rpc/appuser"
+	"rpc/internal/pkg/constants"
+	"rpc/internal/pkg/logger"
 	"rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -25,7 +28,55 @@ func NewGetUserByPhoneLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 
 // 用户信息管理
 func (l *GetUserByPhoneLogic) GetUserByPhone(in *appuser.GetUserInfoReq) (*appuser.GetUserInfoResp, error) {
-	// todo: add your logic here and delete this line
+	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
+	log.Info("获取用户信息请求")
 
-	return &appuser.GetUserInfoResp{}, nil
+	// 参数验证
+	if in.Phone == "" {
+		log.Warn("手机号参数为空")
+		return &appuser.GetUserInfoResp{
+			Code:    constants.CodeInvalidParams,
+			Message: constants.GetMessage(constants.CodeInvalidParams),
+		}, nil
+	}
+
+	// 查找用户
+	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
+	if err != nil {
+		if err == model.ErrNotFound {
+			log.Warn("用户不存在")
+			return &appuser.GetUserInfoResp{
+				Code:    constants.CodeUserNotFound,
+				Message: constants.GetMessage(constants.CodeUserNotFound),
+			}, nil
+		}
+		log.WithError(err).Error("查询用户失败")
+		return &appuser.GetUserInfoResp{
+			Code:    constants.CodeInternalError,
+			Message: constants.GetMessage(constants.CodeInternalError),
+		}, nil
+	}
+
+	// 构建用户信息响应
+	userInfo := &appuser.UserInfo{
+		Id:         int64(user.Id),
+		Phone:      user.Phone,
+		Name:       user.Name,
+		Nickname:   user.Nickname,
+		Age:        int32(user.Age),
+		Gender:     int32(user.Gender),
+		Occupation: user.Occupation,
+		Address:    user.Address,
+		Income:     user.Income,
+		Status:     int32(user.Status),
+		CreatedAt:  user.CreatedAt.Unix(),
+		UpdatedAt:  user.UpdatedAt.Unix(),
+	}
+
+	log.WithField("user_id", user.Id).Info("获取用户信息成功")
+	return &appuser.GetUserInfoResp{
+		Code:     constants.CodeSuccess,
+		Message:  constants.GetMessage(constants.CodeSuccess),
+		UserInfo: userInfo,
+	}, nil
 }

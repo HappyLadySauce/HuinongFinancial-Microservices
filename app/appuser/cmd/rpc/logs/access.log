@@ -1,1 +1,120 @@
 {"@timestamp":"2025-06-29T10:12:44.145Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:06:37.439Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:06:39.209Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:10:12.026Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:10:17.727Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:14:30.916Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:14:39.032Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:15:07.746Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:15:26.755Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:15:45.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:16:03.202Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13800138000' limit 1","duration":"4.0ms","level":"info","span":"f0a4cef5860ba666","trace":"057fca5cf1d97bedfd13b7fa4db6295c"}
+{"@timestamp":"2025-06-29T13:16:03.204Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Register - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"26.0ms","level":"info","span":"9af8e5249ab58d97","trace":"057fca5cf1d97bedfd13b7fa4db6295c"}
+{"@timestamp":"2025-06-29T13:16:03.329Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"94.2ms","level":"info","span":"f94c501b3d61689b","trace":"f994f76834d0c0a9414bc234d53c0f26"}
+{"@timestamp":"2025-06-29T13:16:04.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:16:23.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:16:42.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:17:01.756Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:17:20.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:17:39.756Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:17:58.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:18:17.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:18:36.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:18:55.755Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:19:01.700Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Register - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"2.2ms","level":"info","span":"951748f39d24197e","trace":"6b8926670559d886280ef90ae46e633f"}
+{"@timestamp":"2025-06-29T13:19:01.825Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"108.2ms","level":"info","span":"ffc9eeca2616fa14","trace":"52df7b7517b11bf987fb19589d71e45e"}
+{"@timestamp":"2025-06-29T13:19:14.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:19:33.752Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:19:52.754Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:20:11.754Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:20:30.755Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:20:48.693Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Register - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"1.6ms","level":"info","span":"addbccfb0319ed29","trace":"66ca7a6c93efa0373b2d744a3dd7af3b"}
+{"@timestamp":"2025-06-29T13:20:48.838Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:53760 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"93.7ms","level":"info","span":"95df5c188afab474","trace":"33013f09102f3959484efbc3c8df3524"}
+{"@timestamp":"2025-06-29T13:20:49.754Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:21:08.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:21:27.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:21:44.831Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:21:46.753Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:22:01.503Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:23:22.971Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:23:34.537Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:23:37.049Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T13:23:44.906Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T13:24:03.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:24:22.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:24:37.470Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13900139999' limit 1","duration":"1.5ms","level":"info","span":"1b2859cd10f673e8","trace":"13b619b5a14db5680ce450483571a822"}
+{"@timestamp":"2025-06-29T13:24:37.584Z","caller":"sqlx/stmt.go:274","content":"sql exec: insert into `app_users` (`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`) values ('13900139999', '$2a$10$r9.qhfVhp2ri6joinJ7KMuh0.jY0A1rSJczty.VohPN4QeTBWDdb2', '', '', 0, 0, '', '', 0, 1)","duration":"5.7ms","level":"info","span":"8177f2a3642a716b","trace":"13b619b5a14db5680ce450483571a822"}
+{"@timestamp":"2025-06-29T13:24:37.585Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Register - {\"phone\":\"13900139999\",\"password\":\"123456\"}","duration":"126.6ms","level":"info","span":"c4e848765808b223","trace":"13b619b5a14db5680ce450483571a822"}
+{"@timestamp":"2025-06-29T13:24:37.601Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13900139999' limit 1","duration":"1.4ms","level":"info","span":"89530df2b0c2bf6a","trace":"10a01a5cdd779c885532bdc5ff82e1d0"}
+{"@timestamp":"2025-06-29T13:24:37.695Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13900139999\",\"password\":\"123456\"}","duration":"96.4ms","level":"info","span":"5dc6d4212bac4eb2","trace":"10a01a5cdd779c885532bdc5ff82e1d0"}
+{"@timestamp":"2025-06-29T13:24:38.077Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"95.3ms","level":"info","span":"d905955d2180c2cd","trace":"77adee1a6c98afa3c37ecd1bb1e74037"}
+{"@timestamp":"2025-06-29T13:24:41.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:25:04.944Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:25:19.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:25:38.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:25:57.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:26:16.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:26:35.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:26:54.919Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:27:13.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:27:32.911Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:27:51.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:28:10.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:28:29.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:28:48.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:29:07.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:29:17.774Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Register - {\"phone\":\"13900139999\",\"password\":\"123456\"}","duration":"2.0ms","level":"info","span":"5ab8f2585413bd94","trace":"f30235301e5a232ba99e63f3084414d8"}
+{"@timestamp":"2025-06-29T13:29:17.918Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13900139999\",\"password\":\"123456\"}","duration":"94.6ms","level":"info","span":"d3344a10a735c80c","trace":"c978b570c2f3735494945295b286f7b8"}
+{"@timestamp":"2025-06-29T13:29:18.305Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"94.2ms","level":"info","span":"6dbf6f7bea3aa4be","trace":"8053d2e52a9737f616e3a3c787346b8b"}
+{"@timestamp":"2025-06-29T13:29:26.923Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:29:45.929Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:30:04.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:30:23.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:30:42.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:31:01.911Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:31:20.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:31:39.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:31:58.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:32:17.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:32:36.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:32:55.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:33:14.840Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13900139888' limit 1","duration":"3.3ms","level":"info","span":"4d22234a98f9efae","trace":"9e554c612b82c92ad8abab67bb2ec813"}
+{"@timestamp":"2025-06-29T13:33:14.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:33:14.947Z","caller":"sqlx/stmt.go:274","content":"sql exec: insert into `app_users` (`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`) values ('13900139888', '$2a$10$TvJrqtQ2sjmURGYX4E6UNeXewsmGV/q3.muAiJ3tItS8xnwGDP9WK', '', '', 0, 0, '', '', 0, 1)","duration":"5.8ms","level":"info","span":"26d05ef08a8326fe","trace":"9e554c612b82c92ad8abab67bb2ec813"}
+{"@timestamp":"2025-06-29T13:33:14.947Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Register - {\"phone\":\"13900139888\",\"password\":\"123456\"}","duration":"111.7ms","level":"info","span":"ff1876254eabab3d","trace":"9e554c612b82c92ad8abab67bb2ec813"}
+{"@timestamp":"2025-06-29T13:33:14.998Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13900139888' limit 1","duration":"1.5ms","level":"info","span":"11db2ee3768afc73","trace":"27396424da4129c4a9248c134d1b699b"}
+{"@timestamp":"2025-06-29T13:33:15.106Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13900139888\",\"password\":\"123456\"}","duration":"110.8ms","level":"info","span":"f0d6ea54742143f5","trace":"27396424da4129c4a9248c134d1b699b"}
+{"@timestamp":"2025-06-29T13:33:15.505Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:43366 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"94.3ms","level":"info","span":"fcacfa9e8ad2866a","trace":"cc049027bdcc43a94ae39f10aceeb859"}
+{"@timestamp":"2025-06-29T13:33:33.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:33:52.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:34:11.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:34:30.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:34:49.923Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:35:08.923Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:35:27.928Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:35:46.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:36:05.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:36:24.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:36:43.917Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:37:02.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:37:21.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:37:40.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:37:59.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:38:18.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:38:37.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:38:56.917Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:39:15.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:39:34.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:39:53.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:40:12.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:40:31.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:40:50.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:41:09.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:41:28.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:41:47.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:42:06.919Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:42:25.917Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:42:44.917Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:43:03.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:43:22.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:43:41.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}

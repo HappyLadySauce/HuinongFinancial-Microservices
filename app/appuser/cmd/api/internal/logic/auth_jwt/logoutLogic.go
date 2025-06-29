@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/appuser"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +24,25 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 	}
 }
 
+// 用户登出
 func (l *LogoutLogic) Logout(req *types.LogoutReq) (resp *types.LogoutResp, err error) {
-	// todo: add your logic here and delete this line
+	logx.WithContext(l.ctx).Info("API: 用户登出请求")
 
-	return
+	// 调用 RPC 登出服务
+	logoutResp, err := l.svcCtx.AppUserRpc.Logout(l.ctx, &appuser.LogoutReq{
+		Token: req.Token,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("RPC 登出调用失败: %v", err)
+		return &types.LogoutResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
+
+	// 转换 RPC 响应为 API 响应
+	return &types.LogoutResp{
+		Code:    logoutResp.Code,
+		Message: logoutResp.Message,
+	}, nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/appuser"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +24,25 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 	}
 }
 
+// 删除用户（软删除）
 func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.DeleteUserResp, err error) {
-	// todo: add your logic here and delete this line
+	logx.WithContext(l.ctx).Infof("API: 删除用户请求, phone: %s", req.Phone)
 
-	return
+	// 调用 RPC 删除用户服务
+	deleteResp, err := l.svcCtx.AppUserRpc.DeleteUser(l.ctx, &appuser.DeleteUserReq{
+		Phone: req.Phone,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("RPC 删除用户调用失败: %v", err)
+		return &types.DeleteUserResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
+
+	// 转换 RPC 响应为 API 响应
+	return &types.DeleteUserResp{
+		Code:    deleteResp.Code,
+		Message: deleteResp.Message,
+	}, nil
 }

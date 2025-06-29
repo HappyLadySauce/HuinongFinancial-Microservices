@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/appuser"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +24,61 @@ func NewUpdateUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 	}
 }
 
+// 更新用户信息
 func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp *types.UpdateUserInfoResp, err error) {
-	// todo: add your logic here and delete this line
+	logx.WithContext(l.ctx).Infof("API: 更新用户信息请求, user_id: %d", req.UserInfo.Id)
 
-	return
+	// 数据转换：API UserInfo -> RPC UserInfo
+	rpcUserInfo := &appuser.UserInfo{
+		Id:         req.UserInfo.Id,
+		Phone:      req.UserInfo.Phone,
+		Name:       req.UserInfo.Name,
+		Nickname:   req.UserInfo.Nickname,
+		Age:        int32(req.UserInfo.Age),
+		Gender:     int32(req.UserInfo.Gender),
+		Occupation: req.UserInfo.Occupation,
+		Address:    req.UserInfo.Address,
+		Income:     req.UserInfo.Income,
+		Status:     int32(req.UserInfo.Status),
+		CreatedAt:  req.UserInfo.CreatedAt,
+		UpdatedAt:  req.UserInfo.UpdatedAt,
+	}
+
+	// 调用 RPC 更新用户信息服务
+	updateResp, err := l.svcCtx.AppUserRpc.UpdateUserInfo(l.ctx, &appuser.UpdateUserInfoReq{
+		UserInfo: rpcUserInfo,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("RPC 更新用户信息调用失败: %v", err)
+		return &types.UpdateUserInfoResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
+
+	// 数据转换：RPC UserInfo -> API UserInfo
+	var userInfo types.UserInfo
+	if updateResp.UserInfo != nil {
+		userInfo = types.UserInfo{
+			Id:         updateResp.UserInfo.Id,
+			Phone:      updateResp.UserInfo.Phone,
+			Name:       updateResp.UserInfo.Name,
+			Nickname:   updateResp.UserInfo.Nickname,
+			Age:        int(updateResp.UserInfo.Age),
+			Gender:     int(updateResp.UserInfo.Gender),
+			Occupation: updateResp.UserInfo.Occupation,
+			Address:    updateResp.UserInfo.Address,
+			Income:     updateResp.UserInfo.Income,
+			Status:     int(updateResp.UserInfo.Status),
+			CreatedAt:  updateResp.UserInfo.CreatedAt,
+			UpdatedAt:  updateResp.UserInfo.UpdatedAt,
+		}
+	}
+
+	// 转换 RPC 响应为 API 响应
+	return &types.UpdateUserInfoResp{
+		Code:     updateResp.Code,
+		Message:  updateResp.Message,
+		UserInfo: userInfo,
+	}, nil
 }

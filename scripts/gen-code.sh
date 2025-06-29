@@ -33,17 +33,19 @@ show_help() {
     echo ""
     echo "参数说明:"
     echo "  service_name: 服务名称 (auth|appuser|oauser|loan|loanproduct|leaseproduct|lease)"
-    echo "  type:         生成类型 (api|rpc|model|migrate|all|clean|tidy|workspace)"
+    echo "  type:         生成类型 (api|rpc|model|migrate|docs|all|clean|tidy|workspace)"
     echo ""
     echo "示例:"
     echo "  $0 auth api              # 生成auth服务的API代码"
     echo "  $0 appuser rpc           # 生成appuser服务的RPC代码"
     echo "  $0 loan model            # 生成loan服务的Model代码"
     echo "  $0 oauser migrate        # 执行oauser服务数据库迁移(先清空再迁移)"
+    echo "  $0 appuser docs          # 生成appuser服务的API/RPC文档"
     echo "  $0 all api               # 生成所有服务的API代码"
     echo "  $0 all rpc               # 生成所有服务的RPC代码"
     echo "  $0 all model             # 生成所有服务的Model代码"
     echo "  $0 all migrate           # 执行所有服务数据库迁移(先清空再迁移)"
+    echo "  $0 all docs              # 生成所有服务的API/RPC文档"
     echo "  $0 all all               # 生成所有服务的API、RPC、Model代码并迁移数据库"
     echo "  $0 all clean             # 清理所有服务生成的代码"
     echo "  $0 auth all              # 生成auth服务的所有代码"
@@ -74,7 +76,7 @@ TYPE=$2
 
 # 支持的服务列表
 SERVICES=("auth" "appuser" "oauser" "loan" "loanproduct" "leaseproduct" "lease")
-TYPES=("api" "rpc" "model" "migrate" "all" "clean" "tidy" "workspace")
+TYPES=("api" "rpc" "model" "migrate" "docs" "all" "clean" "tidy" "workspace")
 
 # 验证服务名称
 if [[ "$SERVICE_NAME" != "all" ]] && [[ ! " ${SERVICES[@]} " =~ " ${SERVICE_NAME} " ]]; then
@@ -110,13 +112,26 @@ check_goctl() {
 clean_service() {
     local service=$1
     local cmd_dir="$PROJECT_ROOT/app/$service/cmd"
+    local docs_dir="$PROJECT_ROOT/docs/$service"
+    
+    local cleaned=false
     
     if [[ -d "$cmd_dir" ]]; then
         echo -e "${YELLOW}清理 $service 服务生成的代码...${NC}"
         rm -rf "$cmd_dir"
         echo -e "${GREEN}✓ $service 代码清理完成${NC}"
-    else
-        echo -e "${YELLOW}$service 服务无生成的代码需要清理${NC}"
+        cleaned=true
+    fi
+    
+    if [[ -d "$docs_dir" ]]; then
+        echo -e "${YELLOW}清理 $service 服务生成的文档...${NC}"
+        rm -rf "$docs_dir"
+        echo -e "${GREEN}✓ $service 文档清理完成${NC}"
+        cleaned=true
+    fi
+    
+    if [[ "$cleaned" == false ]]; then
+        echo -e "${YELLOW}$service 服务无生成的代码或文档需要清理${NC}"
     fi
 }
 
@@ -438,6 +453,174 @@ migrate_database() {
     fi
 }
 
+# 生成文档
+generate_docs() {
+    local service=$1
+    local api_file="$PROJECT_ROOT/app/$service/$service-api.api"
+    local proto_file="$PROJECT_ROOT/app/$service/$service-rpc.proto"
+    local docs_dir="$PROJECT_ROOT/docs/$service"
+    
+    echo -e "${GREEN}生成 $service 服务文档...${NC}"
+    
+    # 创建文档目录
+    mkdir -p "$docs_dir"
+    
+    local has_docs=false
+    
+    # 生成API Swagger文档
+    if [[ -f "$api_file" ]]; then
+        echo -e "${BLUE}生成API Swagger文档...${NC}"
+        echo -e "${BLUE}源文件: $api_file${NC}"
+        echo -e "${BLUE}输出目录: $docs_dir${NC}"
+        
+        # 检查goctl版本是否支持swagger
+        if goctl api swagger --help >/dev/null 2>&1; then
+            # 生成JSON格式的swagger文档
+            if goctl api swagger --api "$api_file" --dir "$docs_dir" 2>/dev/null; then
+                echo -e "${GREEN}✓ Swagger JSON文档生成完成${NC}"
+                
+                # 生成YAML格式的swagger文档
+                if goctl api swagger --api "$api_file" --dir "$docs_dir" --yaml 2>/dev/null; then
+                    echo -e "${GREEN}✓ Swagger YAML文档生成完成${NC}"
+                else
+                    echo -e "${YELLOW}⚠ Swagger YAML文档生成失败，但JSON文档已生成${NC}"
+                fi
+                
+                has_docs=true
+            else
+                echo -e "${YELLOW}⚠ Swagger文档生成失败，请检查API文件语法${NC}"
+            fi
+        else
+            echo -e "${YELLOW}⚠ 当前goctl版本不支持swagger生成，需要goctl >= 1.8.2${NC}"
+        fi
+    else
+        echo -e "${YELLOW}跳过API文档: $service-api.api 文件不存在${NC}"
+    fi
+    
+    # 生成Proto文档
+    if [[ -f "$proto_file" ]]; then
+        echo -e "${BLUE}生成RPC Proto文档...${NC}"
+        echo -e "${BLUE}源文件: $proto_file${NC}"
+        
+        # 检查是否安装了protoc-gen-doc
+        if command -v protoc-gen-doc &> /dev/null; then
+            # 生成HTML格式的protobuf文档
+            if protoc --doc_out="$docs_dir" --doc_opt=html,"$service-rpc.html" --proto_path="$(dirname "$proto_file")" "$proto_file" 2>/dev/null; then
+                echo -e "${GREEN}✓ Proto HTML文档生成完成${NC}"
+                has_docs=true
+            else
+                echo -e "${YELLOW}⚠ Proto HTML文档生成失败${NC}"
+            fi
+            
+            # 生成Markdown格式的protobuf文档
+            if protoc --doc_out="$docs_dir" --doc_opt=markdown,"$service-rpc.md" --proto_path="$(dirname "$proto_file")" "$proto_file" 2>/dev/null; then
+                echo -e "${GREEN}✓ Proto Markdown文档生成完成${NC}"
+                has_docs=true
+            else
+                echo -e "${YELLOW}⚠ Proto Markdown文档生成失败${NC}"
+            fi
+        else
+            # 创建简单的Proto说明文档
+            cat > "$docs_dir/$service-rpc-proto.md" << EOF
+# $service RPC 服务协议文档
+
+## Protocol Buffer 定义文件
+- 文件路径: \`app/$service/$service-rpc.proto\`
+- 生成时间: $(date '+%Y-%m-%d %H:%M:%S')
+
+## 说明
+本文档由 \`$service-rpc.proto\` 文件自动生成。
+
+要查看完整的服务定义，请直接查看 Protocol Buffer 文件：
+\`\`\`bash
+cat app/$service/$service-rpc.proto
+\`\`\`
+
+## 安装 protoc-gen-doc 生成更详细文档
+要生成更详细的RPC文档，请安装 protoc-gen-doc：
+\`\`\`bash
+go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+\`\`\`
+
+然后重新运行文档生成命令。
+EOF
+            echo -e "${GREEN}✓ Proto说明文档生成完成${NC}"
+            echo -e "${YELLOW}提示: 安装 protoc-gen-doc 可生成更详细的RPC文档${NC}"
+            has_docs=true
+        fi
+    else
+        echo -e "${YELLOW}跳过RPC文档: $service-rpc.proto 文件不存在${NC}"
+    fi
+    
+    # 生成文档索引
+    if [[ "$has_docs" == true ]]; then
+        cat > "$docs_dir/README.md" << EOF
+# $service 服务文档
+
+本目录包含 $service 服务的API和RPC文档。
+
+## 文档列表
+
+### API文档 (Swagger)
+EOF
+        
+        if [[ -f "$docs_dir/swagger.json" ]]; then
+            echo "- [Swagger JSON](./swagger.json) - OpenAPI 3.0 JSON格式" >> "$docs_dir/README.md"
+        fi
+        
+        if [[ -f "$docs_dir/swagger.yaml" ]]; then
+            echo "- [Swagger YAML](./swagger.yaml) - OpenAPI 3.0 YAML格式" >> "$docs_dir/README.md"
+        fi
+        
+        cat >> "$docs_dir/README.md" << EOF
+
+### RPC文档 (Protocol Buffer)
+EOF
+        
+        if [[ -f "$docs_dir/$service-rpc.html" ]]; then
+            echo "- [$service-rpc.html](./$service-rpc.html) - HTML格式RPC文档" >> "$docs_dir/README.md"
+        fi
+        
+        if [[ -f "$docs_dir/$service-rpc.md" ]]; then
+            echo "- [$service-rpc.md](./$service-rpc.md) - Markdown格式RPC文档" >> "$docs_dir/README.md"
+        fi
+        
+        if [[ -f "$docs_dir/$service-rpc-proto.md" ]]; then
+            echo "- [$service-rpc-proto.md](./$service-rpc-proto.md) - Proto文件说明" >> "$docs_dir/README.md"
+        fi
+        
+        cat >> "$docs_dir/README.md" << EOF
+
+## 使用说明
+
+### 查看Swagger文档
+可以使用以下方式查看Swagger文档：
+1. 将JSON/YAML文件导入到 [Swagger Editor](https://editor.swagger.io/)
+2. 使用IDE插件（如VSCode的OpenAPI扩展）
+3. 使用swagger-ui等工具
+
+### 更新文档
+当修改了API或RPC定义文件后，运行以下命令更新文档：
+\`\`\`bash
+./scripts/gen-code.sh $service docs
+\`\`\`
+
+生成时间: $(date '+%Y-%m-%d %H:%M:%S')
+EOF
+        
+        echo -e "${GREEN}✓ 文档索引生成完成${NC}"
+        echo -e "${BLUE}文档目录: $docs_dir${NC}"
+        
+        # 显示生成的文档列表
+        echo -e "${BLUE}生成的文档文件:${NC}"
+        ls -la "$docs_dir" | grep -v "^total" | tail -n +2 | sed 's/^/    /'
+    else
+        echo -e "${YELLOW}未生成任何文档，请检查API/RPC定义文件是否存在${NC}"
+        # 删除空的文档目录
+        rmdir "$docs_dir" 2>/dev/null || true
+    fi
+}
+
 # 单独执行 go mod tidy
 tidy_service() {
     local service=$1
@@ -485,6 +668,7 @@ generate_all() {
     generate_rpc $service
     migrate_database $service
     generate_model $service
+    generate_docs $service
     
     # 设置Go工作区
     setup_go_workspace $service
@@ -509,6 +693,9 @@ generate_all_services() {
             "migrate")
                 migrate_database $service
                 ;;
+            "docs")
+                generate_docs $service
+                ;;
             "all")
                 generate_all $service
                 ;;
@@ -531,8 +718,8 @@ show_structure() {
     local service=$1
     echo -e "${BLUE}$service 服务目录结构:${NC}"
     echo "app/$service/"
-    echo "├── $service.api          # API定义文件"
-    echo "├── $service.proto        # RPC定义文件"
+    echo "├── $service-api.api      # API定义文件"
+    echo "├── $service-rpc.proto    # RPC定义文件"
     echo "├── $service.sql          # 数据库初始化文件"
     echo "└── cmd/                  # 生成代码目录"
     echo "    ├── api/              # API服务代码"
@@ -546,6 +733,14 @@ show_structure() {
     echo "    │   └── $service.go   # 入口文件"
     echo "    └── model/            # 数据模型(API和RPC共用)"
     echo "        └── *.go          # 模型文件"
+    echo ""
+    echo "docs/$service/            # 服务文档目录"
+    echo "├── README.md             # 文档索引"
+    echo "├── swagger.json          # API Swagger JSON文档"
+    echo "├── swagger.yaml          # API Swagger YAML文档"
+    echo "├── $service-rpc.html     # RPC HTML文档"
+    echo "├── $service-rpc.md       # RPC Markdown文档"
+    echo "└── $service-rpc-proto.md # RPC Proto说明文档"
 }
 
 # 主函数
@@ -575,6 +770,9 @@ main() {
             "migrate")
                 migrate_database $SERVICE_NAME
                 ;;
+            "docs")
+                generate_docs $SERVICE_NAME
+                ;;
             "all")
                 generate_all $SERVICE_NAME
                 ;;
@@ -589,7 +787,7 @@ main() {
                 ;;
         esac
         
-        if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]]; then
+        if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]] && [[ "$TYPE" != "docs" ]]; then
             echo ""
             show_structure $SERVICE_NAME
         fi
@@ -600,7 +798,7 @@ main() {
     echo -e "${GREEN}          操作完成！                   ${NC}"
     echo -e "${GREEN}========================================${NC}"
     
-    if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]]; then
+    if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]] && [[ "$TYPE" != "docs" ]]; then
         echo ""
         echo -e "${YELLOW}下一步操作:${NC}"
         echo "1. 检查生成的代码是否正确"
@@ -623,6 +821,11 @@ main() {
         echo "- 批量执行go mod tidy: $0 all tidy"
         echo "- 设置Go工作区: $0 $SERVICE_NAME workspace"
         echo "- 批量设置Go工作区: $0 all workspace"
+        echo ""
+        echo -e "${YELLOW}文档生成:${NC}"
+        echo "- 生成API/RPC文档: $0 $SERVICE_NAME docs"
+        echo "- 批量生成文档: $0 all docs"
+        echo "- 查看文档: docs/$SERVICE_NAME/README.md"
     elif [[ "$TYPE" == "clean" ]]; then
         echo ""
         echo -e "${YELLOW}代码已清理，可重新生成${NC}"
@@ -632,6 +835,29 @@ main() {
     elif [[ "$TYPE" == "workspace" ]]; then
         echo ""
         echo -e "${YELLOW}Go工作区已设置完成，现在可以在cmd目录中进行跨模块开发${NC}"
+    elif [[ "$TYPE" == "docs" ]]; then
+        echo ""
+        echo -e "${YELLOW}文档生成完成！${NC}"
+        echo ""
+        echo -e "${BLUE}查看方式:${NC}"
+        if [[ "$SERVICE_NAME" == "all" ]]; then
+            echo "- 查看所有服务文档: find docs/ -name 'README.md'"
+            echo "- 浏览器打开Swagger: 将 docs/服务名/swagger.json 导入 https://editor.swagger.io/"
+        else
+            echo "- 查看文档索引: docs/$SERVICE_NAME/README.md"
+            echo "- 浏览器打开Swagger: 将 docs/$SERVICE_NAME/swagger.json 导入 https://editor.swagger.io/"
+            echo "- 查看RPC文档: docs/$SERVICE_NAME/$SERVICE_NAME-rpc.html (如果存在)"
+        fi
+        echo ""
+        echo -e "${BLUE}工具推荐:${NC}"
+        echo "- Swagger Editor: https://editor.swagger.io/"
+        echo "- VSCode OpenAPI 扩展: 可直接预览swagger文件"
+        echo "- 安装 protoc-gen-doc 获得更丰富的RPC文档:"
+        echo "  go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest"
+        echo ""
+        echo -e "${BLUE}更新文档:${NC}"
+        echo "- 修改API定义后: $0 $SERVICE_NAME docs"
+        echo "- 修改RPC定义后: $0 $SERVICE_NAME docs"
     fi
 }
 

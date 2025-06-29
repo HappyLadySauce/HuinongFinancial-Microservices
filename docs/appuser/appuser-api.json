@@ -1,0 +1,546 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "C端用户服务API",
+    "version": "v1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "Login",
+        "operationId": "authLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone",
+                "password"
+              ],
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "Logout",
+        "operationId": "authJwtLogout",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "token"
+              ],
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ChangePassword",
+        "operationId": "authJwtChangePassword",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone",
+                "old_password",
+                "new_password"
+              ],
+              "properties": {
+                "new_password": {
+                  "type": "string"
+                },
+                "old_password": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "Register",
+        "operationId": "authRegister",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone",
+                "password"
+              ],
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/delete": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "DeleteUser",
+        "operationId": "infoDeleteUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone"
+              ],
+              "properties": {
+                "phone": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/info": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "GetUserByPhone",
+        "operationId": "infoGetUserByPhone",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone"
+              ],
+              "properties": {
+                "phone": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "user_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "phone",
+                    "name",
+                    "nickname",
+                    "age",
+                    "gender",
+                    "occupation",
+                    "address",
+                    "income",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "address": {
+                      "type": "string"
+                    },
+                    "age": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "gender": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "income": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nickname": {
+                      "type": "string"
+                    },
+                    "occupation": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "UpdateUserInfo",
+        "operationId": "infoUpdateUserInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "user_info"
+              ],
+              "properties": {
+                "user_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "phone",
+                    "name",
+                    "nickname",
+                    "age",
+                    "gender",
+                    "occupation",
+                    "address",
+                    "income",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "address": {
+                      "type": "string"
+                    },
+                    "age": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "gender": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "income": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nickname": {
+                      "type": "string"
+                    },
+                    "occupation": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "user_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "phone",
+                    "name",
+                    "nickname",
+                    "age",
+                    "gender",
+                    "occupation",
+                    "address",
+                    "income",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "address": {
+                      "type": "string"
+                    },
+                    "age": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "gender": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "income": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "nickname": {
+                      "type": "string"
+                    },
+                    "occupation": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2025-06-29 13:39:48",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.8.4"
+}
