@@ -90,8 +90,8 @@ type GetLoanApplicationResp {
 
 // 获取贷款申请列表请求响应
 type ListLoanApplicationsReq {
-	Page   int32  `form:"page,default=1"`       // 修改为int32统一分页参数
-	Size   int32  `form:"size,default=10"`      // 修改为int32统一分页参数
+	Page   int32  `form:"page,default=1"` // 修改为int32统一分页参数
+	Size   int32  `form:"size,default=10"` // 修改为int32统一分页参数
 	UserId int64  `form:"user_id,optional"`
 	Status string `form:"status,optional"`
 }
