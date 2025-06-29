@@ -8,3 +8,5 @@
 .vscode/
 .DS_Store
 
+skywalking/
+apache-skywalking-apm-10.2.0.tar.gz
