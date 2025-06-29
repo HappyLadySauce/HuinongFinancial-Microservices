@@ -98,6 +98,7 @@ type LoginResp {
 type RegisterReq {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
+	Role     string `json:"role"`
 }
 
 type RegisterResp {

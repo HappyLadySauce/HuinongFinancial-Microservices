@@ -22,3 +22,6 @@
 {"@timestamp":"2025-06-29T15:31:12.895Z","caller":"stat/usage.go:61","content":"CPU: 1m, MEMORY: Alloc=4.5Mi, TotalAlloc=32.6Mi, Sys=18.3Mi, NumGC=13","level":"stat"}
 {"@timestamp":"2025-06-29T15:31:12.932Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 1, total: 0, pass: 0, drop: 0","level":"stat"}
 {"@timestamp":"2025-06-29T15:31:26.582Z","caller":"stat/metrics.go:210","content":"(oauser-api) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}
+{"@timestamp":"2025-06-29T15:32:12.895Z","caller":"stat/usage.go:61","content":"CPU: 1m, MEMORY: Alloc=4.9Mi, TotalAlloc=35.9Mi, Sys=18.3Mi, NumGC=14","level":"stat"}
+{"@timestamp":"2025-06-29T15:32:12.932Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 1, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-29T15:32:26.581Z","caller":"stat/metrics.go:210","content":"(oauser-api) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}

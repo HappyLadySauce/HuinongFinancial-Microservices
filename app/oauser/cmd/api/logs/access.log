@@ -17,3 +17,4 @@
 {"@timestamp":"2025-06-29T15:29:03.211Z","caller":"handler/loghandler.go:147","content":"[HTTP] 401 - POST /api/v1/auth/logout - 172.18.122.4:55047 - PostmanRuntime/7.44.1","duration":"0.2ms","level":"info","span":"16533e2503f283ab","trace":"18bc69a07345404292470f74f3b1b986"}
 {"@timestamp":"2025-06-29T15:29:05.449Z","caller":"handler/loghandler.go:147","content":"[HTTP] 200 - POST /api/v1/auth/login - 172.18.122.4:55047 - PostmanRuntime/7.44.1","duration":"122.3ms","level":"info","span":"aaa85b147239e21a","trace":"561c286e9ffb0a7d0678596d0d5d903f"}
 {"@timestamp":"2025-06-29T15:29:37.060Z","caller":"handler/loghandler.go:147","content":"[HTTP] 200 - POST /api/v1/auth/login - 172.18.122.4:55120 - PostmanRuntime/7.44.1","duration":"120.8ms","level":"info","span":"a0851f14ec35fc3b","trace":"4e7fcf9675c9f25b3ea3f71cbc8b40be"}
+{"@timestamp":"2025-06-29T15:32:38.436Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
