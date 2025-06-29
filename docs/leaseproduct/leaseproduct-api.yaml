@@ -1,0 +1,723 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 租赁产品API
+  version: v1.0.0
+paths:
+  /api/v1/admin/leaseproduct/products:
+    get:
+      operationId: adminListAllLeaseProducts
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: type
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: brand
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              list:
+                description: 修改数据类型名称
+                items:
+                  properties:
+                    available_count:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    brand:
+                      type: string
+                    created_at:
+                      type: integer
+                    daily_rate:
+                      type: number
+                    deposit:
+                      type: number
+                    description:
+                      type: string
+                    id:
+                      type: integer
+                    inventory_count:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    machinery:
+                      type: string
+                    max_duration:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    min_duration:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    model:
+                      type: string
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    status:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                  required:
+                  - id
+                  - product_code
+                  - name
+                  - type
+                  - machinery
+                  - brand
+                  - model
+                  - daily_rate
+                  - deposit
+                  - max_duration
+                  - min_duration
+                  - description
+                  - inventory_count
+                  - available_count
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                description: 添加标准响应格式
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: 获取所有租赁产品列表
+    post:
+      consumes:
+      - application/json
+      operationId: adminCreateLeaseProduct
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            brand:
+              type: string
+            daily_rate:
+              type: number
+            deposit:
+              type: number
+            description:
+              type: string
+            inventory_count:
+              type: integer
+            machinery:
+              type: string
+            max_duration:
+              type: integer
+            min_duration:
+              type: integer
+            model:
+              type: string
+            name:
+              type: string
+            product_code:
+              type: string
+            type:
+              type: string
+          required:
+          - product_code
+          - name
+          - type
+          - machinery
+          - brand
+          - model
+          - daily_rate
+          - deposit
+          - max_duration
+          - min_duration
+          - description
+          - inventory_count
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  available_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  brand:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  deposit:
+                    type: number
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  inventory_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  machinery:
+                    type: string
+                  max_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  min_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  model:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - machinery
+                - brand
+                - model
+                - daily_rate
+                - deposit
+                - max_duration
+                - min_duration
+                - description
+                - inventory_count
+                - available_count
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 创建租赁产品
+  /api/v1/admin/leaseproduct/products/{productCode}:
+    delete:
+      operationId: adminDeleteLeaseProduct
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 删除租赁产品
+    get:
+      operationId: adminGetLeaseProductDetail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  available_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  brand:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  deposit:
+                    type: number
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  inventory_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  machinery:
+                    type: string
+                  max_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  min_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  model:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - machinery
+                - brand
+                - model
+                - daily_rate
+                - deposit
+                - max_duration
+                - min_duration
+                - description
+                - inventory_count
+                - available_count
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 获取租赁产品详情
+    put:
+      consumes:
+      - application/json
+      operationId: adminUpdateLeaseProduct
+      parameters:
+      - in: path
+        name: productCode
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            brand:
+              type: string
+            daily_rate:
+              type: number
+            deposit:
+              type: number
+            description:
+              type: string
+            machinery:
+              type: string
+            max_duration:
+              type: integer
+            min_duration:
+              type: integer
+            model:
+              type: string
+            name:
+              type: string
+            status:
+              type: integer
+            type:
+              type: string
+          required:
+          - name
+          - type
+          - machinery
+          - brand
+          - model
+          - daily_rate
+          - deposit
+          - max_duration
+          - min_duration
+          - description
+          - status
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  available_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  brand:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  deposit:
+                    type: number
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  inventory_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  machinery:
+                    type: string
+                  max_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  min_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  model:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - machinery
+                - brand
+                - model
+                - daily_rate
+                - deposit
+                - max_duration
+                - min_duration
+                - description
+                - inventory_count
+                - available_count
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 更新租赁产品
+  /api/v1/leaseproduct/products:
+    get:
+      operationId: productListLeaseProducts
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: type
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: brand
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              list:
+                description: 修改数据类型名称
+                items:
+                  properties:
+                    available_count:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    brand:
+                      type: string
+                    created_at:
+                      type: integer
+                    daily_rate:
+                      type: number
+                    deposit:
+                      type: number
+                    description:
+                      type: string
+                    id:
+                      type: integer
+                    inventory_count:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    machinery:
+                      type: string
+                    max_duration:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    min_duration:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    model:
+                      type: string
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    status:
+                      description: 修改为int32与RPC一致
+                      type: integer
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                  required:
+                  - id
+                  - product_code
+                  - name
+                  - type
+                  - machinery
+                  - brand
+                  - model
+                  - daily_rate
+                  - deposit
+                  - max_duration
+                  - min_duration
+                  - description
+                  - inventory_count
+                  - available_count
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                description: 添加标准响应格式
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: 获取租赁产品列表
+  /api/v1/leaseproduct/products/{productCode}:
+    get:
+      operationId: productGetLeaseProduct
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  available_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  brand:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  deposit:
+                    type: number
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  inventory_count:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  machinery:
+                    type: string
+                  max_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  min_duration:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  model:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    description: 修改为int32与RPC一致
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - machinery
+                - brand
+                - model
+                - daily_rate
+                - deposit
+                - max_duration
+                - min_duration
+                - description
+                - inventory_count
+                - available_count
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 获取租赁产品详情
+  /api/v1/leaseproduct/products/check-inventory:
+    post:
+      consumes:
+      - application/json
+      operationId: productCheckInventoryAvailability
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            end_date:
+              type: string
+            product_code:
+              type: string
+            quantity:
+              type: integer
+            start_date:
+              type: string
+          required:
+          - product_code
+          - quantity
+          - start_date
+          - end_date
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              available:
+                type: boolean
+              available_count:
+                type: integer
+              code:
+                description: 添加标准响应格式
+                type: integer
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 检查库存可用性
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-29 17:37:04"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

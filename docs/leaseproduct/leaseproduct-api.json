@@ -1,0 +1,1009 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "租赁产品API",
+    "version": "v1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/admin/leaseproduct/products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取所有租赁产品列表",
+        "operationId": "adminListAllLeaseProducts",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "brand",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "list": {
+                  "description": "修改数据类型名称",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "machinery",
+                      "brand",
+                      "model",
+                      "daily_rate",
+                      "deposit",
+                      "max_duration",
+                      "min_duration",
+                      "description",
+                      "inventory_count",
+                      "available_count",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "available_count": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "brand": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "daily_rate": {
+                        "type": "number"
+                      },
+                      "deposit": {
+                        "type": "number"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "inventory_count": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "machinery": {
+                        "type": "string"
+                      },
+                      "max_duration": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "min_duration": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建租赁产品",
+        "operationId": "adminCreateLeaseProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "product_code",
+                "name",
+                "type",
+                "machinery",
+                "brand",
+                "model",
+                "daily_rate",
+                "deposit",
+                "max_duration",
+                "min_duration",
+                "description",
+                "inventory_count"
+              ],
+              "properties": {
+                "brand": {
+                  "type": "string"
+                },
+                "daily_rate": {
+                  "type": "number"
+                },
+                "deposit": {
+                  "type": "number"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "inventory_count": {
+                  "type": "integer"
+                },
+                "machinery": {
+                  "type": "string"
+                },
+                "max_duration": {
+                  "type": "integer"
+                },
+                "min_duration": {
+                  "type": "integer"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "product_code": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "brand",
+                    "model",
+                    "daily_rate",
+                    "deposit",
+                    "max_duration",
+                    "min_duration",
+                    "description",
+                    "inventory_count",
+                    "available_count",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "available_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "brand": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "inventory_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "min_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "model": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/leaseproduct/products/{productCode}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取租赁产品详情",
+        "operationId": "adminGetLeaseProductDetail",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "brand",
+                    "model",
+                    "daily_rate",
+                    "deposit",
+                    "max_duration",
+                    "min_duration",
+                    "description",
+                    "inventory_count",
+                    "available_count",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "available_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "brand": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "inventory_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "min_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "model": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新租赁产品",
+        "operationId": "adminUpdateLeaseProduct",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "productCode",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "type",
+                "machinery",
+                "brand",
+                "model",
+                "daily_rate",
+                "deposit",
+                "max_duration",
+                "min_duration",
+                "description",
+                "status"
+              ],
+              "properties": {
+                "brand": {
+                  "type": "string"
+                },
+                "daily_rate": {
+                  "type": "number"
+                },
+                "deposit": {
+                  "type": "number"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "machinery": {
+                  "type": "string"
+                },
+                "max_duration": {
+                  "type": "integer"
+                },
+                "min_duration": {
+                  "type": "integer"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "brand",
+                    "model",
+                    "daily_rate",
+                    "deposit",
+                    "max_duration",
+                    "min_duration",
+                    "description",
+                    "inventory_count",
+                    "available_count",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "available_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "brand": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "inventory_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "min_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "model": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除租赁产品",
+        "operationId": "adminDeleteLeaseProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/leaseproduct/products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取租赁产品列表",
+        "operationId": "productListLeaseProducts",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "brand",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "list": {
+                  "description": "修改数据类型名称",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "machinery",
+                      "brand",
+                      "model",
+                      "daily_rate",
+                      "deposit",
+                      "max_duration",
+                      "min_duration",
+                      "description",
+                      "inventory_count",
+                      "available_count",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "available_count": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "brand": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "daily_rate": {
+                        "type": "number"
+                      },
+                      "deposit": {
+                        "type": "number"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "inventory_count": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "machinery": {
+                        "type": "string"
+                      },
+                      "max_duration": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "min_duration": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "description": "修改为int32与RPC一致",
+                        "type": "integer"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/leaseproduct/products/check-inventory": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "检查库存可用性",
+        "operationId": "productCheckInventoryAvailability",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "product_code",
+                "quantity",
+                "start_date",
+                "end_date"
+              ],
+              "properties": {
+                "end_date": {
+                  "type": "string"
+                },
+                "product_code": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "integer"
+                },
+                "start_date": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "available": {
+                  "type": "boolean"
+                },
+                "available_count": {
+                  "type": "integer"
+                },
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/leaseproduct/products/{productCode}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取租赁产品详情",
+        "operationId": "productGetLeaseProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "brand",
+                    "model",
+                    "daily_rate",
+                    "deposit",
+                    "max_duration",
+                    "min_duration",
+                    "description",
+                    "inventory_count",
+                    "available_count",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "available_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "brand": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "inventory_count": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "max_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "min_duration": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "model": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "description": "修改为int32与RPC一致",
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2025-06-29 17:37:04",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.8.4"
+}

@@ -1,0 +1,582 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 贷款业务API
+  version: v1.0.0
+paths:
+  /api/v1/admin/loan/applications:
+    get:
+      operationId: adminListAllLoanApplications
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: user_id
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    amount:
+                      type: number
+                    applicant_name:
+                      type: string
+                    application_id:
+                      type: string
+                    created_at:
+                      type: integer
+                    duration:
+                      type: integer
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    product_id:
+                      type: integer
+                    purpose:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                    user_id:
+                      type: integer
+                  required:
+                  - id
+                  - application_id
+                  - user_id
+                  - applicant_name
+                  - product_id
+                  - name
+                  - type
+                  - amount
+                  - duration
+                  - purpose
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: ListAllLoanApplications
+  /api/v1/admin/loan/applications/{id}:
+    get:
+      operationId: adminGetLoanApplicationDetail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  amount:
+                    type: number
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  created_at:
+                    type: integer
+                  duration:
+                    type: integer
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - name
+                - type
+                - amount
+                - duration
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: GetLoanApplicationDetail
+  /api/v1/admin/loan/applications/{id}/approvals:
+    get:
+      operationId: adminListLoanApprovals
+      parameters:
+      - in: query
+        name: application_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    action:
+                      type: string
+                    application_id:
+                      type: integer
+                    approved_amount:
+                      type: number
+                    approved_duration:
+                      type: integer
+                    auditor_id:
+                      type: integer
+                    auditor_name:
+                      type: string
+                    created_at:
+                      type: integer
+                    id:
+                      type: integer
+                    interest_rate:
+                      type: number
+                    suggestions:
+                      type: string
+                  required:
+                  - id
+                  - application_id
+                  - auditor_id
+                  - auditor_name
+                  - action
+                  - suggestions
+                  - approved_amount
+                  - approved_duration
+                  - interest_rate
+                  - created_at
+                  type: object
+                type: array
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: ListLoanApprovals
+  /api/v1/admin/loan/applications/{id}/approve:
+    post:
+      consumes:
+      - application/json
+      operationId: adminApproveLoanApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            action:
+              type: string
+            approved_amount:
+              type: number
+            approved_duration:
+              type: integer
+            interest_rate:
+              type: number
+            suggestions:
+              type: string
+          required:
+          - action
+          - suggestions
+          - approved_amount
+          - approved_duration
+          - interest_rate
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: ApproveLoanApplication
+  /api/v1/loan/applications:
+    get:
+      operationId: loanListMyLoanApplications
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: user_id
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    amount:
+                      type: number
+                    applicant_name:
+                      type: string
+                    application_id:
+                      type: string
+                    created_at:
+                      type: integer
+                    duration:
+                      type: integer
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    product_id:
+                      type: integer
+                    purpose:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                    user_id:
+                      type: integer
+                  required:
+                  - id
+                  - application_id
+                  - user_id
+                  - applicant_name
+                  - product_id
+                  - name
+                  - type
+                  - amount
+                  - duration
+                  - purpose
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: ListMyLoanApplications
+    post:
+      consumes:
+      - application/json
+      operationId: loanCreateLoanApplication
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            amount:
+              type: number
+            duration:
+              type: integer
+            name:
+              type: string
+            product_id:
+              type: integer
+            purpose:
+              type: string
+            type:
+              type: string
+          required:
+          - product_id
+          - name
+          - type
+          - amount
+          - duration
+          - purpose
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_id:
+                type: string
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: CreateLoanApplication
+  /api/v1/loan/applications/{id}:
+    get:
+      operationId: loanGetMyLoanApplication
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  amount:
+                    type: number
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  created_at:
+                    type: integer
+                  duration:
+                    type: integer
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - name
+                - type
+                - amount
+                - duration
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: GetMyLoanApplication
+    put:
+      consumes:
+      - application/json
+      operationId: loanUpdateMyLoanApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            amount:
+              type: number
+            duration:
+              type: integer
+            purpose:
+              type: string
+          required:
+          - amount
+          - duration
+          - purpose
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  amount:
+                    type: number
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  created_at:
+                    type: integer
+                  duration:
+                    type: integer
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - name
+                - type
+                - amount
+                - duration
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: UpdateMyLoanApplication
+  /api/v1/loan/applications/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      operationId: loanCancelMyLoanApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            reason:
+              type: string
+          required:
+          - reason
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: CancelMyLoanApplication
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-29 17:37:20"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

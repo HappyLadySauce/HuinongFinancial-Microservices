@@ -1,0 +1,586 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 贷款产品API
+  version: v1.0.0
+paths:
+  /api/v1/admin/loanproduct/products:
+    get:
+      operationId: adminListAllLoanProducts
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: type
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              list:
+                items:
+                  properties:
+                    created_at:
+                      type: integer
+                    description:
+                      type: string
+                    id:
+                      type: integer
+                    interest_rate:
+                      type: number
+                    max_amount:
+                      type: number
+                    max_duration:
+                      type: integer
+                    min_amount:
+                      type: number
+                    min_duration:
+                      type: integer
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    status:
+                      type: integer
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                  required:
+                  - id
+                  - product_code
+                  - name
+                  - type
+                  - max_amount
+                  - min_amount
+                  - max_duration
+                  - min_duration
+                  - interest_rate
+                  - description
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                description: 添加标准响应格式
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: 获取所有贷款产品列表
+    post:
+      consumes:
+      - application/json
+      operationId: adminCreateLoanProduct
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            description:
+              type: string
+            interest_rate:
+              type: number
+            max_amount:
+              type: number
+            max_duration:
+              type: integer
+            min_amount:
+              type: number
+            min_duration:
+              type: integer
+            name:
+              type: string
+            product_code:
+              type: string
+            type:
+              type: string
+          required:
+          - product_code
+          - name
+          - type
+          - max_amount
+          - min_amount
+          - max_duration
+          - min_duration
+          - interest_rate
+          - description
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  created_at:
+                    type: integer
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  interest_rate:
+                    type: number
+                  max_amount:
+                    type: number
+                  max_duration:
+                    type: integer
+                  min_amount:
+                    type: number
+                  min_duration:
+                    type: integer
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - max_amount
+                - min_amount
+                - max_duration
+                - min_duration
+                - interest_rate
+                - description
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 创建贷款产品
+  /api/v1/admin/loanproduct/products/{id}:
+    delete:
+      operationId: adminDeleteLoanProduct
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 删除贷款产品
+    get:
+      operationId: adminGetLoanProductDetail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  created_at:
+                    type: integer
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  interest_rate:
+                    type: number
+                  max_amount:
+                    type: number
+                  max_duration:
+                    type: integer
+                  min_amount:
+                    type: number
+                  min_duration:
+                    type: integer
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - max_amount
+                - min_amount
+                - max_duration
+                - min_duration
+                - interest_rate
+                - description
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 获取贷款产品详情
+    put:
+      consumes:
+      - application/json
+      operationId: adminUpdateLoanProduct
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            description:
+              type: string
+            interest_rate:
+              type: number
+            max_amount:
+              type: number
+            max_duration:
+              type: integer
+            min_amount:
+              type: number
+            min_duration:
+              type: integer
+            name:
+              type: string
+            type:
+              type: string
+          required:
+          - name
+          - type
+          - max_amount
+          - min_amount
+          - max_duration
+          - min_duration
+          - interest_rate
+          - description
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  created_at:
+                    type: integer
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  interest_rate:
+                    type: number
+                  max_amount:
+                    type: number
+                  max_duration:
+                    type: integer
+                  min_amount:
+                    type: number
+                  min_duration:
+                    type: integer
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - max_amount
+                - min_amount
+                - max_duration
+                - min_duration
+                - interest_rate
+                - description
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 更新贷款产品
+  /api/v1/admin/loanproduct/products/{id}/status:
+    put:
+      consumes:
+      - application/json
+      operationId: adminUpdateProductStatus
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            status:
+              type: integer
+          required:
+          - status
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 更新产品状态
+  /api/v1/loanproduct/products:
+    get:
+      operationId: productListLoanProducts
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: type
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              list:
+                items:
+                  properties:
+                    created_at:
+                      type: integer
+                    description:
+                      type: string
+                    id:
+                      type: integer
+                    interest_rate:
+                      type: number
+                    max_amount:
+                      type: number
+                    max_duration:
+                      type: integer
+                    min_amount:
+                      type: number
+                    min_duration:
+                      type: integer
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    status:
+                      type: integer
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                  required:
+                  - id
+                  - product_code
+                  - name
+                  - type
+                  - max_amount
+                  - min_amount
+                  - max_duration
+                  - min_duration
+                  - interest_rate
+                  - description
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                description: 添加标准响应格式
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: 获取贷款产品列表
+  /api/v1/loanproduct/products/{id}:
+    get:
+      operationId: productGetLoanProduct
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                description: 添加标准响应格式
+                type: integer
+              data:
+                description: 添加数据字段
+                properties:
+                  created_at:
+                    type: integer
+                  description:
+                    type: string
+                  id:
+                    type: integer
+                  interest_rate:
+                    type: number
+                  max_amount:
+                    type: number
+                  max_duration:
+                    type: integer
+                  min_amount:
+                    type: number
+                  min_duration:
+                    type: integer
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  status:
+                    type: integer
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                required:
+                - id
+                - product_code
+                - name
+                - type
+                - max_amount
+                - min_amount
+                - max_duration
+                - min_duration
+                - interest_rate
+                - description
+                - status
+                - created_at
+                - updated_at
+                type: object
+              message:
+                description: 添加标准响应格式
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: 获取贷款产品详情
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-29 17:37:12"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

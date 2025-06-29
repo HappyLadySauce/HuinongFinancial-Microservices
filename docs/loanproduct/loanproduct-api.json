@@ -1,0 +1,835 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "贷款产品API",
+    "version": "v1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/admin/loanproduct/products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取所有贷款产品列表",
+        "operationId": "adminListAllLoanProducts",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "max_amount",
+                      "min_amount",
+                      "max_duration",
+                      "min_duration",
+                      "interest_rate",
+                      "description",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "interest_rate": {
+                        "type": "number"
+                      },
+                      "max_amount": {
+                        "type": "number"
+                      },
+                      "max_duration": {
+                        "type": "integer"
+                      },
+                      "min_amount": {
+                        "type": "number"
+                      },
+                      "min_duration": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "integer"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建贷款产品",
+        "operationId": "adminCreateLoanProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "product_code",
+                "name",
+                "type",
+                "max_amount",
+                "min_amount",
+                "max_duration",
+                "min_duration",
+                "interest_rate",
+                "description"
+              ],
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "interest_rate": {
+                  "type": "number"
+                },
+                "max_amount": {
+                  "type": "number"
+                },
+                "max_duration": {
+                  "type": "integer"
+                },
+                "min_amount": {
+                  "type": "number"
+                },
+                "min_duration": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "product_code": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "max_amount",
+                    "min_amount",
+                    "max_duration",
+                    "min_duration",
+                    "interest_rate",
+                    "description",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "interest_rate": {
+                      "type": "number"
+                    },
+                    "max_amount": {
+                      "type": "number"
+                    },
+                    "max_duration": {
+                      "type": "integer"
+                    },
+                    "min_amount": {
+                      "type": "number"
+                    },
+                    "min_duration": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/loanproduct/products/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取贷款产品详情",
+        "operationId": "adminGetLoanProductDetail",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "max_amount",
+                    "min_amount",
+                    "max_duration",
+                    "min_duration",
+                    "interest_rate",
+                    "description",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "interest_rate": {
+                      "type": "number"
+                    },
+                    "max_amount": {
+                      "type": "number"
+                    },
+                    "max_duration": {
+                      "type": "integer"
+                    },
+                    "min_amount": {
+                      "type": "number"
+                    },
+                    "min_duration": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新贷款产品",
+        "operationId": "adminUpdateLoanProduct",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "type",
+                "max_amount",
+                "min_amount",
+                "max_duration",
+                "min_duration",
+                "interest_rate",
+                "description"
+              ],
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "interest_rate": {
+                  "type": "number"
+                },
+                "max_amount": {
+                  "type": "number"
+                },
+                "max_duration": {
+                  "type": "integer"
+                },
+                "min_amount": {
+                  "type": "number"
+                },
+                "min_duration": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "max_amount",
+                    "min_amount",
+                    "max_duration",
+                    "min_duration",
+                    "interest_rate",
+                    "description",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "interest_rate": {
+                      "type": "number"
+                    },
+                    "max_amount": {
+                      "type": "number"
+                    },
+                    "max_duration": {
+                      "type": "integer"
+                    },
+                    "min_amount": {
+                      "type": "number"
+                    },
+                    "min_duration": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除贷款产品",
+        "operationId": "adminDeleteLoanProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/loanproduct/products/{id}/status": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新产品状态",
+        "operationId": "adminUpdateProductStatus",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/loanproduct/products": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取贷款产品列表",
+        "operationId": "productListLoanProducts",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "keyword",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "max_amount",
+                      "min_amount",
+                      "max_duration",
+                      "min_duration",
+                      "interest_rate",
+                      "description",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "interest_rate": {
+                        "type": "number"
+                      },
+                      "max_amount": {
+                        "type": "number"
+                      },
+                      "max_duration": {
+                        "type": "integer"
+                      },
+                      "min_amount": {
+                        "type": "number"
+                      },
+                      "min_duration": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "integer"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/loanproduct/products/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取贷款产品详情",
+        "operationId": "productGetLoanProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "添加标准响应格式",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "添加数据字段",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "max_amount",
+                    "min_amount",
+                    "max_duration",
+                    "min_duration",
+                    "interest_rate",
+                    "description",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "interest_rate": {
+                      "type": "number"
+                    },
+                    "max_amount": {
+                      "type": "number"
+                    },
+                    "max_duration": {
+                      "type": "integer"
+                    },
+                    "min_amount": {
+                      "type": "number"
+                    },
+                    "min_duration": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "message": {
+                  "description": "添加标准响应格式",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2025-06-29 17:37:12",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.8.4"
+}

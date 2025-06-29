@@ -1,0 +1,734 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 租赁业务API
+  version: "1.0"
+paths:
+  /api/v1/admin/lease/applications:
+    get:
+      operationId: adminListAllLeaseApplications
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: user_id
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: product_code
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    applicant_name:
+                      type: string
+                    application_id:
+                      type: string
+                    contact_phone:
+                      type: string
+                    created_at:
+                      type: integer
+                    daily_rate:
+                      type: number
+                    delivery_address:
+                      type: string
+                    deposit:
+                      type: number
+                    duration:
+                      type: integer
+                    end_date:
+                      type: string
+                    id:
+                      type: integer
+                    machinery:
+                      type: string
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    product_id:
+                      type: integer
+                    purpose:
+                      type: string
+                    start_date:
+                      type: string
+                    status:
+                      type: string
+                    total_amount:
+                      type: number
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                    user_id:
+                      type: integer
+                  required:
+                  - id
+                  - application_id
+                  - user_id
+                  - applicant_name
+                  - product_id
+                  - product_code
+                  - name
+                  - type
+                  - machinery
+                  - start_date
+                  - end_date
+                  - duration
+                  - daily_rate
+                  - total_amount
+                  - deposit
+                  - delivery_address
+                  - contact_phone
+                  - purpose
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: ListAllLeaseApplications
+  /api/v1/admin/lease/applications/{id}:
+    get:
+      operationId: adminGetLeaseApplicationDetail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  contact_phone:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  delivery_address:
+                    type: string
+                  deposit:
+                    type: number
+                  duration:
+                    type: integer
+                  end_date:
+                    type: string
+                  id:
+                    type: integer
+                  machinery:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  start_date:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - product_code
+                - name
+                - type
+                - machinery
+                - start_date
+                - end_date
+                - duration
+                - daily_rate
+                - total_amount
+                - deposit
+                - delivery_address
+                - contact_phone
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: GetLeaseApplicationDetail
+  /api/v1/admin/lease/applications/{id}/approvals:
+    get:
+      operationId: adminListLeaseApprovals
+      parameters:
+      - in: query
+        name: application_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    action:
+                      type: string
+                    application_id:
+                      type: integer
+                    approved_amount:
+                      type: number
+                    approved_deposit:
+                      type: number
+                    approved_duration:
+                      type: integer
+                    auditor_id:
+                      type: integer
+                    auditor_name:
+                      type: string
+                    created_at:
+                      type: integer
+                    id:
+                      type: integer
+                    suggestions:
+                      type: string
+                  required:
+                  - id
+                  - application_id
+                  - auditor_id
+                  - auditor_name
+                  - action
+                  - suggestions
+                  - approved_duration
+                  - approved_amount
+                  - approved_deposit
+                  - created_at
+                  type: object
+                type: array
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: ListLeaseApprovals
+  /api/v1/admin/lease/applications/{id}/approve:
+    post:
+      consumes:
+      - application/json
+      operationId: adminApproveLeaseApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            action:
+              type: string
+            approved_amount:
+              type: number
+            approved_deposit:
+              type: number
+            approved_duration:
+              type: integer
+            suggestions:
+              type: string
+          required:
+          - action
+          - suggestions
+          - approved_duration
+          - approved_amount
+          - approved_deposit
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: ApproveLeaseApplication
+  /api/v1/lease/applications:
+    get:
+      operationId: leaseListMyLeaseApplications
+      parameters:
+      - default: 1
+        description: 修改为int32统一分页参数
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: 修改为int32统一分页参数
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: user_id
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: product_code
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              list:
+                items:
+                  properties:
+                    applicant_name:
+                      type: string
+                    application_id:
+                      type: string
+                    contact_phone:
+                      type: string
+                    created_at:
+                      type: integer
+                    daily_rate:
+                      type: number
+                    delivery_address:
+                      type: string
+                    deposit:
+                      type: number
+                    duration:
+                      type: integer
+                    end_date:
+                      type: string
+                    id:
+                      type: integer
+                    machinery:
+                      type: string
+                    name:
+                      type: string
+                    product_code:
+                      type: string
+                    product_id:
+                      type: integer
+                    purpose:
+                      type: string
+                    start_date:
+                      type: string
+                    status:
+                      type: string
+                    total_amount:
+                      type: number
+                    type:
+                      type: string
+                    updated_at:
+                      type: integer
+                    user_id:
+                      type: integer
+                  required:
+                  - id
+                  - application_id
+                  - user_id
+                  - applicant_name
+                  - product_id
+                  - product_code
+                  - name
+                  - type
+                  - machinery
+                  - start_date
+                  - end_date
+                  - duration
+                  - daily_rate
+                  - total_amount
+                  - deposit
+                  - delivery_address
+                  - contact_phone
+                  - purpose
+                  - status
+                  - created_at
+                  - updated_at
+                  type: object
+                type: array
+              message:
+                type: string
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: ListMyLeaseApplications
+    post:
+      consumes:
+      - application/json
+      operationId: leaseCreateLeaseApplication
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            contact_phone:
+              type: string
+            daily_rate:
+              type: number
+            delivery_address:
+              type: string
+            deposit:
+              type: number
+            duration:
+              type: integer
+            end_date:
+              type: string
+            machinery:
+              type: string
+            name:
+              type: string
+            product_code:
+              type: string
+            product_id:
+              type: integer
+            purpose:
+              type: string
+            start_date:
+              type: string
+            total_amount:
+              type: number
+            type:
+              type: string
+          required:
+          - product_id
+          - product_code
+          - name
+          - type
+          - machinery
+          - start_date
+          - end_date
+          - duration
+          - daily_rate
+          - total_amount
+          - deposit
+          - delivery_address
+          - contact_phone
+          - purpose
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_id:
+                type: string
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: CreateLeaseApplication
+  /api/v1/lease/applications/{id}:
+    get:
+      operationId: leaseGetMyLeaseApplication
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  contact_phone:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  delivery_address:
+                    type: string
+                  deposit:
+                    type: number
+                  duration:
+                    type: integer
+                  end_date:
+                    type: string
+                  id:
+                    type: integer
+                  machinery:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  start_date:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - product_code
+                - name
+                - type
+                - machinery
+                - start_date
+                - end_date
+                - duration
+                - daily_rate
+                - total_amount
+                - deposit
+                - delivery_address
+                - contact_phone
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: GetMyLeaseApplication
+    put:
+      consumes:
+      - application/json
+      operationId: leaseUpdateMyLeaseApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            contact_phone:
+              type: string
+            delivery_address:
+              type: string
+            purpose:
+              type: string
+          required:
+          - purpose
+          - delivery_address
+          - contact_phone
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              application_info:
+                properties:
+                  applicant_name:
+                    type: string
+                  application_id:
+                    type: string
+                  contact_phone:
+                    type: string
+                  created_at:
+                    type: integer
+                  daily_rate:
+                    type: number
+                  delivery_address:
+                    type: string
+                  deposit:
+                    type: number
+                  duration:
+                    type: integer
+                  end_date:
+                    type: string
+                  id:
+                    type: integer
+                  machinery:
+                    type: string
+                  name:
+                    type: string
+                  product_code:
+                    type: string
+                  product_id:
+                    type: integer
+                  purpose:
+                    type: string
+                  start_date:
+                    type: string
+                  status:
+                    type: string
+                  total_amount:
+                    type: number
+                  type:
+                    type: string
+                  updated_at:
+                    type: integer
+                  user_id:
+                    type: integer
+                required:
+                - id
+                - application_id
+                - user_id
+                - applicant_name
+                - product_id
+                - product_code
+                - name
+                - type
+                - machinery
+                - start_date
+                - end_date
+                - duration
+                - daily_rate
+                - total_amount
+                - deposit
+                - delivery_address
+                - contact_phone
+                - purpose
+                - status
+                - created_at
+                - updated_at
+                type: object
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: UpdateMyLeaseApplication
+  /api/v1/lease/applications/{id}/cancel:
+    post:
+      consumes:
+      - application/json
+      operationId: leaseCancelMyLeaseApplication
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            reason:
+              type: string
+          required:
+          - reason
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: CancelMyLeaseApplication
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-29 17:36:57"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

@@ -1,0 +1,1050 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "租赁业务API",
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/api/v1/admin/lease/applications": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ListAllLeaseApplications",
+        "operationId": "adminListAllLeaseApplications",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "user_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "product_code",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "application_id",
+                      "user_id",
+                      "applicant_name",
+                      "product_id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "machinery",
+                      "start_date",
+                      "end_date",
+                      "duration",
+                      "daily_rate",
+                      "total_amount",
+                      "deposit",
+                      "delivery_address",
+                      "contact_phone",
+                      "purpose",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "applicant_name": {
+                        "type": "string"
+                      },
+                      "application_id": {
+                        "type": "string"
+                      },
+                      "contact_phone": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "daily_rate": {
+                        "type": "number"
+                      },
+                      "delivery_address": {
+                        "type": "string"
+                      },
+                      "deposit": {
+                        "type": "number"
+                      },
+                      "duration": {
+                        "type": "integer"
+                      },
+                      "end_date": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "machinery": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "product_id": {
+                        "type": "integer"
+                      },
+                      "purpose": {
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "total_amount": {
+                        "type": "number"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      },
+                      "user_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/lease/applications/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "GetLeaseApplicationDetail",
+        "operationId": "adminGetLeaseApplicationDetail",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "application_id",
+                    "user_id",
+                    "applicant_name",
+                    "product_id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "start_date",
+                    "end_date",
+                    "duration",
+                    "daily_rate",
+                    "total_amount",
+                    "deposit",
+                    "delivery_address",
+                    "contact_phone",
+                    "purpose",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "applicant_name": {
+                      "type": "string"
+                    },
+                    "application_id": {
+                      "type": "string"
+                    },
+                    "contact_phone": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "delivery_address": {
+                      "type": "string"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "duration": {
+                      "type": "integer"
+                    },
+                    "end_date": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "product_id": {
+                      "type": "integer"
+                    },
+                    "purpose": {
+                      "type": "string"
+                    },
+                    "start_date": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "total_amount": {
+                      "type": "number"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/lease/applications/{id}/approvals": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ListLeaseApprovals",
+        "operationId": "adminListLeaseApprovals",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "application_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "application_id",
+                      "auditor_id",
+                      "auditor_name",
+                      "action",
+                      "suggestions",
+                      "approved_duration",
+                      "approved_amount",
+                      "approved_deposit",
+                      "created_at"
+                    ],
+                    "properties": {
+                      "action": {
+                        "type": "string"
+                      },
+                      "application_id": {
+                        "type": "integer"
+                      },
+                      "approved_amount": {
+                        "type": "number"
+                      },
+                      "approved_deposit": {
+                        "type": "number"
+                      },
+                      "approved_duration": {
+                        "type": "integer"
+                      },
+                      "auditor_id": {
+                        "type": "integer"
+                      },
+                      "auditor_name": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "suggestions": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/lease/applications/{id}/approve": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ApproveLeaseApplication",
+        "operationId": "adminApproveLeaseApplication",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "action",
+                "suggestions",
+                "approved_duration",
+                "approved_amount",
+                "approved_deposit"
+              ],
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "approved_amount": {
+                  "type": "number"
+                },
+                "approved_deposit": {
+                  "type": "number"
+                },
+                "approved_duration": {
+                  "type": "integer"
+                },
+                "suggestions": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lease/applications": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "ListMyLeaseApplications",
+        "operationId": "leaseListMyLeaseApplications",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "description": "修改为int32统一分页参数",
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "description": "修改为int32统一分页参数",
+            "name": "size",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "user_id",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "product_code",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "string",
+            "name": "status",
+            "in": "query",
+            "allowEmptyValue": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "application_id",
+                      "user_id",
+                      "applicant_name",
+                      "product_id",
+                      "product_code",
+                      "name",
+                      "type",
+                      "machinery",
+                      "start_date",
+                      "end_date",
+                      "duration",
+                      "daily_rate",
+                      "total_amount",
+                      "deposit",
+                      "delivery_address",
+                      "contact_phone",
+                      "purpose",
+                      "status",
+                      "created_at",
+                      "updated_at"
+                    ],
+                    "properties": {
+                      "applicant_name": {
+                        "type": "string"
+                      },
+                      "application_id": {
+                        "type": "string"
+                      },
+                      "contact_phone": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "integer"
+                      },
+                      "daily_rate": {
+                        "type": "number"
+                      },
+                      "delivery_address": {
+                        "type": "string"
+                      },
+                      "deposit": {
+                        "type": "number"
+                      },
+                      "duration": {
+                        "type": "integer"
+                      },
+                      "end_date": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "machinery": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "product_code": {
+                        "type": "string"
+                      },
+                      "product_id": {
+                        "type": "integer"
+                      },
+                      "purpose": {
+                        "type": "string"
+                      },
+                      "start_date": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "total_amount": {
+                        "type": "number"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "updated_at": {
+                        "type": "integer"
+                      },
+                      "user_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "message": {
+                  "type": "string"
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "CreateLeaseApplication",
+        "operationId": "leaseCreateLeaseApplication",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "product_id",
+                "product_code",
+                "name",
+                "type",
+                "machinery",
+                "start_date",
+                "end_date",
+                "duration",
+                "daily_rate",
+                "total_amount",
+                "deposit",
+                "delivery_address",
+                "contact_phone",
+                "purpose"
+              ],
+              "properties": {
+                "contact_phone": {
+                  "type": "string"
+                },
+                "daily_rate": {
+                  "type": "number"
+                },
+                "delivery_address": {
+                  "type": "string"
+                },
+                "deposit": {
+                  "type": "number"
+                },
+                "duration": {
+                  "type": "integer"
+                },
+                "end_date": {
+                  "type": "string"
+                },
+                "machinery": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "product_code": {
+                  "type": "string"
+                },
+                "product_id": {
+                  "type": "integer"
+                },
+                "purpose": {
+                  "type": "string"
+                },
+                "start_date": {
+                  "type": "string"
+                },
+                "total_amount": {
+                  "type": "number"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_id": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lease/applications/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "GetMyLeaseApplication",
+        "operationId": "leaseGetMyLeaseApplication",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "application_id",
+                    "user_id",
+                    "applicant_name",
+                    "product_id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "start_date",
+                    "end_date",
+                    "duration",
+                    "daily_rate",
+                    "total_amount",
+                    "deposit",
+                    "delivery_address",
+                    "contact_phone",
+                    "purpose",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "applicant_name": {
+                      "type": "string"
+                    },
+                    "application_id": {
+                      "type": "string"
+                    },
+                    "contact_phone": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "delivery_address": {
+                      "type": "string"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "duration": {
+                      "type": "integer"
+                    },
+                    "end_date": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "product_id": {
+                      "type": "integer"
+                    },
+                    "purpose": {
+                      "type": "string"
+                    },
+                    "start_date": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "total_amount": {
+                      "type": "number"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "UpdateMyLeaseApplication",
+        "operationId": "leaseUpdateMyLeaseApplication",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "purpose",
+                "delivery_address",
+                "contact_phone"
+              ],
+              "properties": {
+                "contact_phone": {
+                  "type": "string"
+                },
+                "delivery_address": {
+                  "type": "string"
+                },
+                "purpose": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_info": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "application_id",
+                    "user_id",
+                    "applicant_name",
+                    "product_id",
+                    "product_code",
+                    "name",
+                    "type",
+                    "machinery",
+                    "start_date",
+                    "end_date",
+                    "duration",
+                    "daily_rate",
+                    "total_amount",
+                    "deposit",
+                    "delivery_address",
+                    "contact_phone",
+                    "purpose",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                  ],
+                  "properties": {
+                    "applicant_name": {
+                      "type": "string"
+                    },
+                    "application_id": {
+                      "type": "string"
+                    },
+                    "contact_phone": {
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "type": "integer"
+                    },
+                    "daily_rate": {
+                      "type": "number"
+                    },
+                    "delivery_address": {
+                      "type": "string"
+                    },
+                    "deposit": {
+                      "type": "number"
+                    },
+                    "duration": {
+                      "type": "integer"
+                    },
+                    "end_date": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "machinery": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "product_code": {
+                      "type": "string"
+                    },
+                    "product_id": {
+                      "type": "integer"
+                    },
+                    "purpose": {
+                      "type": "string"
+                    },
+                    "start_date": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "total_amount": {
+                      "type": "number"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lease/applications/{id}/cancel": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "CancelMyLeaseApplication",
+        "operationId": "leaseCancelMyLeaseApplication",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2025-06-29 17:36:57",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.8.4"
+}
