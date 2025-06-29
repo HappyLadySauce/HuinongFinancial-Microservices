@@ -4,6 +4,10 @@ package appuser;
 
 option go_package = "./appuser";
 
+// 服务架构：
+// 用户 -> 前端 -> nginx网关 -> appuser-api -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
+//                                                        -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
+
 // consul 注册地址：consul.huinong.internal
 // rpc 端口：20001
 // rpc 服务名：appuser.rpc

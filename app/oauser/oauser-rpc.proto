@@ -4,81 +4,160 @@ package oauser;
 
 option go_package = "./oauser";
 
-// ======== 基础数据模型 ========
+// 服务架构：
+// 用户 -> 前端 -> nginx网关 -> oauser-api -> oauser.rpc -> redis 缓存用户信息 -> 数据库 oauser (MySQL)
+//                                                      -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
 
-// 后台用户信息
-message OAUserInfo {
-    int64 id = 1;
-    string username = 2;
-    string name = 3;
-    string email = 4;
-    string mobile = 5;
-    int32 status = 6; // 1:正常 2:禁用
-    int64 created_at = 7;
-    repeated string roles = 8; // 用户拥有的角色列表(简化为字符串数组)
+// consul 注册地址：consul.huinong.internal
+// rpc 端口：20002
+// rpc 服务名：oauser.rpc
+
+// 数据库：oauser (MySQL)
+// 缓存：redis 缓存用户信息
+
+// 服务职责：
+// 1. 用户信息管理：用户信息查询、用户信息修改、用户注销
+// 2. 用户认证管理：用户登录管理、用户注册管理、用户注销管理、用户密码修改
+
+// -- ----------------------------
+// 后台用户表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `oa_users`;
+// CREATE TABLE `oa_users` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+//   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+//   `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码哈希',
+//   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '姓名',
+//   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '昵称',
+//   `age` tinyint UNSIGNED DEFAULT 0 COMMENT '年龄',
+//   `gender` tinyint UNSIGNED DEFAULT 0 COMMENT '性别 0:未知 1:男 2:女',
+//   `role` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '管理员(admin)/普通操作员(operator)',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:正常 2:禁用',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_phone` (`phone`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='后台用户表';
+
+
+// 后台用户基础信息
+message UserInfo {
+    int64 id = 1;  // 用户ID
+    string phone = 2; // 手机号
+    string name = 3;  // 姓名
+    string nickname = 4;  // 昵称
+    int32 age = 5;  // 年龄
+    int32 gender = 6;  // 0:未知 1:男 2:女
+    string role = 7;  // 管理员(admin)/普通操作员(operator)
+    int32 status = 8;  // 1:正常 2:禁用
+    int64 created_at = 9;  // 创建时间
+    int64 updated_at = 10;  // 更新时间
 }
 
-// ======== RPC 请求/响应 ========
-
-// --- 认证相关 ---
-
-message GetOAUserByUsernameReq {
-    string username = 1;
+// 用户信息管理
+service OaUserService {
+    rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
+    rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
+    rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
 }
 
-message VerifyOAPasswordReq {
-    string username = 1;
+// 用户认证管理
+service OaUserAuthService {
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc Register(RegisterReq) returns (RegisterResp);
+    rpc Logout(LogoutReq) returns (LogoutResp);
+    rpc ChangePassword(ChangePasswordReq) returns (ChangePasswordResp);
+}
+
+
+// 获取用户信息
+message GetUserInfoReq {
+    string phone = 1;
+}
+
+message GetUserInfoResp {
+    int32 code = 1;
+    string message = 2;
+    UserInfo user_info = 3;
+}
+// 获取用户信息
+
+
+// 更新用户信息
+message UpdateUserInfoReq {
+    UserInfo user_info = 1;
+}
+
+message UpdateUserInfoResp {
+    int32 code = 1;
+    string message = 2;
+    UserInfo user_info = 3;
+}
+// 更新用户信息
+
+
+
+// 删除用户
+message DeleteUserReq {
+    string phone = 1;
+}
+
+message DeleteUserResp {
+    int32 code = 1;
+    string message = 2;
+}
+// 删除用户
+
+
+//登录
+message LoginReq {
+    string phone = 1;
     string password = 2;
 }
 
-message VerifyOAPasswordResp {
-    OAUserInfo userInfo = 1;
+message LoginResp {
+    int32 code = 1;
+    string message = 2;
+    string token = 3;
 }
+// 登录
 
-// --- 用户管理 ---
 
-message GetOAUserListReq {
-    int32 page = 1;
-    int32 size = 2;
-    string keyword = 3; // 按用户名或姓名搜索
-    int32 status = 4; // 按状态筛选
-}
-
-message GetOAUserListResp {
-    repeated OAUserInfo users = 1;
-    int64 total = 2;
-}
-
-message CreateOAUserReq {
-    string username = 1;
+// 注册
+message RegisterReq {
+    string phone = 1;
     string password = 2;
-    string name = 3;
-    string email = 4;
-    string mobile = 5;
-    repeated string roles = 6; // 简化为字符串数组
 }
 
-message UpdateOAUserReq {
-    int64 user_id = 1;
-    string name = 2;
-    string email = 3;
-    string mobile = 4;
-    int32 status = 5;
-    repeated string roles = 6;
+message RegisterResp {
+    int32 code = 1;
+    string message = 2;
+    string token = 3;
+}
+// 注册
+
+
+// 注销
+message LogoutReq {
+    string token = 1;
 }
 
-// --------------------
-// OAUser RPC 服务定义
-// --------------------
-service OAUser {
-    // --- 认证(内部调用) ---
-    rpc GetOAUserByUsername(GetOAUserByUsernameReq) returns (OAUserInfo);
-    rpc VerifyOAPassword(VerifyOAPasswordReq) returns (VerifyOAPasswordResp);
-
-    // --- 用户管理 ---
-    rpc GetOAUserList(GetOAUserListReq) returns (GetOAUserListResp);
-    rpc GetOAUserDetail(GetOAUserByUsernameReq) returns (OAUserInfo);
-    rpc CreateOAUser(CreateOAUserReq) returns (OAUserInfo);
-    rpc UpdateOAUser(UpdateOAUserReq) returns (OAUserInfo);
-    rpc DeleteOAUser(GetOAUserByUsernameReq) returns (OAUserInfo);
+message LogoutResp {
+    int32 code = 1;
+    string message = 2;
 }
+// 注销
+
+
+// 修改密码
+message ChangePasswordReq {
+    string phone = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResp {
+    int32 code = 1;
+    string message = 2;
+}
+// 修改密码
