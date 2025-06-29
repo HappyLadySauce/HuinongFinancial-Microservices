@@ -5,7 +5,7 @@ Port: 10001
 
 # JWT 认证配置
 Auth:
-  AccessSecret: "huinong-auth-access-secret"
+  AccessSecret: "huinong-appuser-secret"
   AccessExpire: 3600
 
 # RPC 客户端配置

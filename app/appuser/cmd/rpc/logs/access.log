@@ -118,3 +118,296 @@
 {"@timestamp":"2025-06-29T13:43:03.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2025-06-29T13:43:22.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2025-06-29T13:43:41.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:44:00.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:44:19.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:44:38.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:44:55.211Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13800138000\",\"password\":\"123456\"}","duration":"107.5ms","level":"info","span":"2e5cc266de10e7c8","trace":"2a35f5244c3ae9ac78b4dd1f623b052d"}
+{"@timestamp":"2025-06-29T13:44:57.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:45:07.869Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13800138001' limit 1","duration":"4.8ms","level":"info","span":"fcfa86b601cbf70c","trace":"8da280428ab8f9dc9a36af54c4603ecd"}
+{"@timestamp":"2025-06-29T13:45:07.963Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13800138001\",\"password\":\"123456\"}","duration":"99.7ms","level":"info","span":"f99546fca213671c","trace":"8da280428ab8f9dc9a36af54c4603ecd"}
+{"@timestamp":"2025-06-29T13:45:16.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:45:29.649Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13452552349' limit 1","duration":"1.5ms","level":"info","span":"62cd30c0e50f8069","trace":"0afc5e05f74184634cf191a901088ce6"}
+{"@timestamp":"2025-06-29T13:45:29.748Z","caller":"sqlx/stmt.go:274","content":"sql exec: insert into `app_users` (`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`) values ('13452552349', '$2a$10$8TneNOluLavOmFy7cDhaXetmR3w5UkTO6ilfeWvKTaqZCeTxogE2q', '', '', 0, 0, '', '', 0, 1)","duration":"5.5ms","level":"info","span":"afe863cc57d67298","trace":"0afc5e05f74184634cf191a901088ce6"}
+{"@timestamp":"2025-06-29T13:45:29.748Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"101.6ms","level":"info","span":"6891835f8a8f5e0a","trace":"0afc5e05f74184634cf191a901088ce6"}
+{"@timestamp":"2025-06-29T13:45:35.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:45:36.703Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13452552349' limit 1","duration":"1.0ms","level":"info","span":"656ba880397cc0de","trace":"73832fd3df4a6dd424db99a863f0289a"}
+{"@timestamp":"2025-06-29T13:45:36.797Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"95.9ms","level":"info","span":"a55004758963d3ed","trace":"73832fd3df4a6dd424db99a863f0289a"}
+{"@timestamp":"2025-06-29T13:45:54.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:46:10.216Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"126.1ms","level":"info","span":"866e15d834c72b84","trace":"9eee18e28780e310e5b03457836b246c"}
+{"@timestamp":"2025-06-29T13:46:13.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:46:32.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:46:51.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:47:10.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:47:29.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:47:45.753Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.0ms","level":"info","span":"fe66a10e41b58cd6","trace":"623413ce55116066d20ac39382b91092"}
+{"@timestamp":"2025-06-29T13:47:48.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:48:07.917Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:48:13.571Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.1ms","level":"info","span":"7d9818e9e60e6726","trace":"b3bd47d6918259b9ed8cf4f85f44cff1"}
+{"@timestamp":"2025-06-29T13:48:26.918Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:48:41.473Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"93.9ms","level":"info","span":"7a9740cfe2a4d183","trace":"beb30e8990428d74144b2487a0ceda16"}
+{"@timestamp":"2025-06-29T13:48:45.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:48:54.593Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"107.5ms","level":"info","span":"226bc47e5829d954","trace":"661031ecafea51cd61e7c4db0c42a89e"}
+{"@timestamp":"2025-06-29T13:49:04.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:49:23.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:49:42.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:50:01.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:50:11.556Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.6ms","level":"info","span":"6834b7d76c2beaf8","trace":"09e8ed3b31a065a8edcb5dcacab3f1aa"}
+{"@timestamp":"2025-06-29T13:50:20.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:50:39.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:50:58.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:51:17.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:51:36.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:51:55.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:52:14.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:52:33.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:52:52.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:53:11.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:53:30.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:53:49.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:54:08.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:54:27.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:54:46.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:55:04.990Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"108.6ms","level":"info","span":"78c68710b0c7a37c","trace":"34a5fa03ced19f80acddd3fadd540263"}
+{"@timestamp":"2025-06-29T13:55:05.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:55:06.433Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"93.8ms","level":"info","span":"afe7523381db3c36","trace":"68a4e4ce61154d068b3f9d152bea8637"}
+{"@timestamp":"2025-06-29T13:55:13.329Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.9ms","level":"info","span":"113bc15dfe691396","trace":"72f2dd6e6635a67088a07ec6d702a0c2"}
+{"@timestamp":"2025-06-29T13:55:17.612Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"125.3ms","level":"info","span":"295fc9080fd8ebdd","trace":"d0f9d8af9e6c0db3360414fd622ffbbe"}
+{"@timestamp":"2025-06-29T13:55:18.691Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"93.6ms","level":"info","span":"f1815e21a50082ea","trace":"850d8af4229a3eed97466d0bb4bafe2a"}
+{"@timestamp":"2025-06-29T13:55:19.679Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"107.3ms","level":"info","span":"589f02f2e8a9151d","trace":"be2bbc618c9330c210b4986f524c3cec"}
+{"@timestamp":"2025-06-29T13:55:24.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:55:26.427Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.1ms","level":"info","span":"0cc4c9c83a3352d7","trace":"afa0fead04e2920fd349e709e0c70cbc"}
+{"@timestamp":"2025-06-29T13:55:43.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:55:55.247Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:37204 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"93.7ms","level":"info","span":"88ae560321e3d018","trace":"6529b81650449d16168d3c7f72339fcb"}
+{"@timestamp":"2025-06-29T13:56:02.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:56:21.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:56:40.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:56:59.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:57:18.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:57:37.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:57:56.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:58:15.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:58:34.911Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:58:53.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:59:12.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:59:31.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T13:59:50.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:00:09.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:00:28.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:00:47.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:01:06.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:01:25.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:01:44.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:02:03.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:02:22.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:02:41.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:03:00.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:03:19.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:03:38.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:03:57.911Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:04:16.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:04:35.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:04:54.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:05:13.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:05:32.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:05:51.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:06:10.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:06:29.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:06:48.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:07:07.918Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:07:26.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:07:45.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:08:04.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:08:23.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:08:42.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:08:54.204Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:54612 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"2.1ms","level":"info","span":"5a3f00dfcee0fb59","trace":"b7dd856e2275aecb9c1f314b3b1a53ea"}
+{"@timestamp":"2025-06-29T14:08:54.348Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:54612 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"119.1ms","level":"info","span":"8afca5fc2b1983c9","trace":"23500627816092d5d639562cb706db4a"}
+{"@timestamp":"2025-06-29T14:09:01.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:09:20.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:09:39.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:09:58.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:10:07.790Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:54612 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"119.8ms","level":"info","span":"884135d86a20be24","trace":"a1bac34f91d7937b193b18989a6a9d00"}
+{"@timestamp":"2025-06-29T14:10:17.927Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:10:23.084Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:54612 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"1.7ms","level":"info","span":"e7d636f6396450d9","trace":"5ed91668284e207c39e82698878cdc47"}
+{"@timestamp":"2025-06-29T14:10:23.201Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:54612 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"95.1ms","level":"info","span":"786dc8636612e079","trace":"ef411cd96fc32fff71ad6aeb3d98e5a3"}
+{"@timestamp":"2025-06-29T14:10:36.930Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:10:55.934Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:11:14.911Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:11:33.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:11:52.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:12:11.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:12:30.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:12:49.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:13:08.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:13:27.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:13:46.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:14:05.916Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:14:24.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:14:43.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:15:02.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:15:21.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:15:40.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:15:53.632Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:55336 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"97.1ms","level":"info","span":"3d2dd7d3fa5f9ad1","trace":"570c62c487356f016fcc87b54eaa4a56"}
+{"@timestamp":"2025-06-29T14:15:59.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:16:18.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:16:37.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:16:56.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:17:15.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:17:34.912Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:17:53.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:18:12.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:18:31.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:18:50.915Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:18:55.676Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:55336 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"1.0ms","level":"info","span":"b6c9420d82a05486","trace":"78d3c97bcd397758bfe568d3234231e1"}
+{"@timestamp":"2025-06-29T14:18:55.796Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:55336 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"95.5ms","level":"info","span":"1d0a4ddb831f6fbb","trace":"e32944061bd36fb3a1f45eb5f1811bc0"}
+{"@timestamp":"2025-06-29T14:19:09.914Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:19:28.913Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:19:41.392Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T14:19:43.319Z","caller":"rpc/appuserrpc.go:46","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-29T14:19:53.361Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:44606 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"4.4ms","level":"info","span":"f56a14c885d61ece","trace":"7073e6f5447335250805947567d51506"}
+{"@timestamp":"2025-06-29T14:19:53.515Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:44606 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"117.7ms","level":"info","span":"26a5199f3acddff0","trace":"249a3c63bc8f2e896b6e29c64dbc0a55"}
+{"@timestamp":"2025-06-29T14:20:02.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:20:21.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:20:40.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:20:59.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:21:18.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:21:37.418Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:21:56.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:22:15.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:22:34.418Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:22:44.919Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:35144 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.5ms","level":"info","span":"a7beae5c9e3a2df3","trace":"63f926237254f16af3d57b60db69afdd"}
+{"@timestamp":"2025-06-29T14:22:51.759Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:35144 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"94.3ms","level":"info","span":"6637a7d4a98bf877","trace":"d7d3965d7d994ed9b70eeccf04591ee7"}
+{"@timestamp":"2025-06-29T14:22:53.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:23:12.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:23:28.489Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:35144 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"107.5ms","level":"info","span":"3cd93875e7528b7d","trace":"310a0be2d3a87f8de87ed6242aec2fad"}
+{"@timestamp":"2025-06-29T14:23:31.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:23:37.339Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:35144 - /appuser.AppUser/GetUserByPhone - {\"phone\":\"13452552349\"}","duration":"1.6ms","level":"info","span":"3aef8738f56ca94d","trace":"318b810ae335a8e71dfe933d0acf1214"}
+{"@timestamp":"2025-06-29T14:23:45.786Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:35144 - /appuser.AppUser/GetUserByPhone - {\"phone\":\"13452552349\"}","duration":"2.0ms","level":"info","span":"c68a7e30d8ffad5b","trace":"310239c5a2f21078dbfbddb0820d6692"}
+{"@timestamp":"2025-06-29T14:23:50.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:24:09.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:24:28.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:24:47.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:25:06.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:25:25.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:25:44.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:26:03.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:26:22.417Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:26:41.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:27:00.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:27:19.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:27:38.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:27:57.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:28:16.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:28:35.330Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:28:54.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:29:13.415Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:29:32.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:29:51.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:30:10.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:30:29.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:30:48.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:31:07.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:31:26.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:31:45.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:32:04.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:32:23.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:32:42.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:33:01.415Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:33:20.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:33:31.699Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"2.3ms","level":"info","span":"e648a9d4d8be17f4","trace":"fb5cdb51e1bcec3f04127e306e8eec89"}
+{"@timestamp":"2025-06-29T14:33:31.821Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"99.8ms","level":"info","span":"cdf4016f95eaaa62","trace":"d6d4fa2da6488ab3924cd95f98078230"}
+{"@timestamp":"2025-06-29T14:33:31.873Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `id` = 1 limit 1","duration":"2.0ms","level":"info","span":"60737dc529e76b5b","trace":"d2c2acdddef45d40bcfa51295fa7c43d"}
+{"@timestamp":"2025-06-29T14:33:31.874Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/UpdateUserInfo - {\"user_info\":{\"id\":1,\"phone\":\"13452552349\",\"name\":\"测试用户\",\"nickname\":\"test\",\"age\":25,\"gender\":1,\"occupation\":\"工程师\",\"address\":\"北京市\",\"income\":10000,\"status\":1,\"created_at\":1640995200,\"updated_at\":1640995200}}","duration":"8.4ms","level":"info","span":"0bc58de07939385a","trace":"d2c2acdddef45d40bcfa51295fa7c43d"}
+{"@timestamp":"2025-06-29T14:33:32.093Z","caller":"sqlx/stmt.go:274","content":"sql exec: update `app_users` set `phone`='13452552349',`password`='$2a$10$0BfBfHL0qtnwT9D4p0e1Q.xmaFkGgTehHonDIm02NqvgE3hxNtBim',`name`='',`nickname`='',`age`=0,`gender`=0,`occupation`='',`address`='',`income`=0,`status`=1 where `id` = 1009","duration":"8.5ms","level":"info","span":"db28652708734350","trace":"8480b7ee54bad842cfb5fbfd1194cf52"}
+{"@timestamp":"2025-06-29T14:33:32.095Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/ChangePassword - {\"phone\":\"13452552349\",\"old_password\":\"13452552349\",\"new_password\":\"newpass123\"}","duration":"197.3ms","level":"info","span":"aa3dbc64008e71c6","trace":"8480b7ee54bad842cfb5fbfd1194cf52"}
+{"@timestamp":"2025-06-29T14:33:32.120Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Logout - {\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDA5LCJwaG9uZSI6IjEzNDUyNTUyMzQ5IiwidXNlcl90eXBlIjoiYXBwIiwiaXNzIjoiaHVpbm9uZy1maW5hbmNpYWwiLCJleHAiOjE3NTEyMTEyMTEsIm5iZiI6MTc1MTIwNzYxMSwiaWF0IjoxNzUxMjA3NjExfQ.yaYy6s5qONoceAwMslLpiQX70Ip34YTcTpKJXgGTqpw\"}","duration":"0.8ms","level":"info","span":"8cd4517257913ca6","trace":"0617daf5ae07e4167755dae23161e56b"}
+{"@timestamp":"2025-06-29T14:33:39.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:33:58.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:34:00.192Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13452552349' limit 1","duration":"2.2ms","level":"info","span":"da420e8e2d6d9465","trace":"715b397c585783c13aedb869f7b7e3d3"}
+{"@timestamp":"2025-06-29T14:34:00.205Z","caller":"sqlx/stmt.go:274","content":"sql exec: update `app_users` set `phone`='13452552349',`password`='$2a$10$0BfBfHL0qtnwT9D4p0e1Q.xmaFkGgTehHonDIm02NqvgE3hxNtBim',`name`='',`nickname`='',`age`=0,`gender`=0,`occupation`='',`address`='',`income`=0,`status`=4 where `id` = 1009","duration":"9.9ms","level":"info","span":"66ceb1734ace3528","trace":"715b397c585783c13aedb869f7b7e3d3"}
+{"@timestamp":"2025-06-29T14:34:00.206Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/DeleteUser - {\"phone\":\"13452552349\"}","duration":"17.7ms","level":"info","span":"175a0b3438d05a9d","trace":"715b397c585783c13aedb869f7b7e3d3"}
+{"@timestamp":"2025-06-29T14:34:06.173Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13452552349' limit 1","duration":"1.9ms","level":"info","span":"3ea8196d7b63d162","trace":"fcba608074b53b151cfbd8e7999f3579"}
+{"@timestamp":"2025-06-29T14:34:06.175Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Register - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"5.0ms","level":"info","span":"e7d722de1428a03b","trace":"fcba608074b53b151cfbd8e7999f3579"}
+{"@timestamp":"2025-06-29T14:34:10.064Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/DeleteUser - {\"phone\":\"13452552349\"}","duration":"1.4ms","level":"info","span":"1104f5a82d3eb354","trace":"9d7f4429ca8fd4754f79716d4c218cd1"}
+{"@timestamp":"2025-06-29T14:34:11.939Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/DeleteUser - {\"phone\":\"13452552349\"}","duration":"1.4ms","level":"info","span":"b986b6149b2106ad","trace":"0dcab24366d2d412b42fca19b8f30f70"}
+{"@timestamp":"2025-06-29T14:34:17.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:34:17.378Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Logout - {\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDA5LCJwaG9uZSI6IjEzNDUyNTUyMzQ5IiwidXNlcl90eXBlIjoiYXBwIiwiaXNzIjoiaHVpbm9uZy1maW5hbmNpYWwiLCJleHAiOjE3NTEyMDgzNzAsIm5iZiI6MTc1MTIwNDc3MCwiaWF0IjoxNzUxMjA0NzcwfQ.Bz6GqVRSeK8lJia0ZheXQ2l_JLFsMSasZ3qTAf1wcxY\"}","duration":"0.2ms","level":"info","span":"09eae68ddcf14918","trace":"5251cc75d204463b75d768170762077f"}
+{"@timestamp":"2025-06-29T14:34:36.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:34:55.415Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:35:14.044Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"134.2ms","level":"info","span":"36b0c29a68662ef0","trace":"b6b23c8374fd0e0b17debbf69fc8ccd1"}
+{"@timestamp":"2025-06-29T14:35:14.330Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:35:26.478Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/ChangePassword - {\"phone\":\"13452552349\",\"old_password\":\"13452552349\",\"new_password\":\"13452552349\"}","duration":"122.1ms","level":"info","span":"c73429dc0f35791a","trace":"f27c04f29cfa2b95ee5e73be8df908c3"}
+{"@timestamp":"2025-06-29T14:35:33.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:35:52.417Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:36:04.118Z","caller":"sqlx/stmt.go:274","content":"sql exec: update `app_users` set `phone`='13452552349',`password`='$2a$10$SOryUCwrqcPU0HpXGjP.Ju5R0oBIb95ouqml6JiaRMGfti8lvMw5u',`name`='',`nickname`='',`age`=0,`gender`=0,`occupation`='',`address`='',`income`=0,`status`=4 where `id` = 1009","duration":"7.8ms","level":"info","span":"05a2494768c02ffb","trace":"43c31498087e3c5f1537258301963ec3"}
+{"@timestamp":"2025-06-29T14:36:04.118Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/ChangePassword - {\"phone\":\"13452552349\",\"old_password\":\"newpass123\",\"new_password\":\"13452552349\"}","duration":"196.3ms","level":"info","span":"bf6a61d5f14c157f","trace":"43c31498087e3c5f1537258301963ec3"}
+{"@timestamp":"2025-06-29T14:36:07.920Z","caller":"sqlx/stmt.go:274","content":"sql query: select `id`,`phone`,`password`,`name`,`nickname`,`age`,`gender`,`occupation`,`address`,`income`,`status`,`created_at`,`updated_at` from `app_users` where `phone` = '13452552349' limit 1","duration":"1.6ms","level":"info","span":"8a9deb12c5f34d57","trace":"f6f66573b62f9601e7418c3cf30a405a"}
+{"@timestamp":"2025-06-29T14:36:08.014Z","caller":"serverinterceptors/statinterceptor.go:90","content":"10.10.10.6:46098 - /appuser.AppUser/Login - {\"phone\":\"13452552349\",\"password\":\"13452552349\"}","duration":"96.0ms","level":"info","span":"896545a54c9f21ca","trace":"f6f66573b62f9601e7418c3cf30a405a"}
+{"@timestamp":"2025-06-29T14:36:11.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:36:30.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:36:49.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:37:08.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:37:27.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:37:46.416Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:38:05.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:38:24.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:38:43.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:39:02.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:39:21.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:39:40.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:39:59.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:40:18.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:40:37.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:40:56.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:41:15.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:41:34.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:41:53.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:42:12.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:42:31.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:42:50.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:43:09.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:43:28.412Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:43:47.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:44:06.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:44:25.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:44:44.330Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:45:03.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:45:22.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:45:41.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:46:00.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:46:19.413Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:46:38.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:46:57.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:47:16.411Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:47:35.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:47:54.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:48:13.412Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:48:32.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:48:51.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:49:10.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:49:29.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:49:48.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:50:07.410Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:50:26.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:50:45.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:51:04.414Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:51:23.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:51:42.330Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:52:01.410Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:52:20.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:52:39.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:52:58.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:53:17.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:53:36.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:53:55.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:54:14.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:54:33.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:54:52.411Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:55:11.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:55:30.328Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:55:49.325Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:56:08.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:56:27.329Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:56:46.327Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:57:05.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:57:24.326Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T14:57:43.409Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
