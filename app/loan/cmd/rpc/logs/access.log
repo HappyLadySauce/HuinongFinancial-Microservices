@@ -1,0 +1,5 @@
+{"@timestamp":"2025-06-29T18:11:07.853Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T18:16:04.553Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T18:16:23.554Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T18:16:42.555Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-29T18:16:53.630Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}

@@ -1,0 +1,2 @@
+{"@timestamp":"2025-06-29T18:16:28.386Z","caller":"stat/usage.go:61","content":"CPU: 8m, MEMORY: Alloc=3.3Mi, TotalAlloc=8.3Mi, Sys=18.3Mi, NumGC=4","level":"stat"}
+{"@timestamp":"2025-06-29T18:16:28.418Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 8, total: 0, pass: 0, drop: 0","level":"stat"}

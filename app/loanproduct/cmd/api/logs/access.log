@@ -1,0 +1,4 @@
+{"@timestamp":"2025-06-29T18:03:35.085Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 6.295612ms for target={service='loanproductrpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-29T18:03:45.504Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T18:16:40.011Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 5.278866ms for target={service='loanproductrpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-29T18:16:48.933Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}

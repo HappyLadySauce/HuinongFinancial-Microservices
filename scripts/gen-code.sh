@@ -2,7 +2,7 @@
 
 # 代码生成脚本 - 基于go-zero微服务架构
 # 使用方法：./scripts/gen-code.sh [service_name] [type]
-# 示例：./scripts/gen-code.sh auth api
+# 示例：./scripts/gen-code.sh appuser api
 #       ./scripts/gen-code.sh appuser rpc
 
 set -e
@@ -32,11 +32,11 @@ show_help() {
     echo "  $0 [service_name] [type]"
     echo ""
     echo "参数说明:"
-    echo "  service_name: 服务名称 (auth|appuser|oauser|loan|loanproduct|leaseproduct|lease)"
+    echo "  service_name: 服务名称 (appuser|oauser|loan|loanproduct|leaseproduct|lease)"
     echo "  type:         生成类型 (api|rpc|model|migrate|docs|all|clean|tidy|workspace)"
     echo ""
     echo "示例:"
-    echo "  $0 auth api              # 生成auth服务的API代码"
+    echo "  $0 appuser api           # 生成appuser服务的API代码"
     echo "  $0 appuser rpc           # 生成appuser服务的RPC代码"
     echo "  $0 loan model            # 生成loan服务的Model代码"
     echo "  $0 oauser migrate        # 执行oauser服务数据库迁移(先清空再迁移)"
@@ -48,15 +48,14 @@ show_help() {
     echo "  $0 all docs              # 生成所有服务的API/RPC文档"
     echo "  $0 all all               # 生成所有服务的API、RPC、Model代码并迁移数据库"
     echo "  $0 all clean             # 清理所有服务生成的代码"
-    echo "  $0 auth all              # 生成auth服务的所有代码"
-    echo "  $0 auth clean            # 清理auth服务生成的代码"
-    echo "  $0 auth tidy             # 对auth服务的API和RPC目录执行go mod tidy"
+    echo "  $0 appuser all           # 生成appuser服务的所有代码"
+    echo "  $0 appuser clean         # 清理appuser服务生成的代码"
+    echo "  $0 appuser tidy          # 对appuser服务的API和RPC目录执行go mod tidy"
     echo "  $0 all tidy              # 对所有服务的API和RPC目录执行go mod tidy"
-    echo "  $0 auth workspace        # 设置auth服务的Go工作区"
+    echo "  $0 appuser workspace     # 设置appuser服务的Go工作区"
     echo "  $0 all workspace         # 设置所有服务的Go工作区"
     echo ""
     echo "支持的服务:"
-    echo "  auth         - 认证服务 (Redis + JWT，无Model)"
     echo "  appuser      - App用户服务"
     echo "  oauser       - OA用户服务"
     echo "  loan         - 贷款服务"
@@ -75,7 +74,7 @@ SERVICE_NAME=$1
 TYPE=$2
 
 # 支持的服务列表
-SERVICES=("auth" "appuser" "oauser" "loan" "loanproduct" "leaseproduct" "lease")
+SERVICES=("appuser" "oauser" "loan" "loanproduct" "leaseproduct" "lease")
 TYPES=("api" "rpc" "model" "migrate" "docs" "all" "clean" "tidy" "workspace")
 
 # 验证服务名称
@@ -313,12 +312,6 @@ generate_model() {
     local sql_file="$PROJECT_ROOT/app/$service/$service.sql"
     local model_dir="$PROJECT_ROOT/app/$service/cmd/model"
     
-    # Auth服务使用Redis，跳过Model生成
-    if [[ "$service" == "auth" ]]; then
-        echo -e "${YELLOW}跳过 $service: Auth服务使用Redis，无需生成Model${NC}"
-        return
-    fi
-    
     if [[ ! -f "$sql_file" ]]; then
         echo -e "${YELLOW}跳过 $service: SQL文件不存在 ($service.sql)${NC}"
         return
@@ -346,12 +339,6 @@ generate_model() {
 migrate_database() {
     local service=$1
     local sql_file="$PROJECT_ROOT/app/$service/$service.sql"
-    
-    # Auth服务使用Redis，跳过迁移
-    if [[ "$service" == "auth" ]]; then
-        echo -e "${YELLOW}跳过 $service: Auth服务使用Redis，无需数据库迁移${NC}"
-        return
-    fi
     
     if [[ ! -f "$sql_file" ]]; then
         echo -e "${YELLOW}跳过 $service: SQL文件不存在 ($service.sql)${NC}"
