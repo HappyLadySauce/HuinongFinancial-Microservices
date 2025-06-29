@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/oauserclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,21 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 }
 
 func (l *LogoutLogic) Logout(req *types.LogoutReq) (resp *types.LogoutResp, err error) {
-	// todo: add your logic here and delete this line
+	// 调用 RPC 服务进行注销
+	logoutResp, err := l.svcCtx.OaUserRpc.Logout(l.ctx, &oauserclient.LogoutReq{
+		Token: req.Token,
+	})
+	if err != nil {
+		l.Logger.Errorf("RPC Logout failed: %v", err)
+		return &types.LogoutResp{
+			Code:    500,
+			Message: "服务器内部错误",
+		}, nil
+	}
 
-	return
+	// 转换响应格式
+	return &types.LogoutResp{
+		Code:    logoutResp.Code,
+		Message: logoutResp.Message,
+	}, nil
 }

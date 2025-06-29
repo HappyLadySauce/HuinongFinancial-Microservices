@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/oauserclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,23 @@ func NewChangePasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 }
 
 func (l *ChangePasswordLogic) ChangePassword(req *types.ChangePasswordReq) (resp *types.ChangePasswordResp, err error) {
-	// todo: add your logic here and delete this line
+	// 调用 RPC 服务进行密码修改
+	changePasswordResp, err := l.svcCtx.OaUserRpc.ChangePassword(l.ctx, &oauserclient.ChangePasswordReq{
+		Phone:       req.Phone,
+		OldPassword: req.OldPassword,
+		NewPassword: req.NewPassword,
+	})
+	if err != nil {
+		l.Logger.Errorf("RPC ChangePassword failed: %v", err)
+		return &types.ChangePasswordResp{
+			Code:    500,
+			Message: "服务器内部错误",
+		}, nil
+	}
 
-	return
+	// 转换响应格式
+	return &types.ChangePasswordResp{
+		Code:    changePasswordResp.Code,
+		Message: changePasswordResp.Message,
+	}, nil
 }

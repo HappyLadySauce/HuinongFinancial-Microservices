@@ -225,3 +225,4 @@
 {"@timestamp":"2025-06-29T14:36:04.119Z","caller":"handler/loghandler.go:147","content":"[HTTP] 200 - POST /api/v1/auth/password - 172.18.122.4:50217 - PostmanRuntime/7.44.1","duration":"198.1ms","level":"info","span":"ff8c0b2e7db3a62a","trace":"43c31498087e3c5f1537258301963ec3"}
 {"@timestamp":"2025-06-29T14:36:07.917Z","caller":"auth/loginLogic.go:29","content":"API: 用户登录请求, phone: 13452552349","level":"info","span":"da68017b8f97bc5e","trace":"f6f66573b62f9601e7418c3cf30a405a"}
 {"@timestamp":"2025-06-29T14:36:08.014Z","caller":"handler/loghandler.go:147","content":"[HTTP] 200 - POST /api/v1/auth/login - 172.18.122.4:50220 - PostmanRuntime/7.44.1","duration":"97.5ms","level":"info","span":"da68017b8f97bc5e","trace":"f6f66573b62f9601e7418c3cf30a405a"}
+{"@timestamp":"2025-06-29T15:03:10.956Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}

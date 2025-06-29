@@ -1,0 +1,314 @@
+---
+# OAUser API 服务部署
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauser-api
+  namespace: huinong-financial
+  labels:
+    app: oauser-api
+    service: oauser
+    tier: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: oauser-api
+  template:
+    metadata:
+      labels:
+        app: oauser-api
+        service: oauser
+        tier: api
+    spec:
+      containers:
+      - name: oauser-api
+        image: registry.huinong.internal/huinong/oauser-api:latest
+        ports:
+        - containerPort: 10002
+        env:
+        - name: GO_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 10002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 10002
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /app/etc
+      volumes:
+      - name: config
+        configMap:
+          name: oauser-api-config
+      imagePullSecrets:
+      - name: registry-secret
+
+---
+# OAUser API 服务 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauser-api-service
+  namespace: huinong-financial
+  labels:
+    app: oauser-api
+    service: oauser
+spec:
+  type: ClusterIP
+  ports:
+  - port: 10002
+    targetPort: 10002
+    protocol: TCP
+    name: http
+  selector:
+    app: oauser-api
+
+---
+# OAUser RPC 服务部署
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauser-rpc
+  namespace: huinong-financial
+  labels:
+    app: oauser-rpc
+    service: oauser
+    tier: rpc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oauser-rpc
+  template:
+    metadata:
+      labels:
+        app: oauser-rpc
+        service: oauser
+        tier: rpc
+    spec:
+      containers:
+      - name: oauser-rpc
+        image: registry.huinong.internal/huinong/oauser-rpc:latest
+        ports:
+        - containerPort: 20002
+        env:
+        - name: GO_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          tcpSocket:
+            port: 20002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 20002
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /app/etc
+      volumes:
+      - name: config
+        configMap:
+          name: oauser-rpc-config
+      imagePullSecrets:
+      - name: registry-secret
+
+---
+# OAUser RPC 服务 Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauser-rpc-service
+  namespace: huinong-financial
+  labels:
+    app: oauser-rpc
+    service: oauser
+spec:
+  type: ClusterIP
+  ports:
+  - port: 20002
+    targetPort: 20002
+    protocol: TCP
+    name: grpc
+  selector:
+    app: oauser-rpc
+
+---
+# OAUser API 配置 ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauser-api-config
+  namespace: huinong-financial
+data:
+  oauser.yaml: |
+    Name: oauser-api
+    Host: 0.0.0.0
+    Port: 10002
+    
+    # JWT 认证配置
+    Auth:
+      AccessSecret: "huinong-auth-access-secret"
+      AccessExpire: 3600
+    
+    # RPC 客户端配置
+    OaUserRpc:
+      Target: consul://consul.huinong.internal/oauserrpc.rpc
+    
+    # 日志配置
+    Log:
+      ServiceName: oauser-api
+      Mode: console
+      Level: info
+
+---
+# OAUser RPC 配置 ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauser-rpc-config
+  namespace: huinong-financial
+data:
+  oauserrpc.yaml: |
+    Name: oauserrpc.rpc
+    ListenOn: 0.0.0.0:20002
+    
+    # Consul 服务注册配置
+    Consul:
+      Host: consul.huinong.internal
+      Key: oauserrpc.rpc
+      Token: "331c00f9-bd87-2383-4394-548a0e66dea9"
+    
+    # MySQL 数据库配置
+    MySQL:
+      DataSource: oauser:oauser@tcp(mysql.huinong.internal:3306)/oauser?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+    
+    # Redis 缓存配置
+    CacheConf:
+      - Host: redis.huinong.internal:6379
+        Type: node
+        Pass: "ChinaSkills@"
+    
+    # JWT 配置
+    JwtAuth:
+      AccessSecret: "huinong-auth-access-secret"
+      AccessExpire: 3600
+    
+    # 日志配置
+    Logger:
+      ServiceName: oauserrpc
+      Mode: console
+      Level: info
+      KeepDays: 7
+      Compress: true
+      MaxSize: 100
+      MaxBackups: 5
+    
+    Log:
+      ServiceName: oauserrpc
+      Mode: console
+      Level: info
+
+---
+# HPA 自动扩缩容 (API)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: oauser-api-hpa
+  namespace: huinong-financial
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: oauser-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# HPA 自动扩缩容 (RPC)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: oauser-rpc-hpa
+  namespace: huinong-financial
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: oauser-rpc
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# Ingress 配置 (API 对外暴露)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauser-api-ingress
+  namespace: huinong-financial
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
+spec:
+  rules:
+  - host: oauser-api.huinong.internal
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: oauser-api-service
+            port:
+              number: 10002 
