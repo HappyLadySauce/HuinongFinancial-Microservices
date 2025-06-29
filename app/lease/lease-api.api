@@ -1,0 +1,513 @@
+syntax = "v1"
+
+info (
+	title:   "Lease API"
+	desc:    "租赁申请、审批、合同管理、设备交付归还、租金管理"
+	author:  "HuinongFinancial"
+	version: "1.0"
+)
+
+// ========== 标准响应结构 ==========
+type (
+	// 通用响应，用于不需要返回数据的场景
+	CommonResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+
+	// 数据响应，用于返回单个对象
+	DataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+	}
+
+	// 分页响应，用于返回列表数据
+	PageResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+		Total   int64       `json:"total"`
+		Page    int64       `json:"page"`
+		Size    int64       `json:"size"`
+	}
+)
+
+// ========== 租赁申请请求结构 ==========
+type (
+	// 创建租赁申请
+	CreateLeaseApplicationReq {
+		ProductCode     string `json:"productCode"`     // 产品编码
+		Quantity        int64  `json:"quantity"`        // 数量
+		Duration        int64  `json:"duration"`        // 租期(天)
+		StartDate       string `json:"startDate"`       // 开始日期
+		Purpose         string `json:"purpose"`         // 租用目的
+		DeliveryAddress string `json:"deliveryAddress"` // 交付地址
+		ContactPerson   string `json:"contactPerson"`   // 联系人
+		ContactPhone    string `json:"contactPhone"`    // 联系电话
+	}
+
+	// 更新租赁申请
+	UpdateLeaseApplicationReq {
+		ApplicationNo   string `path:"applicationNo"`   // 申请编号
+		Purpose         string `json:"purpose"`         // 租用目的
+		DeliveryAddress string `json:"deliveryAddress"` // 交付地址
+		ContactPerson   string `json:"contactPerson"`   // 联系人
+		ContactPhone    string `json:"contactPhone"`    // 联系电话
+	}
+
+	// 审批申请
+	ApproveLeaseApplicationReq {
+		ApplicationNo string `json:"applicationNo"` // 申请编号
+		Result        string `json:"result"`        // 审批结果: "approved", "rejected"
+		Comments      string `json:"comments"`      // 审批意见
+	}
+
+	// 取消申请
+	CancelLeaseApplicationReq {
+		ApplicationNo string `json:"applicationNo"` // 申请编号
+		Reason        string `json:"reason"`        // 取消原因
+	}
+)
+
+// ========== 租赁合同请求结构 ==========
+type (
+	// 创建合同
+	CreateLeaseContractReq {
+		ApplicationId int64  `json:"applicationId"` // 申请ID
+		Terms         string `json:"terms"`         // 合同条款
+	}
+)
+
+// ========== 设备交付请求结构 ==========
+type (
+	// 创建交付记录
+	CreateDeliveryRecordReq {
+		ContractId         int64    `json:"contractId"`         // 合同ID
+		EquipmentId        string   `json:"equipmentId"`        // 设备编号
+		DeliveryType       string   `json:"deliveryType"`       // 交付类型: "delivery", "return"
+		DeliveryDate       string   `json:"deliveryDate"`       // 交付日期
+		DeliveryAddress    string   `json:"deliveryAddress"`    // 交付地址
+		DeliveryPerson     string   `json:"deliveryPerson"`     // 交付人员
+		ReceiverName       string   `json:"receiverName"`       // 接收人姓名
+		ReceiverPhone      string   `json:"receiverPhone"`      // 接收人电话
+		EquipmentCondition string   `json:"equipmentCondition"` // 设备状况
+		Photos             []string `json:"photos"`             // 照片
+		Remarks            string   `json:"remarks"`            // 备注
+	}
+)
+
+// ========== 租金管理请求结构 ==========
+type (
+	// 创建租金记录
+	CreateRentalPaymentReq {
+		ContractId   int64   `json:"contractId"`   // 合同ID
+		PaymentType  string  `json:"paymentType"`  // 支付类型
+		Amount       float64 `json:"amount"`       // 金额
+		DueDate      string  `json:"dueDate"`      // 到期日期
+		Remarks      string  `json:"remarks"`      // 备注
+	}
+
+	// 支付租金
+	PayRentalReq {
+		PaymentId       int64  `json:"paymentId"`       // 支付记录ID
+		PaymentMethod   string `json:"paymentMethod"`   // 支付方式
+		PaymentOrderNo  string `json:"paymentOrderNo"`  // 支付订单号
+	}
+)
+
+// ========== 风险评估请求结构 ==========
+type (
+	AssessLeaseRiskReq {
+		CustomerId    int64   `json:"customerId"`    // 客户ID
+		ProductCode   string  `json:"productCode"`   // 产品编码
+		Quantity      int64   `json:"quantity"`      // 数量
+		Duration      int64   `json:"duration"`      // 租期(天)
+		RentalAmount  float64 `json:"rentalAmount"`  // 租金总额
+	}
+)
+
+// ========== 基础数据结构 ==========
+// 租赁申请信息
+type LeaseApplication {
+	Id                int64   `json:"id"` // 申请ID
+	ApplicationNo     string  `json:"application_no"` // 申请编号
+	CustomerId        int64   `json:"customer_id"` // 客户ID
+	ProductCode       string  `json:"product_code"` // 产品编码
+	ProductName       string  `json:"product_name"` // 产品名称
+	Quantity          int64   `json:"quantity"` // 数量
+	Duration          int64   `json:"duration"` // 租期(天)
+	StartDate         string  `json:"start_date"` // 开始日期
+	EndDate           string  `json:"end_date"` // 结束日期
+	RentalAmount      float64 `json:"rental_amount"` // 租金总额
+	DepositAmount     float64 `json:"deposit_amount"` // 押金金额
+	Purpose           string  `json:"purpose"` // 租用目的
+	DeliveryAddress   string  `json:"delivery_address"` // 交付地址
+	ContactPerson     string  `json:"contact_person"` // 联系人
+	ContactPhone      string  `json:"contact_phone"` // 联系电话
+	ApplicationStatus string  `json:"application_status"` // 申请状态
+	ApprovalStatus    string  `json:"approval_status"` // 审批状态
+	RejectReason      string  `json:"reject_reason"` // 拒绝原因
+	ApprovalComments  string  `json:"approval_comments"` // 审批意见
+	ApprovedBy        int64   `json:"approved_by"` // 审批人ID
+	ApprovedAt        int64   `json:"approved_at"` // 审批时间
+	CreatedAt         int64   `json:"created_at"` // 创建时间
+	UpdatedAt         int64   `json:"updated_at"` // 更新时间
+}
+
+// 租赁合同信息
+type LeaseContract {
+	Id              int64   `json:"id"` // 合同ID
+	ContractNo      string  `json:"contract_no"` // 合同编号
+	ApplicationId   int64   `json:"application_id"` // 申请ID
+	CustomerId      int64   `json:"customer_id"` // 客户ID
+	ProductCode     string  `json:"product_code"` // 产品编码
+	ProductName     string  `json:"product_name"` // 产品名称
+	Quantity        int64   `json:"quantity"` // 数量
+	Duration        int64   `json:"duration"` // 租期(天)
+	StartDate       string  `json:"start_date"` // 开始日期
+	EndDate         string  `json:"end_date"` // 结束日期
+	RentalAmount    float64 `json:"rental_amount"` // 租金总额
+	DepositAmount   float64 `json:"deposit_amount"` // 押金金额
+	EquipmentIds    string  `json:"equipment_ids"` // 设备编号列表(JSON)
+	Terms           string  `json:"terms"` // 合同条款
+	DeliveryAddress string  `json:"delivery_address"` // 交付地址
+	ContactPerson   string  `json:"contact_person"` // 联系人
+	ContactPhone    string  `json:"contact_phone"` // 联系电话
+	ContractStatus  string  `json:"contract_status"` // 合同状态
+	SignedAt        int64   `json:"signed_at"` // 签约时间
+	CreatedAt       int64   `json:"created_at"` // 创建时间
+	UpdatedAt       int64   `json:"updated_at"` // 更新时间
+}
+
+// 设备交付记录
+type DeliveryRecord {
+	Id                 int64  `json:"id"` // 记录ID
+	ContractId         int64  `json:"contract_id"` // 合同ID
+	ContractNo         string `json:"contract_no"` // 合同编号
+	EquipmentId        string `json:"equipment_id"` // 设备编号
+	DeliveryType       string `json:"delivery_type"` // 交付类型 delivery:交付 return:归还
+	DeliveryDate       string `json:"delivery_date"` // 交付日期
+	DeliveryAddress    string `json:"delivery_address"` // 交付地址
+	DeliveryPerson     string `json:"delivery_person"` // 交付人员
+	ReceiverName       string `json:"receiver_name"` // 接收人姓名
+	ReceiverPhone      string `json:"receiver_phone"` // 接收人电话
+	EquipmentCondition string `json:"equipment_condition"` // 设备状况
+	Photos             string `json:"photos"` // 照片(JSON数组)
+	Remarks            string `json:"remarks"` // 备注
+	Status             string `json:"status"` // 状态 pending:待交付 completed:已完成 cancelled:已取消
+	CreatedAt          int64  `json:"created_at"` // 创建时间
+	UpdatedAt          int64  `json:"updated_at"` // 更新时间
+}
+
+// 租金记录
+type RentalPayment {
+	Id             int64   `json:"id"` // 记录ID
+	ContractId     int64   `json:"contract_id"` // 合同ID
+	ContractNo     string  `json:"contract_no"` // 合同编号
+	PaymentType    string  `json:"payment_type"` // 支付类型 rental:租金 deposit:押金 penalty:违约金
+	Amount         float64 `json:"amount"` // 金额
+	PaidAmount     float64 `json:"paid_amount"` // 已支付金额
+	DueDate        string  `json:"due_date"` // 到期日期
+	PaidDate       string  `json:"paid_date"` // 支付日期
+	PaymentMethod  string  `json:"payment_method"` // 支付方式
+	PaymentOrderNo string  `json:"payment_order_no"` // 支付订单号
+	Status         string  `json:"status"` // 状态 pending:待支付 paid:已支付 overdue:逾期 cancelled:已取消
+	Remarks        string  `json:"remarks"` // 备注
+	CreatedAt      int64   `json:"created_at"` // 创建时间
+	UpdatedAt      int64   `json:"updated_at"` // 更新时间
+}
+
+// 审批记录
+type ApprovalRecord {
+	Id            int64  `json:"id"` // 记录ID
+	ApplicationId int64  `json:"application_id"` // 申请ID
+	ApprovalStep  string `json:"approval_step"` // 审批步骤
+	ApproverId    int64  `json:"approver_id"` // 审批人ID
+	ApproverName  string `json:"approver_name"` // 审批人姓名
+	Result        string `json:"result"` // 审批结果 approve:通过 reject:拒绝
+	Comments      string `json:"comments"` // 审批意见
+	ApprovedAt    int64  `json:"approved_at"` // 审批时间
+	CreatedAt     int64  `json:"created_at"` // 创建时间
+}
+
+// ========== 请求响应结构 ==========
+// 租赁申请列表请求
+type ListLeaseApplicationsRequest {
+	Page              int64  `form:"page,default=1"` // 页码
+	Size              int64  `form:"size,default=10"` // 每页数量
+	CustomerId        int64  `form:"customer_id,optional"` // 客户ID
+	ProductCode       string `form:"product_code,optional"` // 产品编码
+	ApplicationStatus string `form:"application_status,optional"` // 申请状态
+	ApprovalStatus    string `form:"approval_status,optional"` // 审批状态
+	StartDate         string `form:"start_date,optional"` // 开始日期
+	EndDate           string `form:"end_date,optional"` // 结束日期
+	Keyword           string `form:"keyword,optional"` // 关键词
+}
+
+// 租赁申请详情响应(复用)
+type GetLeaseApplicationResponse {
+	*LeaseApplication
+	Customer        interface{}      `json:"customer"` // 客户信息
+	Product         interface{}      `json:"product"` // 产品信息
+	ApprovalRecords []ApprovalRecord `json:"approval_records"` // 审批记录
+}
+
+// 创建租赁申请请求
+type CreateLeaseApplicationRequest {
+	CustomerId      int64  `json:"customer_id"` // 客户ID
+	ProductCode     string `json:"product_code"` // 产品编码
+	Quantity        int64  `json:"quantity"` // 数量
+	Duration        int64  `json:"duration"` // 租期(天)
+	StartDate       string `json:"start_date"` // 开始日期
+	Purpose         string `json:"purpose"` // 租用目的
+	DeliveryAddress string `json:"delivery_address"` // 交付地址
+	ContactPerson   string `json:"contact_person"` // 联系人
+	ContactPhone    string `json:"contact_phone"` // 联系电话
+}
+
+// 更新租赁申请请求
+type UpdateLeaseApplicationRequest {
+	Purpose         string `json:"purpose,optional"` // 租用目的
+	DeliveryAddress string `json:"delivery_address,optional"` // 交付地址
+	ContactPerson   string `json:"contact_person,optional"` // 联系人
+	ContactPhone    string `json:"contact_phone,optional"` // 联系电话
+}
+
+// 提交申请请求
+type SubmitLeaseApplicationRequest {
+	Reason string `json:"reason,optional"` // 提交说明
+}
+
+// 审批申请请求
+type ApproveLeaseApplicationRequest {
+	Result   string `json:"result"` // 审批结果 approve:通过 reject:拒绝
+	Comments string `json:"comments"` // 审批意见
+}
+
+// 取消申请请求
+type CancelLeaseApplicationRequest {
+	Reason string `json:"reason"` // 取消原因
+}
+
+// 租赁合同列表请求
+type ListLeaseContractsRequest {
+	Page           int64  `form:"page,default=1"` // 页码
+	Size           int64  `form:"size,default=10"` // 每页数量
+	CustomerId     int64  `form:"customer_id,optional"` // 客户ID
+	ProductCode    string `form:"product_code,optional"` // 产品编码
+	ContractStatus string `form:"contract_status,optional"` // 合同状态
+	StartDate      string `form:"start_date,optional"` // 开始日期
+	EndDate        string `form:"end_date,optional"` // 结束日期
+	Keyword        string `form:"keyword,optional"` // 关键词
+}
+
+// 租赁合同详情响应(复用)
+type GetLeaseContractResponse {
+	*LeaseContract
+	Customer        interface{}      `json:"customer"` // 客户信息
+	Product         interface{}      `json:"product"` // 产品信息
+	Equipment       []interface{}    `json:"equipment"` // 设备信息
+	DeliveryRecords []DeliveryRecord `json:"delivery_records"` // 交付记录
+	RentalPayments  []RentalPayment  `json:"rental_payments"` // 租金记录
+}
+
+// 创建租赁合同请求
+type CreateLeaseContractRequest {
+	ApplicationId int64  `json:"application_id"` // 申请ID
+	Terms         string `json:"terms"` // 合同条款
+}
+
+// 终止合同请求
+type TerminateLeaseContractRequest {
+	Reason string `json:"reason"` // 终止原因
+}
+
+// 设备交付记录列表请求
+type ListDeliveryRecordsRequest {
+	Page         int64  `form:"page,default=1"` // 页码
+	Size         int64  `form:"size,default=10"` // 每页数量
+	ContractId   int64  `form:"contract_id,optional"` // 合同ID
+	EquipmentId  string `form:"equipment_id,optional"` // 设备编号
+	DeliveryType string `form:"delivery_type,optional"` // 交付类型
+	Status       string `form:"status,optional"` // 状态
+}
+
+// 创建设备交付记录请求
+type CreateDeliveryRecordRequest {
+	ContractId         int64    `json:"contract_id"` // 合同ID
+	EquipmentId        string   `json:"equipment_id"` // 设备编号
+	DeliveryType       string   `json:"delivery_type"` // 交付类型
+	DeliveryDate       string   `json:"delivery_date"` // 交付日期
+	DeliveryAddress    string   `json:"delivery_address"` // 交付地址
+	DeliveryPerson     string   `json:"delivery_person"` // 交付人员
+	ReceiverName       string   `json:"receiver_name"` // 接收人姓名
+	ReceiverPhone      string   `json:"receiver_phone"` // 接收人电话
+	EquipmentCondition string   `json:"equipment_condition"` // 设备状况
+	Photos             []string `json:"photos,optional"` // 照片
+	Remarks            string   `json:"remarks,optional"` // 备注
+}
+
+// 更新交付记录请求
+type UpdateDeliveryRecordRequest {
+	EquipmentCondition string   `json:"equipment_condition,optional"` // 设备状况
+	Photos             []string `json:"photos,optional"` // 照片
+	Remarks            string   `json:"remarks,optional"` // 备注
+	Status             string   `json:"status,optional"` // 状态
+}
+
+// 租金记录列表请求
+type ListRentalPaymentsRequest {
+	Page        int64  `form:"page,default=1"` // 页码
+	Size        int64  `form:"size,default=10"` // 每页数量
+	ContractId  int64  `form:"contract_id,optional"` // 合同ID
+	PaymentType string `form:"payment_type,optional"` // 支付类型
+	Status      string `form:"status,optional"` // 状态
+}
+
+// 创建租金记录请求
+type CreateRentalPaymentRequest {
+	ContractId  int64   `json:"contract_id"` // 合同ID
+	PaymentType string  `json:"payment_type"` // 支付类型
+	Amount      float64 `json:"amount"` // 金额
+	DueDate     string  `json:"due_date"` // 到期日期
+	Remarks     string  `json:"remarks,optional"` // 备注
+}
+
+// 支付租金请求
+type PayRentalRequest {
+	PaymentMethod  string `json:"payment_method"` // 支付方式
+	PaymentOrderNo string `json:"payment_order_no,optional"` // 支付订单号
+}
+
+// 统计数据请求
+type GetLeaseStatisticsRequest {
+	StartDate string `form:"start_date,optional"` // 开始日期
+	EndDate   string `form:"end_date,optional"` // 结束日期
+}
+
+// ========== 用户API (需要认证) ==========
+@server (
+	basePath: /api/v1
+	prefix:   lease
+	jwt:      Auth
+)
+service lease {
+	// --- 租赁申请 (我的) ---
+	@doc "获取我的租赁申请列表"
+	@handler GetMyApplications
+	get /my/applications (ListLeaseApplicationsRequest) returns (PageResp)
+
+	@doc "获取我的租赁申请详情"
+	@handler GetMyApplication
+	get /my/applications/:application_no returns (DataResp)
+
+	@doc "创建租赁申请"
+	@handler CreateApplication
+	post /applications (CreateLeaseApplicationRequest) returns (DataResp)
+
+	@doc "更新我的租赁申请"
+	@handler UpdateMyApplication
+	put /my/applications/:application_no (UpdateLeaseApplicationRequest) returns (CommonResp)
+
+	@doc "提交我的租赁申请"
+	@handler SubmitMyApplication
+	post /my/applications/:application_no/submit (SubmitLeaseApplicationRequest) returns (CommonResp)
+
+	@doc "取消我的租赁申请"
+	@handler CancelMyApplication
+	post /my/applications/:application_no/cancel (CancelLeaseApplicationRequest) returns (CommonResp)
+
+	// --- 租赁合同 (我的) ---
+	@doc "获取我的租赁合同列表"
+	@handler GetMyContracts
+	get /my/contracts (ListLeaseContractsRequest) returns (PageResp)
+
+	@doc "获取我的租赁合同详情"
+	@handler GetMyContract
+	get /my/contracts/:contract_no returns (DataResp)
+
+	@doc "签署我的租赁合同"
+	@handler SignMyContract
+	post /my/contracts/:contract_no/sign returns (CommonResp)
+
+	// --- 租金 (我的) ---
+	@doc "获取我的租金记录列表"
+	@handler GetMyRentalPayments
+	get /my/rental-payments (ListRentalPaymentsRequest) returns (PageResp)
+
+	@doc "支付我的租金"
+	@handler PayMyRental
+	post /my/rental-payments/:payment_id/pay (PayRentalRequest) returns (CommonResp)
+}
+
+// ========== 管理员API (需要管理员权限) ==========
+@server (
+	basePath:   /api/v1
+	prefix:     lease
+	jwt:        Auth
+	middleware: AdminAuth
+)
+service lease {
+	// --- 租赁申请管理 ---
+	@doc "获取所有租赁申请列表"
+	@handler ListAllApplications
+	get /admin/applications (ListLeaseApplicationsRequest) returns (PageResp)
+
+	@doc "获取指定租赁申请详情"
+	@handler GetApplication
+	get /admin/applications/:application_no returns (DataResp)
+
+	@doc "审批租赁申请"
+	@handler ApproveApplication
+	post /admin/applications/:application_no/approve (ApproveLeaseApplicationRequest) returns (CommonResp)
+
+	// --- 租赁合同管理 ---
+	@doc "获取所有租赁合同列表"
+	@handler ListAllContracts
+	get /admin/contracts (ListLeaseContractsRequest) returns (PageResp)
+
+	@doc "获取指定租赁合同详情"
+	@handler GetContract
+	get /admin/contracts/:contract_no returns (DataResp)
+
+	@doc "创建租赁合同"
+	@handler CreateContract
+	post /admin/contracts (CreateLeaseContractRequest) returns (DataResp)
+
+	@doc "激活租赁合同"
+	@handler ActivateContract
+	post /admin/contracts/:contract_no/activate returns (CommonResp)
+
+	@doc "终止租赁合同"
+	@handler TerminateContract
+	post /admin/contracts/:contract_no/terminate (TerminateLeaseContractRequest) returns (CommonResp)
+
+	// --- 设备交付管理 ---
+	@doc "获取设备交付记录列表"
+	@handler ListDeliveryRecords
+	get /admin/delivery-records (ListDeliveryRecordsRequest) returns (PageResp)
+
+	@doc "创建设备交付记录"
+	@handler CreateDeliveryRecord
+	post /admin/delivery-records (CreateDeliveryRecordRequest) returns (DataResp)
+
+	@doc "更新设备交付记录"
+	@handler UpdateDeliveryRecord
+	put /admin/delivery-records/:id (UpdateDeliveryRecordRequest) returns (CommonResp)
+
+	// --- 租金管理 ---
+	@doc "获取租金记录列表"
+	@handler ListRentalPayments
+	get /admin/rental-payments (ListRentalPaymentsRequest) returns (PageResp)
+
+	@doc "创建租金记录"
+	@handler CreateRentalPayment
+	post /admin/rental-payments (CreateRentalPaymentRequest) returns (DataResp)
+
+	// --- 统计分析 ---
+	@doc "获取租赁统计数据"
+	@handler GetLeaseStatistics
+	get /admin/statistics (GetLeaseStatisticsRequest) returns (DataResp)
+}
+

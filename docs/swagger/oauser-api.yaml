@@ -1,0 +1,191 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 后台管理API
+  version: v1.0.0
+paths:
+  /api/v1/oa/users/:
+    get:
+      operationId: adminGetUserList
+      parameters:
+      - default: 1
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        in: query
+        name: size
+        required: true
+        type: integer
+      - allowEmptyValue: true
+        in: query
+        name: keyword
+        type: string
+      - allowEmptyValue: true
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+              page:
+                type: integer
+              size:
+                type: integer
+              total:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: GetUserList
+    post:
+      consumes:
+      - application/json
+      operationId: adminCreateUser
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            mobile:
+              type: string
+            name:
+              type: string
+            password:
+              type: string
+            roles:
+              items:
+                type: string
+              type: array
+            username:
+              type: string
+          required:
+          - username
+          - password
+          - name
+          - roles
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: CreateUser
+  /api/v1/oa/users/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: adminUpdateUser
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            email:
+              type: string
+            mobile:
+              type: string
+            name:
+              type: string
+            roles:
+              items:
+                type: string
+              type: array
+            status:
+              type: integer
+          required:
+          - name
+          - status
+          - roles
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: UpdateUser
+  /api/v1/oa/users/{username}:
+    delete:
+      operationId: adminDeleteUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: DeleteUser
+    get:
+      operationId: adminGetUserDetail
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: GetUserDetail
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-28 19:00:09"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

@@ -1,0 +1,107 @@
+# Prometheus监控配置
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-monitoring-config
+  namespace: default
+data:
+  prometheus.yml: |
+    # 认证服务监控指标
+    - job_name: 'auth-api'
+      static_configs:
+      - targets: ['auth-api-svc:8001']
+      metrics_path: /metrics
+      scrape_interval: 15s
+      
+    # 监控指标示例：
+    # auth_login_attempts_total{user_type="appuser", status="success"}
+    # auth_login_attempts_total{user_type="appuser", status="failed"}
+    # auth_token_generated_total{token_type="access"}
+    # auth_token_validated_total{status="valid"}
+    # auth_active_sessions_total{user_type="appuser"}
+
+---
+# 告警规则配置
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-alert-rules
+  namespace: default
+data:
+  auth.rules.yml: |
+    groups:
+    - name: auth.rules
+      rules:
+      # 登录失败率过高告警
+      - alert: HighLoginFailureRate
+        expr: rate(auth_login_attempts_total{status="failed"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "认证服务登录失败率过高"
+          description: "过去5分钟内登录失败率超过10%"
+      
+      # Token验证失败率过高告警  
+      - alert: HighTokenValidationFailureRate
+        expr: rate(auth_token_validated_total{status="invalid"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Token验证失败率过高"
+          description: "过去5分钟内Token验证失败率超过5%"
+      
+      # 服务不可用告警
+      - alert: AuthServiceDown
+        expr: up{job="auth-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "认证服务不可用"
+          description: "认证服务已停止响应超过1分钟"
+
+---
+# Grafana Dashboard配置
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-dashboard-config
+  namespace: default
+data:
+  auth-dashboard.json: |
+    {
+      "dashboard": {
+        "title": "认证服务监控",
+        "panels": [
+          {
+            "title": "登录成功率",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "rate(auth_login_attempts_total{status=\"success\"}[5m]) / rate(auth_login_attempts_total[5m]) * 100"
+              }
+            ]
+          },
+          {
+            "title": "活跃会话数",
+            "type": "graph", 
+            "targets": [
+              {
+                "expr": "auth_active_sessions_total"
+              }
+            ]
+          },
+          {
+            "title": "Token生成速率",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(auth_token_generated_total[5m])"
+              }
+            ]
+          }
+        ]
+      }
+    } 

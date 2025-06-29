@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "./auth";
+
+// ======== RPC 请求/响应 ========
+
+// C端用户登录请求
+message AppLoginReq {
+    string account = 1;  // 手机号
+    string password = 2;
+}
+
+// B端用户登录请求
+message OALoginReq {
+    string username = 1;
+    string password = 2;
+}
+
+// 登录响应
+message LoginResp {
+    string accessToken = 1;
+    int64 accessExpire = 2;
+    string refreshToken = 3;
+    int64 refreshExpire = 4;
+    int64 userId = 5;
+    string userType = 6; // "app" or "oa"
+}
+
+// 生成Token请求
+message GenerateTokenReq {
+    int64 userId = 1;
+    string userType = 2; // "app" or "oa"
+    repeated string roles = 3;
+}
+
+// 生成Token响应
+message GenerateTokenResp {
+    string accessToken = 1;
+    int64 accessExpire = 2;
+    string refreshToken = 3;
+    int64 refreshExpire = 4;
+}
+
+// 校验Token请求
+message ValidateTokenReq {
+    string accessToken = 1;
+}
+
+// 校验Token响应
+message ValidateTokenResp {
+    int64 userId = 1;
+    string userType = 2;
+    repeated string roles = 3;
+    bool isValid = 4;
+}
+
+// 使Token失效响应
+message InvalidateTokenResp {
+    bool success = 1;
+}
+
+// --------------------
+// Auth RPC 服务定义
+// --------------------
+service Auth {
+    // 用户登录
+    rpc AppLogin(AppLoginReq) returns (LoginResp);
+    rpc OALogin(OALoginReq) returns (LoginResp);
+    
+    // Token管理
+    rpc GenerateToken(GenerateTokenReq) returns (GenerateTokenResp);
+    rpc ValidateToken(ValidateTokenReq) returns (ValidateTokenResp);
+    rpc InvalidateToken(ValidateTokenReq) returns (InvalidateTokenResp);
+} 

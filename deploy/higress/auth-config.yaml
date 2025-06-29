@@ -1,0 +1,112 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: huinong-financial-gateway
+  namespace: default
+  annotations:
+    # 启用认证插件
+    higress.io/auth-url: "http://auth-api.default.svc.cluster.local:8001/internal/v1/auth/validate"
+    # 认证请求头配置
+    higress.io/auth-request-headers: "Authorization,X-User-Type"
+    # 认证响应头传递
+    higress.io/auth-response-headers: "X-User-Id,X-User-Type,X-User-Info"
+    # 白名单路径（不需要认证）
+    higress.io/auth-whitelist: "/api/v1/auth/login,/api/v1/auth/register,/api/v1/auth/refresh,/health,/metrics"
+spec:
+  ingressClassName: higress
+  rules:
+  - host: api.huinong.internal
+    http:
+      paths:
+      # 认证服务路由
+      - path: /api/v1/auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-api
+            port:
+              number: 8001
+      # App用户服务路由
+      - path: /api/v1/appuser
+        pathType: Prefix
+        backend:
+          service:
+            name: appuser-api
+            port:
+              number: 8002
+      # OA用户服务路由
+      - path: /api/v1/oauser
+        pathType: Prefix
+        backend:
+          service:
+            name: oauser-api
+            port:
+              number: 8003
+      # 贷款产品服务路由
+      - path: /api/v1/loanproduct
+        pathType: Prefix
+        backend:
+          service:
+            name: loanproduct-api
+            port:
+              number: 8004
+      # 贷款服务路由
+      - path: /api/v1/loan
+        pathType: Prefix
+        backend:
+          service:
+            name: loan-api
+            port:
+              number: 8005
+      # 风控服务路由
+      - path: /api/v1/risk
+        pathType: Prefix
+        backend:
+          service:
+            name: risk-api
+            port:
+              number: 8006
+
+---
+# Higress 认证插件配置
+apiVersion: extensions.higress.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: auth-plugin
+  namespace: higress-system
+spec:
+  selector:
+    matchLabels:
+      higress: gateway
+  url: oci://registry.cn-hangzhou.aliyuncs.com/higress_wasm/auth:1.0.0
+  phase: AUTHZ
+  priority: 200
+  pluginConfig:
+    # 认证服务配置
+    auth_service:
+      url: "http://auth-api.default.svc.cluster.local:8001/internal/v1/auth/validate"
+      timeout: 5s
+      headers:
+        - name: "Content-Type"
+          value: "application/json"
+    
+    # 白名单配置
+    whitelist:
+      - "/api/v1/auth/login"
+      - "/api/v1/auth/register"
+      - "/api/v1/auth/refresh"
+      - "/health"
+      - "/metrics"
+    
+    # 用户类型路径映射
+    user_type_mapping:
+      - path_prefix: "/api/v1/appuser"
+        user_type: "appuser"
+      - path_prefix: "/api/v1/oauser"
+        user_type: "oauser"
+    
+    # 认证响应头配置
+    response_headers:
+      user_id_header: "X-User-Id"
+      user_type_header: "X-User-Type"
+      user_info_header: "X-User-Info" 

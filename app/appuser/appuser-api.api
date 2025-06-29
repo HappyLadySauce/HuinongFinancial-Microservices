@@ -1,0 +1,60 @@
+info (
+	title:   "C端用户服务API"
+	desc:    "提供C端用户的基本信息管理功能"
+	author:  "Huinong"
+	email:   "dev@huinong.com"
+	version: "v1.0.0"
+)
+
+// ========== 标准响应结构 ==========
+type (
+	// 通用响应
+	CommonResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	// 数据响应
+	DataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+	}
+	// 分页响应
+	PageResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+		Total   int64       `json:"total"`
+		Page    int64       `json:"page"`
+		Size    int64       `json:"size"`
+	}
+)
+
+// ========== 用户信息 ==========
+type (
+	// 更新个人资料请求
+	UpdateProfileReq {
+		Nickname   string  `json:"nickname,optional"`
+		Age        int     `json:"age,optional"`
+		Gender     int     `json:"gender,optional"` // 0:未知 1:男 2:女
+		Occupation string  `json:"occupation,optional"`
+		Address    string  `json:"address,optional"`
+		Income     float64 `json:"income,optional"`
+	}
+)
+
+// --- C端用户 API (需要 JWT 认证) ---
+@server (
+	jwt:    Auth
+	group:  user
+	prefix: /api/v1/appuser
+)
+service appuser {
+	// 个人信息
+	@handler GetUserInfo
+	get /info returns (DataResp)
+
+	@handler UpdateUserProfile
+	put /profile (UpdateProfileReq) returns (DataResp)
+}
+

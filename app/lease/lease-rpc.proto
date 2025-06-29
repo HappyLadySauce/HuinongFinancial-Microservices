@@ -1,0 +1,327 @@
+syntax = "proto3";
+
+package lease;
+import "google/protobuf/empty.proto";
+
+option go_package = "./lease";
+
+// ========== 基础数据结构 ==========
+
+// 租赁申请信息
+message LeaseApplication {
+  int64 id = 1;                     // 申请ID
+  string application_no = 2;        // 申请编号
+  int64 customer_id = 3;            // 客户ID
+  string product_code = 4;          // 产品编码
+  string product_name = 5;          // 产品名称
+  int64 quantity = 6;               // 数量
+  int64 duration = 7;               // 租期(天)
+  string start_date = 8;            // 开始日期
+  string end_date = 9;              // 结束日期
+  double rental_amount = 10;        // 租金总额
+  double deposit_amount = 11;       // 押金金额
+  string purpose = 12;              // 租用目的
+  string delivery_address = 13;     // 交付地址
+  string contact_person = 14;       // 联系人
+  string contact_phone = 15;        // 联系电话
+  string application_status = 16;   // 申请状态
+  string approval_status = 17;      // 审批状态
+  string reject_reason = 18;        // 拒绝原因
+  string approval_comments = 19;    // 审批意见
+  int64 approved_by = 20;           // 审批人ID
+  int64 approved_at = 21;           // 审批时间
+  int64 created_at = 22;            // 创建时间
+  int64 updated_at = 23;            // 更新时间
+}
+
+// 租赁合同信息
+message LeaseContract {
+  int64 id = 1;                     // 合同ID
+  string contract_no = 2;           // 合同编号
+  int64 application_id = 3;         // 申请ID
+  int64 customer_id = 4;            // 客户ID
+  string product_code = 5;          // 产品编码
+  string product_name = 6;          // 产品名称
+  int64 quantity = 7;               // 数量
+  int64 duration = 8;               // 租期(天)
+  string start_date = 9;            // 开始日期
+  string end_date = 10;             // 结束日期
+  double rental_amount = 11;        // 租金总额
+  double deposit_amount = 12;       // 押金金额
+  string equipment_ids = 13;        // 设备编号列表(JSON)
+  string terms = 14;                // 合同条款
+  string delivery_address = 15;     // 交付地址
+  string contact_person = 16;       // 联系人
+  string contact_phone = 17;        // 联系电话
+  string contract_status = 18;      // 合同状态
+  int64 signed_at = 19;             // 签约时间
+  int64 created_at = 20;            // 创建时间
+  int64 updated_at = 21;            // 更新时间
+}
+
+// 设备交付记录
+message DeliveryRecord {
+  int64 id = 1;                     // 记录ID
+  int64 contract_id = 2;            // 合同ID
+  string contract_no = 3;           // 合同编号
+  string equipment_id = 4;          // 设备编号
+  string delivery_type = 5;         // 交付类型
+  string delivery_date = 6;         // 交付日期
+  string delivery_address = 7;      // 交付地址
+  string delivery_person = 8;       // 交付人员
+  string receiver_name = 9;         // 接收人姓名
+  string receiver_phone = 10;       // 接收人电话
+  string equipment_condition = 11;  // 设备状况
+  string photos = 12;               // 照片(JSON数组)
+  string remarks = 13;              // 备注
+  string status = 14;               // 状态
+  int64 created_at = 15;            // 创建时间
+  int64 updated_at = 16;            // 更新时间
+}
+
+// 租金记录
+message RentalPayment {
+  int64 id = 1;                     // 记录ID
+  int64 contract_id = 2;            // 合同ID
+  string contract_no = 3;           // 合同编号
+  string payment_type = 4;          // 支付类型
+  double amount = 5;                // 金额
+  double paid_amount = 6;           // 已支付金额
+  string due_date = 7;              // 到期日期
+  string paid_date = 8;             // 支付日期
+  string payment_method = 9;        // 支付方式
+  string payment_order_no = 10;     // 支付订单号
+  string status = 11;               // 状态
+  string remarks = 12;              // 备注
+  int64 created_at = 13;            // 创建时间
+  int64 updated_at = 14;            // 更新时间
+}
+
+// 审批记录
+message ApprovalRecord {
+  int64 id = 1;                     // 记录ID
+  int64 application_id = 2;         // 申请ID
+  string approval_step = 3;         // 审批步骤
+  int64 approver_id = 4;            // 审批人ID
+  string approver_name = 5;         // 审批人姓名
+  string result = 6;                // 审批结果
+  string comments = 7;              // 审批意见
+  int64 approved_at = 8;            // 审批时间
+  int64 created_at = 9;             // 创建时间
+}
+
+// ========== 服务请求/响应 ==========
+
+// --- 申请管理 ---
+message GetLeaseApplicationReq { string application_no = 1; }
+message GetLeaseApplicationResp { LeaseApplication application = 1; }
+
+message ListLeaseApplicationsReq {
+  int64 page = 1;
+  int64 size = 2;
+  int64 customer_id = 3;
+  string product_code = 4;
+  string application_status = 5;
+  string approval_status = 6;
+  string start_date = 7;
+  string end_date = 8;
+  string keyword = 9;
+}
+message ListLeaseApplicationsResp {
+  repeated LeaseApplication list = 1;
+  int64 total = 2;
+}
+
+message CreateLeaseApplicationReq {
+  int64 customer_id = 1;
+  string product_code = 2;
+  int64 quantity = 3;
+  int64 duration = 4;
+  string start_date = 5;
+  string purpose = 6;
+  string delivery_address = 7;
+  string contact_person = 8;
+  string contact_phone = 9;
+}
+message CreateLeaseApplicationResp { string application_no = 1; }
+
+message UpdateLeaseApplicationReq {
+  string application_no = 1;
+  string purpose = 2;
+  string delivery_address = 3;
+  string contact_person = 4;
+  string contact_phone = 5;
+}
+
+message SubmitLeaseApplicationReq { string application_no = 1; }
+message ApproveLeaseApplicationReq {
+  string application_no = 1;
+  string result = 2;
+  string comments = 3;
+  int64 approver_id = 4;
+}
+message CancelLeaseApplicationReq {
+  string application_no = 1;
+  string reason = 2;
+}
+
+// --- 合同管理 ---
+message GetLeaseContractReq { string contract_no = 1; }
+message GetLeaseContractResp { LeaseContract contract = 1; }
+
+message ListLeaseContractsReq {
+  int64 page = 1;
+  int64 size = 2;
+  int64 customer_id = 3;
+  string product_code = 4;
+  string contract_status = 5;
+  string start_date = 6;
+  string end_date = 7;
+  string keyword = 8;
+}
+message ListLeaseContractsResp {
+  repeated LeaseContract list = 1;
+  int64 total = 2;
+}
+
+message CreateLeaseContractReq {
+  int64 application_id = 1;
+  string terms = 2;
+}
+message CreateLeaseContractResp { string contract_no = 1; }
+
+message SignLeaseContractReq { string contract_no = 1; }
+message ActivateLeaseContractReq { string contract_no = 1; }
+message TerminateLeaseContractReq {
+  string contract_no = 1;
+  string reason = 2;
+}
+
+// --- 交付管理 ---
+message CreateDeliveryRecordReq {
+  int64 contract_id = 1;
+  string equipment_id = 2;
+  string delivery_type = 3;
+  string delivery_date = 4;
+  string delivery_address = 5;
+  string delivery_person = 6;
+  string receiver_name = 7;
+  string receiver_phone = 8;
+  string equipment_condition = 9;
+  repeated string photos = 10;
+  string remarks = 11;
+}
+message CreateDeliveryRecordResp { int64 id = 1; }
+
+message UpdateDeliveryRecordReq {
+  int64 id = 1;
+  string equipment_condition = 2;
+  repeated string photos = 3;
+  string remarks = 4;
+  string status = 5;
+}
+
+message ListDeliveryRecordsReq {
+  int64 page = 1;
+  int64 size = 2;
+  int64 contract_id = 3;
+  string equipment_id = 4;
+  string delivery_type = 5;
+  string status = 6;
+}
+message ListDeliveryRecordsResp {
+  repeated DeliveryRecord list = 1;
+  int64 total = 2;
+}
+
+// --- 租金管理 ---
+message CreateRentalPaymentReq {
+  int64 contract_id = 1;
+  string payment_type = 2;
+  double amount = 3;
+  string due_date = 4;
+  string remarks = 5;
+}
+message CreateRentalPaymentResp { int64 id = 1; }
+
+message PayRentalReq {
+  int64 payment_id = 1;
+  string payment_method = 2;
+  string payment_order_no = 3;
+}
+
+message ListRentalPaymentsReq {
+  int64 page = 1;
+  int64 size = 2;
+  int64 contract_id = 3;
+  string payment_type = 4;
+  string status = 5;
+}
+message ListRentalPaymentsResp {
+  repeated RentalPayment list = 1;
+  int64 total = 2;
+}
+
+// --- 统计与风控 ---
+message GetLeaseStatisticsReq {
+  string start_date = 1;
+  string end_date = 2;
+}
+message GetLeaseStatisticsResp {
+  int64 total_applications = 1;
+  int64 approved_applications = 2;
+  int64 active_contracts = 3;
+  double total_revenue = 4;
+  double pending_payments = 5;
+  double overdue_payments = 6;
+}
+
+message AssessLeaseRiskReq {
+  int64 customer_id = 1;
+  string product_code = 2;
+  int64 quantity = 3;
+  int64 duration = 4;
+  double rental_amount = 5;
+}
+message AssessLeaseRiskResp {
+  string risk_level = 1;
+  double risk_score = 2;
+  bool is_approved = 3;
+  double max_amount = 4;
+  string recommendation = 5;
+  repeated string risk_factors = 6;
+}
+
+// ========== 服务定义 ==========
+service LeaseService {
+  // 申请管理
+  rpc GetLeaseApplication(GetLeaseApplicationReq) returns (GetLeaseApplicationResp);
+  rpc ListLeaseApplications(ListLeaseApplicationsReq) returns (ListLeaseApplicationsResp);
+  rpc CreateLeaseApplication(CreateLeaseApplicationReq) returns (CreateLeaseApplicationResp);
+  rpc UpdateLeaseApplication(UpdateLeaseApplicationReq) returns (google.protobuf.Empty);
+  rpc SubmitLeaseApplication(SubmitLeaseApplicationReq) returns (google.protobuf.Empty);
+  rpc ApproveLeaseApplication(ApproveLeaseApplicationReq) returns (google.protobuf.Empty);
+  rpc CancelLeaseApplication(CancelLeaseApplicationReq) returns (google.protobuf.Empty);
+  
+  // 合同管理
+  rpc GetLeaseContract(GetLeaseContractReq) returns (GetLeaseContractResp);
+  rpc ListLeaseContracts(ListLeaseContractsReq) returns (ListLeaseContractsResp);
+  rpc CreateLeaseContract(CreateLeaseContractReq) returns (CreateLeaseContractResp);
+  rpc SignLeaseContract(SignLeaseContractReq) returns (google.protobuf.Empty);
+  rpc ActivateLeaseContract(ActivateLeaseContractReq) returns (google.protobuf.Empty);
+  rpc TerminateLeaseContract(TerminateLeaseContractReq) returns (google.protobuf.Empty);
+  
+  // 交付管理
+  rpc CreateDeliveryRecord(CreateDeliveryRecordReq) returns (CreateDeliveryRecordResp);
+  rpc UpdateDeliveryRecord(UpdateDeliveryRecordReq) returns (google.protobuf.Empty);
+  rpc ListDeliveryRecords(ListDeliveryRecordsReq) returns (ListDeliveryRecordsResp);
+  
+  // 租金管理
+  rpc CreateRentalPayment(CreateRentalPaymentReq) returns (CreateRentalPaymentResp);
+  rpc PayRental(PayRentalReq) returns (google.protobuf.Empty);
+  rpc ListRentalPayments(ListRentalPaymentsReq) returns (ListRentalPaymentsResp);
+  
+  // 统计与风控
+  rpc GetLeaseStatistics(GetLeaseStatisticsReq) returns (GetLeaseStatisticsResp);
+  rpc AssessLeaseRisk(AssessLeaseRiskReq) returns (AssessLeaseRiskResp);
+} 

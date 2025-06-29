@@ -1,0 +1,21 @@
+Name: oauser-api
+Host: 0.0.0.0
+Port: 10002
+
+# JWT 认证配置
+Auth:
+  AccessSecret: "huinong-auth-access-secret"
+  AccessExpire: 3600
+
+# OAUser RPC 客户端配置
+OaUserRpc:
+  Target: consul://consul.huinong.internal/oauserrpc.rpc
+
+# 日志配置
+Log:
+  ServiceName: oauser-api
+  Mode: file
+  Path: logs
+  Level: info
+  KeepDays: 7
+  Compress: true

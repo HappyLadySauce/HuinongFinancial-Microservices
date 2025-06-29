@@ -1,0 +1,216 @@
+syntax = "proto3";
+
+package loanproduct;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "./loanproduct";
+
+// === 服务定义 ===
+service LoanProductService {
+    // --- 产品查询 ---
+    rpc GetLoanProduct(GetLoanProductReq) returns (GetLoanProductResp);
+    rpc ListLoanProducts(ListLoanProductsReq) returns (ListLoanProductsResp);
+    
+    // --- 产品管理 (后台) ---
+    rpc CreateLoanProduct(CreateLoanProductReq) returns (LoanProductInfo);
+    rpc UpdateLoanProduct(UpdateLoanProductReq) returns (LoanProductInfo);
+    rpc DeleteLoanProduct(DeleteLoanProductReq) returns (google.protobuf.Empty);
+    rpc UpdateProductStatus(UpdateProductStatusReq) returns (google.protobuf.Empty);
+    
+    // --- 分类管理 (后台) ---
+    rpc ListCategories(ListCategoriesReq) returns (ListCategoriesResp);
+    rpc GetCategoryTree(GetCategoryTreeReq) returns (GetCategoryTreeResp);
+    rpc CreateCategory(CreateCategoryReq) returns (CategoryInfo);
+    rpc UpdateCategory(UpdateCategoryReq) returns (CategoryInfo);
+    rpc DeleteCategory(DeleteCategoryReq) returns (google.protobuf.Empty);
+    
+    // --- 利率与额度配置 (后台) ---
+    rpc GetInterestRates(GetConfigReq) returns (ListInterestRatesResp);
+    rpc CreateInterestRate(CreateInterestRateReq) returns (InterestRateInfo);
+    rpc UpdateInterestRate(UpdateInterestRateReq) returns (InterestRateInfo);
+    rpc DeleteInterestRate(DeleteConfigReq) returns (google.protobuf.Empty);
+    
+    rpc GetAmountLimits(GetConfigReq) returns (ListAmountLimitsResp);
+    rpc CreateAmountLimit(CreateAmountLimitReq) returns (AmountLimitInfo);
+    rpc UpdateAmountLimit(UpdateAmountLimitReq) returns (AmountLimitInfo);
+    rpc DeleteAmountLimit(DeleteConfigReq) returns (google.protobuf.Empty);
+}
+
+// === 基础数据结构 ===
+
+// 贷款产品信息
+message LoanProductInfo {
+    int64 id = 1;
+    string productCode = 2;
+    string name = 3;
+    string repaymentMethod = 4; // 'equal_installment', 'equal_principal'
+    string category = 5;
+    double maxAmount = 6;
+    double minAmount = 7;
+    int32 maxTerm = 8; // in months
+    int32 minTerm = 9;
+    double interestRate = 10; // annual rate
+    string description = 13;
+    repeated string requiredDocuments = 15;
+    int32 status = 20;  // 1:active 2:inactive
+    int64 createdAt = 22;
+    int64 updatedAt = 23;
+}
+
+// 产品分类信息
+message CategoryInfo {
+    int64 id = 1;
+    string code = 2;
+    string name = 3;
+    int64 parentId = 4;
+    repeated CategoryInfo children = 12;
+}
+
+// 利率配置信息
+message InterestRateInfo {
+    int64 id = 1;
+    int64 productId = 2;
+    int32 termMin = 4;
+    int32 termMax = 5;
+    double amountMin = 6;
+    double amountMax = 7;
+    double rate = 8;
+}
+
+// 额度配置信息
+message AmountLimitInfo {
+    int64 id = 1;
+    int64 productId = 2;
+    string customerType = 4;
+    string creditLevel = 5;
+    double maxAmount = 7;
+}
+
+// === 请求与响应 ===
+
+// --- 产品查询 ---
+message GetLoanProductReq {
+    int64 id = 1;
+}
+message GetLoanProductResp {
+    LoanProductInfo product = 1;
+    repeated InterestRateInfo interestRates = 2;
+    repeated AmountLimitInfo amountLimits = 3;
+}
+
+message ListLoanProductsReq {
+    int32 page = 1;
+    int32 size = 2;
+    string category = 3;
+    int32 status = 5;
+}
+message ListLoanProductsResp {
+    repeated LoanProductInfo list = 1;
+    int64 total = 2;
+}
+
+// --- 产品管理 ---
+message CreateLoanProductReq {
+    string name = 2;
+    string repaymentMethod = 4;
+    string category = 5;
+    double maxAmount = 6;
+    double minAmount = 7;
+    int32 maxTerm = 8;
+    int32 minTerm = 9;
+    double interestRate = 10;
+    string description = 12;
+    repeated string requiredDocuments = 13;
+}
+message UpdateLoanProductReq {
+    int64 id = 1;
+    string name = 2;
+    string repaymentMethod = 4;
+    string category = 5;
+    double maxAmount = 6;
+    double minAmount = 7;
+    int32 maxTerm = 8;
+    int32 minTerm = 9;
+    double interestRate = 10;
+    string description = 12;
+    repeated string requiredDocuments = 13;
+}
+message DeleteLoanProductReq {
+    int64 id = 1;
+}
+message UpdateProductStatusReq {
+    int64 id = 1;
+    int32 status = 2;
+}
+
+// --- 分类管理 ---
+message ListCategoriesReq {
+    string name = 1;
+}
+message ListCategoriesResp {
+    repeated CategoryInfo list = 1;
+}
+message GetCategoryTreeReq {}
+message GetCategoryTreeResp {
+    repeated CategoryInfo list = 1;
+}
+message CreateCategoryReq {
+    string name = 1;
+    int64 parentId = 2;
+}
+message UpdateCategoryReq {
+    int64 id = 1;
+    string name = 2;
+    int64 parentId = 3;
+}
+message DeleteCategoryReq {
+    int64 id = 1;
+}
+
+// --- 利率与额度配置 ---
+message GetConfigReq {
+    int64 productId = 1;
+}
+message DeleteConfigReq {
+    int64 id = 1;
+}
+
+message ListInterestRatesResp {
+    repeated InterestRateInfo list = 1;
+}
+message CreateInterestRateReq {
+    int64 productId = 1;
+    int32 termMin = 2;
+    int32 termMax = 3;
+    double amountMin = 4;
+    double amountMax = 5;
+    double rate = 6;
+}
+message UpdateInterestRateReq {
+    int64 id = 1;
+    int32 termMin = 2;
+    int32 termMax = 3;
+    double amountMin = 4;
+    double amountMax = 5;
+    double rate = 6;
+}
+
+message ListAmountLimitsResp {
+    repeated AmountLimitInfo list = 1;
+}
+message CreateAmountLimitReq {
+    int64 productId = 1;
+    string customerType = 2;
+    string creditLevel = 3;
+    double maxAmount = 4;
+}
+message UpdateAmountLimitReq {
+    int64 id = 1;
+    string customerType = 2;
+    string creditLevel = 3;
+    double maxAmount = 4;
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go

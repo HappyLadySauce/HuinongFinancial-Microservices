@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package appuser;
+
+// import "google/protobuf/empty.proto";
+
+option go_package = "./appuser";
+
+// C端用户基础信息
+message AppUserInfo {
+    int64 id = 1;
+    string account = 2; // 手机号
+    string name = 3;
+    string nickname = 4;
+    int32 age = 5;
+    int32 gender = 6;  // 0:未知 1:男 2:女
+    string occupation = 7;
+    string address = 8;
+    double income = 9;
+    int32 status = 10;  // 1:正常 2:冻结 3:禁用
+    int64 created_at = 11;
+    int64 updated_at = 12;
+}
+
+// === 用户认证相关 ===
+
+// 根据账号获取用户
+message GetUserByAccountReq {
+    string account = 1;
+}
+
+// 验证用户密码
+message VerifyUserPasswordReq {
+    string account = 1;
+    string password = 2;
+}
+
+// 验证密码后的响应
+message VerifyUserPasswordResp {
+    int64 user_id = 1;
+    int32 status = 2; // 1:正常 2:冻结 3:禁用
+}
+
+// 创建用户(注册)
+message CreateUserReq {
+    string account = 1;
+    string password = 2;
+    string name = 3;
+}
+
+// === 用户信息管理 ===
+
+// 获取用户基础信息
+message GetUserInfoReq {
+    int64 user_id = 1;
+}
+
+// 更新用户档案
+message UpdateUserProfileReq {
+    int64 user_id = 1;
+    string nickname = 2;
+    int32 age = 3;
+    int32 gender = 4;
+    string occupation = 5;
+    string address = 6;
+    double income = 7;
+}
+
+// 获取用户列表
+message GetUserListReq {
+    int32 page = 1;
+    int32 size = 2;
+    string keyword = 3;
+    int32 status = 4;
+}
+
+message GetUserListResp {
+    repeated AppUserInfo users = 1;
+    int64 total = 2;
+}
+
+// 更新用户状态
+message UpdateUserStatusReq {
+    int64 user_id = 1;
+    int32 status = 2;
+    string reason = 3;
+}
+
+// AppUser服务 - App用户管理服务
+// 职责：用户信息管理、认证验证
+// 数据库：appuser (MySQL)
+service AppUser {
+    // 用户认证相关
+    rpc GetUserByAccount(GetUserByAccountReq) returns (AppUserInfo);
+    rpc VerifyUserPassword(VerifyUserPasswordReq) returns (VerifyUserPasswordResp);
+    rpc CreateUser(CreateUserReq) returns (AppUserInfo);
+    
+    // 用户信息管理
+    rpc GetUserInfo(GetUserInfoReq) returns (AppUserInfo);
+    rpc UpdateUserProfile(UpdateUserProfileReq) returns (AppUserInfo);
+    rpc GetUserList(GetUserListReq) returns (GetUserListResp);
+    rpc UpdateUserStatus(UpdateUserStatusReq) returns (AppUserInfo);
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go

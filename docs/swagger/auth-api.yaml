@@ -1,0 +1,138 @@
+basePath: /
+consumes:
+- application/json
+info:
+  title: 统一认证中心API
+  version: v1.0.0
+paths:
+  /api/v1/auth/app/login:
+    post:
+      consumes:
+      - application/json
+      operationId: authAppLogin
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            account:
+              description: 手机号
+              type: string
+            password:
+              type: string
+          required:
+          - account
+          - password
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: AppLogin
+  /api/v1/auth/logout:
+    post:
+      operationId: authLogout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: Logout
+  /api/v1/auth/oa/login:
+    post:
+      consumes:
+      - application/json
+      operationId: authOALogin
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+            username:
+              type: string
+          required:
+          - username
+          - password
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: OALogin
+  /api/v1/auth/refresh:
+    post:
+      consumes:
+      - application/json
+      operationId: authRefreshToken
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            refreshToken:
+              type: string
+          required:
+          - refreshToken
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              code:
+                type: integer
+              data: {}
+              message:
+                type: string
+            type: object
+      schemes:
+      - https
+      summary: RefreshToken
+produces:
+- application/json
+schemes:
+- https
+swagger: "2.0"
+x-date: "2025-06-28 19:00:35"
+x-description: This is a goctl generated swagger file.
+x-github: https://github.com/zeromicro/go-zero
+x-go-zero-doc: https://go-zero.dev/
+x-goctl-version: 1.8.4

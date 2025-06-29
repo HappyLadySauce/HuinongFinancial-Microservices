@@ -1,0 +1,85 @@
+info (
+	title:   "后台管理API"
+	desc:    "提供后台用户的基本管理功能"
+	author:  "Huinong"
+	email:   "dev@huinong.com"
+	version: "v1.0.0"
+)
+
+// ========== 标准响应结构 ==========
+type (
+	// 通用响应
+	CommonResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	// 数据响应
+	DataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+	}
+	// 分页响应
+	PageResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+		Total   int64       `json:"total"`
+		Page    int64       `json:"page"`
+		Size    int64       `json:"size"`
+	}
+)
+
+// ========== 后台用户管理 ==========
+type (
+	// 获取用户列表请求
+	GetUserListReq {
+		Page    int    `form:"page,default=1"`
+		Size    int    `form:"size,default=10"`
+		Keyword string `form:"keyword,optional"`
+		Status  int    `form:"status,optional"`
+	}
+	// 创建用户请求
+	CreateUserReq {
+		Username string   `json:"username"`
+		Password string   `json:"password"`
+		Name     string   `json:"name"`
+		Email    string   `json:"email,optional"`
+		Mobile   string   `json:"mobile,optional"`
+		Roles    []string `json:"roles"`
+	}
+	// 更新用户请求
+	UpdateUserReq {
+		UserID int64    `path:"id"`
+		Name   string   `json:"name"`
+		Email  string   `json:"email,optional"`
+		Mobile string   `json:"mobile,optional"`
+		Status int      `json:"status"`
+		Roles  []string `json:"roles"`
+	}
+)
+
+// --- 后台管理 API (需要 JWT 和管理员权限) ---
+@server (
+	jwt:        Auth
+	middleware: AdminAuth
+	group:      admin
+	prefix:     /api/v1/oa/users
+)
+service oauser {
+	@handler GetUserList
+	get / (GetUserListReq) returns (PageResp)
+
+	@handler GetUserDetail
+	get /:username returns (DataResp)
+
+	@handler CreateUser
+	post / (CreateUserReq) returns (DataResp)
+
+	@handler UpdateUser
+	put /:id (UpdateUserReq) returns (DataResp)
+
+	@handler DeleteUser
+	delete /:username returns (CommonResp)
+}
+

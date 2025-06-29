@@ -1,0 +1,173 @@
+syntax = "v1"
+
+info (
+	title:   "贷款业务API"
+	desc:    "提供贷款申请、审批、还款等相关功能"
+	author:  "Huinong"
+	email:   "dev@huinong.com"
+	version: "v1.0.0"
+)
+
+// ========== 标准响应结构 ==========
+type (
+	// 通用响应，用于不需要返回数据的场景
+	CommonResp {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	}
+	// 数据响应，用于返回单个对象
+	DataResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+	}
+	// 分页响应，用于返回列表数据
+	PageResp {
+		Code    int         `json:"code"`
+		Message string      `json:"message"`
+		Data    interface{} `json:"data,omitempty"`
+		Total   int64       `json:"total"`
+		Page    int64       `json:"page"`
+		Size    int64       `json:"size"`
+	}
+)
+
+// ========== 贷款申请请求 ==========
+type (
+	// 创建贷款申请
+	CreateLoanApplicationReq {
+		LoanProductId int64   `json:"loanProductId"` // 贷款产品ID
+		Amount        float64 `json:"amount"` // 申请金额
+		LoanTerm      int32   `json:"loanTerm"` // 贷款期限(月)
+		Purpose       string  `json:"purpose"` // 贷款用途
+	}
+	// 更新贷款申请
+	UpdateLoanApplicationReq {
+		ApplicationId string  `path:"id"` // 申请ID
+		Amount        float64 `json:"amount"` // 申请金额
+		LoanTerm      int32   `json:"loanTerm"` // 贷款期限(月)
+		Purpose       string  `json:"purpose"` // 贷款用途
+	}
+	// 提交贷款申请
+	SubmitLoanApplicationReq {
+		ApplicationId string `path:"id"` // 申请ID
+	}
+	// 撤销贷款申请
+	CancelLoanApplicationReq {
+		ApplicationId string `path:"id"` // 申请ID
+	}
+)
+
+// ========== 还款计划与还款请求 ==========
+type (
+	// 创建还款计划
+	CreateRepaymentPlanReq {
+		LoanId int64 `json:"loanId"` // 贷款ID
+	}
+	// 偿还贷款
+	RepayLoanReq {
+		RepaymentId int64   `json:"repaymentId"` // 还款ID
+		Amount      float64 `json:"amount"` // 还款金额
+	}
+)
+
+// ========== 管理员操作请求 ==========
+type (
+	// 审批贷款申请
+	ApproveLoanApplicationReq {
+		ApplicationId string `path:"id"` // 申请ID
+		Status        string `json:"status"` // 审批状态: approved, rejected
+		Comment       string `json:"comment"` // 审批意见
+	}
+	// 发放贷款
+	DisburseLoanReq {
+		LoanId int64 `path:"id"` // 贷款ID
+	}
+)
+
+// ========== 列表查询请求 ==========
+type (
+	// 查询贷款申请列表
+	ListLoanApplicationsReq {
+		Page   int64  `form:"page,default=1"`
+		Size   int64  `form:"size,default=10"`
+		UserId int64  `form:"userId,optional"` // 用户ID
+		Status string `form:"status,optional"` // 状态
+	}
+	// 查询还款计划列表
+	ListRepaymentPlansReq {
+		Page   int64 `form:"page,default=1"`
+		Size   int64 `form:"size,default=10"`
+		LoanId int64 `form:"loanId,optional"` // 贷款ID
+	}
+	// 查询还款记录列表
+	ListRepaymentsReq {
+		Page   int64 `form:"page,default=1"`
+		Size   int64 `form:"size,default=10"`
+		LoanId int64 `form:"loanId,optional"` // 贷款ID
+	}
+)
+
+@server (
+	jwt:    Auth
+	group:  loan
+	prefix: /api/v1/loan
+)
+service loan {
+	// --- 贷款申请 ---
+	@handler CreateLoanApplication
+	post /applications (CreateLoanApplicationReq) returns (DataResp)
+
+	@handler GetLoanApplication
+	get /applications/:id returns (DataResp)
+
+	@handler UpdateLoanApplication
+	put /applications/:id (UpdateLoanApplicationReq) returns (CommonResp)
+
+	@handler SubmitLoanApplication
+	post /applications/:id/submit (SubmitLoanApplicationReq) returns (CommonResp)
+
+	@handler CancelLoanApplication
+	post /applications/:id/cancel (CancelLoanApplicationReq) returns (CommonResp)
+
+	@handler ListLoanApplications
+	get /applications (ListLoanApplicationsReq) returns (PageResp)
+
+	// --- 还款 ---
+	@handler GetRepaymentPlan
+	get /repayment-plans/:loanId returns (DataResp)
+
+	@handler RepayLoan
+	post /repayments (RepayLoanReq) returns (CommonResp)
+
+	@handler ListRepayments
+	get /repayments (ListRepaymentsReq) returns (PageResp)
+}
+
+@server (
+	jwt:        Auth
+	middleware: AdminAuth
+	group:      loanAdmin
+	prefix:     /api/v1/admin/loan
+)
+service loan {
+	// --- 管理员贷款审批 ---
+	@handler AdminGetLoanApplication
+	get /applications/:id returns (DataResp)
+
+	@handler AdminListLoanApplications
+	get /applications (ListLoanApplicationsReq) returns (PageResp)
+
+	@handler ApproveLoanApplication
+	post /applications/:id/approve (ApproveLoanApplicationReq) returns (CommonResp)
+
+	// --- 管理员贷款发放 ---
+	@handler DisburseLoan
+	post /disbursements/:id (DisburseLoanReq) returns (CommonResp)
+
+	// --- 管理员还款计划 ---
+	@handler AdminGetRepaymentPlan
+	get /repayment-plans/:loanId returns (DataResp)
+}
+
+// goctl api go -api *.api -dir ../  -style=goZero

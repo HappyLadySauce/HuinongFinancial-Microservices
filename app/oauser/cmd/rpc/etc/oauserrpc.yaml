@@ -1,0 +1,27 @@
+Name: oauserrpc.rpc
+ListenOn: 0.0.0.0:20002
+
+# Consul 服务注册配置
+Consul:
+  Host: consul.huinong.internal
+  Key: oauserrpc.rpc
+  Token: "331c00f9-bd87-2383-4394-548a0e66dea9"
+
+# 数据库配置
+MySQL:
+  DataSource: oauser:oauser@tcp(10.10.10.6:3306)/oauser?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+# Redis 缓存配置
+CacheConf:
+  - Host: 10.10.10.6:6379
+    Type: node
+    Pass: "ChinaSkills@"
+
+# 日志配置
+Log:
+  ServiceName: oauserrpc
+  Mode: file
+  Path: logs
+  Level: info
+  KeepDays: 7
+  Compress: true

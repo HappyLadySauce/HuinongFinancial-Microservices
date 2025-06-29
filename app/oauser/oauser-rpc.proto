@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package oauser;
+
+option go_package = "./oauser";
+
+// ======== 基础数据模型 ========
+
+// 后台用户信息
+message OAUserInfo {
+    int64 id = 1;
+    string username = 2;
+    string name = 3;
+    string email = 4;
+    string mobile = 5;
+    int32 status = 6; // 1:正常 2:禁用
+    int64 created_at = 7;
+    repeated string roles = 8; // 用户拥有的角色列表(简化为字符串数组)
+}
+
+// ======== RPC 请求/响应 ========
+
+// --- 认证相关 ---
+
+message GetOAUserByUsernameReq {
+    string username = 1;
+}
+
+message VerifyOAPasswordReq {
+    string username = 1;
+    string password = 2;
+}
+
+message VerifyOAPasswordResp {
+    OAUserInfo userInfo = 1;
+}
+
+// --- 用户管理 ---
+
+message GetOAUserListReq {
+    int32 page = 1;
+    int32 size = 2;
+    string keyword = 3; // 按用户名或姓名搜索
+    int32 status = 4; // 按状态筛选
+}
+
+message GetOAUserListResp {
+    repeated OAUserInfo users = 1;
+    int64 total = 2;
+}
+
+message CreateOAUserReq {
+    string username = 1;
+    string password = 2;
+    string name = 3;
+    string email = 4;
+    string mobile = 5;
+    repeated string roles = 6; // 简化为字符串数组
+}
+
+message UpdateOAUserReq {
+    int64 user_id = 1;
+    string name = 2;
+    string email = 3;
+    string mobile = 4;
+    int32 status = 5;
+    repeated string roles = 6;
+}
+
+// --------------------
+// OAUser RPC 服务定义
+// --------------------
+service OAUser {
+    // --- 认证(内部调用) ---
+    rpc GetOAUserByUsername(GetOAUserByUsernameReq) returns (OAUserInfo);
+    rpc VerifyOAPassword(VerifyOAPasswordReq) returns (VerifyOAPasswordResp);
+
+    // --- 用户管理 ---
+    rpc GetOAUserList(GetOAUserListReq) returns (GetOAUserListResp);
+    rpc GetOAUserDetail(GetOAUserByUsernameReq) returns (OAUserInfo);
+    rpc CreateOAUser(CreateOAUserReq) returns (OAUserInfo);
+    rpc UpdateOAUser(UpdateOAUserReq) returns (OAUserInfo);
+    rpc DeleteOAUser(GetOAUserByUsernameReq) returns (OAUserInfo);
+}

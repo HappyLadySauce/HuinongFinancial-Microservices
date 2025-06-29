@@ -1,0 +1,282 @@
+syntax = "proto3";
+
+package loan;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "./loan";
+
+// === 服务定义 ===
+service LoanService {
+    // --- 贷款申请 ---
+    rpc CreateLoanApplication(CreateLoanApplicationReq) returns (LoanApplicationInfo);
+    rpc GetLoanApplication(GetLoanApplicationReq) returns (LoanApplicationInfo);
+    rpc ListLoanApplications(ListLoanApplicationsReq) returns (ListLoanApplicationsResp);
+    rpc UpdateLoanApplication(UpdateLoanApplicationReq) returns (LoanApplicationInfo);
+    rpc SubmitLoanApplication(SubmitLoanApplicationReq) returns (google.protobuf.Empty);
+    rpc CancelLoanApplication(CancelLoanApplicationReq) returns (google.protobuf.Empty);
+    rpc GetApplicationDetail(GetApplicationDetailReq) returns (GetApplicationDetailResp);
+    
+    // --- 贷款审批 ---
+    rpc ApproveLoanApplication(ApproveLoanApplicationReq) returns (google.protobuf.Empty);
+    rpc ListApprovalHistory(ListApprovalHistoryReq) returns (ListApprovalHistoryResp);
+    
+    // --- 合同管理 ---
+    rpc CreateLoanContract(CreateLoanContractReq) returns (LoanContractInfo);
+    rpc GetLoanContract(GetLoanContractReq) returns (LoanContractInfo);
+    rpc ListLoanContracts(ListLoanContractsReq) returns (ListLoanContractsResp);
+    rpc UpdateContractStatus(UpdateContractStatusReq) returns (google.protobuf.Empty);
+    rpc GetContractDetail(GetContractDetailReq) returns (GetContractDetailResp);
+    
+    // --- 还款管理 ---
+    rpc GetRepaymentPlan(GetRepaymentPlanReq) returns (GetRepaymentPlanResp);
+    rpc MakeRepayment(MakeRepaymentReq) returns (RepaymentRecordInfo);
+    rpc ListRepayments(ListRepaymentsReq) returns (ListRepaymentsResp);
+    
+    // --- 文档管理 ---
+    rpc UploadLoanDocument(UploadLoanDocumentReq) returns (LoanDocumentInfo);
+    rpc ListLoanDocuments(ListLoanDocumentsReq) returns (ListLoanDocumentsResp);
+    rpc ReviewLoanDocument(ReviewLoanDocumentReq) returns (google.protobuf.Empty);
+    rpc DeleteLoanDocument(DeleteLoanDocumentReq) returns (google.protobuf.Empty);
+    
+    // --- 统计与查询 ---
+    rpc GetLoanStatistics(GetLoanStatisticsReq) returns (GetLoanStatisticsResp);
+}
+
+// === 基础数据结构 ===
+
+// 贷款申请信息
+message LoanApplicationInfo {
+    int64 id = 1;
+    string applicationId = 2;
+    int64 userId = 3;
+    int64 loanProductId = 5;
+    double amount = 8;
+    int32 loanTerm = 9; // in months
+    string purpose = 10;
+    string status = 12;  // pending, submitted, approved, rejected, cancelled
+    int64 createdAt = 17;
+    int64 updatedAt = 18;
+}
+
+// 贷款审批记录信息
+message LoanApprovalInfo {
+    int64 id = 1;
+    int64 applicationId = 2;
+    int64 auditorId = 3;
+    string action = 5;  // approve, reject
+    string comment = 6;
+    int64 createdAt = 10;
+}
+
+// 贷款合同信息
+message LoanContractInfo {
+    int64 id = 1;
+    int64 applicationId = 2;
+    string contractNo = 3;
+    int64 userId = 4;
+    double amount = 5;
+    int32 term = 6;
+    double interestRate = 7;
+    string status = 11;  // active, completed, overdue, cancelled
+    int64 createdAt = 12;
+    int64 updatedAt = 13;
+}
+
+// 还款计划信息
+message RepaymentPlanInfo {
+    int64 id = 1;
+    int64 contractId = 2;
+    int32 period = 3;
+    string dueDate = 4;
+    double principal = 5;
+    double interest = 6;
+    double totalAmount = 7;
+    string status = 8;  // pending, paid, overdue
+    int64 paidAt = 9;
+}
+
+// 还款记录信息
+message RepaymentRecordInfo {
+    int64 id = 1;
+    int64 contractId = 2;
+    int64 planId = 3;
+    int32 period = 4;
+    double amount = 5;
+    string paymentMethod = 9;
+    int64 paidAt = 12;
+}
+
+// 贷款文档信息
+message LoanDocumentInfo {
+    int64 id = 1;
+    int64 applicationId = 2;
+    string documentType = 3;  // id_card, income_proof, etc.
+    string name = 4;
+    string url = 5;
+    string status = 7;  // pending, approved, rejected
+}
+
+// === 请求与响应 ===
+
+// --- 贷款申请 ---
+message CreateLoanApplicationReq {
+    int64 userId = 1;
+    int64 loanProductId = 2;
+    double amount = 3;
+    int32 loanTerm = 4;
+    string purpose = 5;
+}
+
+message GetLoanApplicationReq {
+    string applicationId = 1;
+    }
+
+message ListLoanApplicationsReq {
+    int32 page = 1;
+    int32 size = 2;
+    int64 userId = 3;
+    string status = 4;
+}
+message ListLoanApplicationsResp {
+    repeated LoanApplicationInfo list = 1;
+    int64 total = 2;
+}
+
+message UpdateLoanApplicationReq {
+    string applicationId = 1;
+    double amount = 2;
+    int32 loanTerm = 3;
+    string purpose = 4;
+}
+
+message SubmitLoanApplicationReq {
+    string applicationId = 1;
+}
+
+message CancelLoanApplicationReq {
+    string applicationId = 1;
+    string reason = 2;
+}
+
+message GetApplicationDetailReq {
+    string applicationId = 1;
+}
+message GetApplicationDetailResp {
+    LoanApplicationInfo application = 1;
+    repeated LoanApprovalInfo approvals = 2;
+    repeated LoanDocumentInfo documents = 3;
+    LoanContractInfo contract = 4;
+}
+
+// --- 贷款审批 ---
+message ApproveLoanApplicationReq {
+    string applicationId = 1;
+    string action = 2; // "approve" or "reject"
+    string comment = 3;
+}
+
+message ListApprovalHistoryReq {
+    string applicationId = 1;
+}
+message ListApprovalHistoryResp {
+    repeated LoanApprovalInfo list = 1;
+}
+
+// --- 合同管理 ---
+message CreateLoanContractReq {
+    int64 applicationId = 1;
+}
+
+message GetLoanContractReq {
+    string contractNo = 1;
+    }
+
+message ListLoanContractsReq {
+    int32 page = 1;
+    int32 size = 2;
+    int64 userId = 3;
+    string status = 4;
+}
+message ListLoanContractsResp {
+    repeated LoanContractInfo list = 1;
+    int64 total = 2;
+}
+
+message UpdateContractStatusReq {
+    string contractNo = 1;
+    string status = 2;
+}
+
+message GetContractDetailReq {
+    string contractNo = 1;
+}
+message GetContractDetailResp {
+    LoanContractInfo contract = 1;
+    repeated RepaymentPlanInfo plan = 2;
+}
+
+// --- 还款管理 ---
+message GetRepaymentPlanReq {
+    int64 loanId = 1;
+}
+message GetRepaymentPlanResp {
+    repeated RepaymentPlanInfo list = 1;
+}
+
+message MakeRepaymentReq {
+    int64 planId = 1;
+    double amount = 2;
+    string paymentMethod = 3;
+}
+
+message ListRepaymentsReq {
+    int32 page = 1;
+    int32 size = 2;
+    int64 loanId = 3;
+}
+message ListRepaymentsResp {
+    repeated RepaymentRecordInfo list = 1;
+    int64 total = 2;
+}
+
+// --- 文档管理 ---
+message UploadLoanDocumentReq {
+    int64 applicationId = 1;
+    string documentType = 2;
+    string name = 3;
+    string url = 4;
+}
+
+message ListLoanDocumentsReq {
+    int64 applicationId = 1;
+}
+message ListLoanDocumentsResp {
+    repeated LoanDocumentInfo list = 1;
+}
+
+message ReviewLoanDocumentReq {
+    int64 documentId = 1;
+    string status = 2; // "approved" or "rejected"
+    string remark = 3;
+}
+
+message DeleteLoanDocumentReq {
+    int64 documentId = 1;
+}
+
+// --- 统计 ---
+message GetLoanStatisticsReq {
+    int64 userId = 1; // 0 for all users
+}
+message GetLoanStatisticsResp {
+    int64 totalApplications = 1;
+    int64 pendingApplications = 2;
+    int64 approvedApplications = 3;
+    int64 rejectedApplications = 4;
+    double totalLoanAmount = 5;
+    int64 activeContracts = 6;
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go

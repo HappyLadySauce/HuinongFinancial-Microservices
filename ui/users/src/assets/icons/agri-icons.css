@@ -1,0 +1,53 @@
+.agri-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 养老保障图标 - 农田波浪图案 */
+.agri-icon-pension {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M10,30 C25,10 40,30 55,20 C70,10 85,25 95,15 L95,70 C80,60 65,80 50,60 C35,80 20,60 5,70 L5,40 C5,40 10,30 10,30 Z'/%3E%3C/svg%3E");
+}
+
+/* 保险产品图标 - 麦穗 */
+.agri-icon-insurance {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M50,10 L50,90 M40,30 L60,30 M35,40 L65,40 M30,50 L70,50 M35,60 L65,60 M40,70 L60,70'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M50,10 L50,90 M40,30 L60,30 M35,40 L65,40 M30,50 L70,50 M35,60 L65,60 M40,70 L60,70'/%3E%3C/svg%3E");
+}
+
+/* 银行产品图标 - 树形图案 */
+.agri-icon-bank {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M50,10 L50,50 M30,30 C30,30 50,10 50,10 C50,10 70,30 70,30 M20,50 C20,50 50,20 50,20 C50,20 80,50 80,50 M25,75 C25,75 50,30 50,30 C50,30 75,75 75,75 M10,90 L90,90'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='4' d='M50,10 L50,50 M30,30 C30,30 50,10 50,10 C50,10 70,30 70,30 M20,50 C20,50 50,20 50,20 C50,20 80,50 80,50 M25,75 C25,75 50,30 50,30 C50,30 75,75 75,75 M10,90 L90,90'/%3E%3C/svg%3E");
+}
+
+/* 券商产品图标 - 向日葵 */
+.agri-icon-securities {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%234CAF50' cx='50' cy='50' r='20'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M50,20 L50,10 M65,25 L75,15 M75,40 L85,40 M65,55 L75,65 M50,60 L50,70 M35,55 L25,65 M25,40 L15,40 M35,25 L25,15'/%3E%3C/svg%3E");
+}
+
+/* 惠农小金图标 - 农田和麦穗 */
+.agri-icon-xiaojin {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M20,70 C30,60 40,80 60,60 C80,40 90,60 95,50 L95,85 L5,85 L5,70 C5,70 10,80 20,70 Z'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M50,10 L50,50 M40,20 L60,20 M35,30 L65,30 M40,40 L60,40'/%3E%3C/svg%3E");
+}
+
+/* 存工资图标 - 农田和房屋 */
+.agri-icon-salary {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M10,60 C20,50 30,70 45,55 C60,40 80,60 90,50 L90,85 L10,85 L10,60 Z'/%3E%3Cpath fill='%234CAF50' d='M35,20 L65,20 L65,45 L35,45 Z M30,20 L70,20 L50,5 Z'/%3E%3C/svg%3E");
+}
+
+/* 定期精选图标 - 麦穗圆圈 */
+.agri-icon-fixed {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='none' stroke='%234CAF50' stroke-width='5' cx='50' cy='50' r='40'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M50,20 L50,80 M30,35 L70,35 M25,50 L75,50 M30,65 L70,65'/%3E%3C/svg%3E");
+}
+
+/* 惠农专区图标 - 农作物与农田 */
+.agri-icon-zone {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M10,65 C25,50 40,70 60,55 C80,40 90,50 90,50 L90,90 L10,90 L10,65 Z'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M30,10 C30,40 70,40 70,10 M40,25 C40,55 60,55 60,25'/%3E%3C/svg%3E");
+}
+
+/* 指数低谷图标 - 丰收图案 */
+.agri-icon-chart {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M10,70 L30,40 L50,60 L70,30 L90,50'/%3E%3Cpath fill='none' stroke='%234CAF50' stroke-width='3' d='M10,50 C20,40 30,60 40,45 C50,30 60,50 70,35 C80,20 90,40 90,30'/%3E%3C/svg%3E");
+} 

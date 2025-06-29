@@ -1,0 +1,48 @@
+.machinery-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* 收割机图标 */
+.machinery-icon-harvester {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M85,70H70V40H55V30H25V70H10c-2.8,0-5,2.2-5,5s2.2,5,5,5h75c2.8,0,5-2.2,5-5S87.8,70,85,70z M20,65V35h30v30H20z M60,65V45h10v20H60z'/%3E%3Ccircle fill='%234CAF50' cx='25' cy='75' r='5'/%3E%3Ccircle fill='%234CAF50' cx='75' cy='75' r='5'/%3E%3C/svg%3E");
+}
+
+/* 拖拉机图标 */
+.machinery-icon-tractor {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M80,55H65l-5-20H30v20h-5c-2.8,0-5,2.2-5,5s2.2,5,5,5h10c0,5.5,4.5,10,10,10s10-4.5,10-10h15c0,5.5,4.5,10,10,10s10-4.5,10-10h5c2.8,0,5-2.2,5-5S82.8,55,80,55z M40,70c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S42.8,70,40,70z M75,70c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S77.8,70,75,70z M60,45H37.5l2.5,10h20V45z'/%3E%3C/svg%3E");
+}
+
+/* 播种机图标 */
+.machinery-icon-seeder {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M85,60H15c-2.8,0-5,2.2-5,5s2.2,5,5,5h5c0,5.5,4.5,10,10,10s10-4.5,10-10h20c0,5.5,4.5,10,10,10s10-4.5,10-10h5c2.8,0,5-2.2,5-5S87.8,60,85,60z M30,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S32.8,75,30,75z M70,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S72.8,75,70,75z'/%3E%3Cpath fill='%234CAF50' d='M85,55V35H65v-5c0-2.8-2.2-5-5-5H40c-2.8,0-5,2.2-5,5v5H15v20H85z M40,35v-5h20v5H40z M25,45h50v5H25V45z'/%3E%3C/svg%3E");
+}
+
+/* 插秧机图标 */
+.machinery-icon-transplanter {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M75,60H25c-2.8,0-5,2.2-5,5s2.2,5,5,5h10c0,5.5,4.5,10,10,10s10-4.5,10-10h5c0,5.5,4.5,10,10,10s10-4.5,10-10h5c2.8,0,5-2.2,5-5S77.8,60,75,60z M45,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S47.8,75,45,75z M70,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S72.8,75,70,75z'/%3E%3Cpath fill='%234CAF50' d='M35,55h30v-5H35V55z M40,25c0-2.8,2.2-5,5-5s5,2.2,5,5v15h5V25c0-5.5-4.5-10-10-10s-10,4.5-10,10v15h5V25z M60,30c0-2.8,2.2-5,5-5s5,2.2,5,5v10h5V30c0-5.5-4.5-10-10-10s-10,4.5-10,10v10h5V30z'/%3E%3C/svg%3E");
+}
+
+/* 旋耕机图标 */
+.machinery-icon-rotary-tiller {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M85,50H15c-2.8,0-5,2.2-5,5v10c0,2.8,2.2,5,5,5h5c0,5.5,4.5,10,10,10s10-4.5,10-10h20c0,5.5,4.5,10,10,10s10-4.5,10-10h5c2.8,0,5-2.2,5-5V55C90,52.2,87.8,50,85,50z M30,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S32.8,75,30,75z M70,75c-2.8,0-5-2.2-5-5s2.2-5,5-5s5,2.2,5,5S72.8,75,70,75z M85,60H65v-5h20V60z M55,60H45v-5h10V60z M35,60H15v-5h20V60z'/%3E%3Cpath fill='%234CAF50' d='M70,45c5.5,0,10-4.5,10-10s-4.5-10-10-10H30c-5.5,0-10,4.5-10,10s4.5,10,10,10H70z M30,35c0-2.8,2.2-5,5-5h30c2.8,0,5,2.2,5,5s-2.2,5-5,5H35C32.2,40,30,37.8,30,35z'/%3E%3C/svg%3E");
+}
+
+/* 取机地点图标 */
+.machinery-icon-pickup {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%234CAF50' d='M50,10c-16.6,0-30,13.4-30,30c0,16.4,29.1,48.4,30,49.4c0.9-1,30-33,30-49.4C80,23.4,66.6,10,50,10z M50,50c-5.5,0-10-4.5-10-10s4.5-10,10-10s10,4.5,10,10S55.5,50,50,50z'/%3E%3C/svg%3E");
+}
+
+/* 归还地点图标 */
+.machinery-icon-return {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23FF9800' d='M50,10c-16.6,0-30,13.4-30,30c0,16.4,29.1,48.4,30,49.4c0.9-1,30-33,30-49.4C80,23.4,66.6,10,50,10z M50,50c-5.5,0-10-4.5-10-10s4.5-10,10-10s10,4.5,10,10S55.5,50,50,50z'/%3E%3C/svg%3E");
+}
+
+/* 归还时间图标 */
+.machinery-icon-time {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle fill='%233F51B5' cx='50' cy='50' r='40'/%3E%3Ccircle fill='white' cx='50' cy='50' r='36'/%3E%3Cpath fill='%233F51B5' d='M50,20v30l20,10l-4-7L50,48V20z'/%3E%3C/svg%3E");
+} 
