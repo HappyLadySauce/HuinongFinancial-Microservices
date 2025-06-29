@@ -4,20 +4,20 @@ package appuser;
 
 option go_package = "./appuser";
 
-// 服务架构：
+// 服务架构:
 // 用户 -> 前端 -> nginx网关 -> appuser-api -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
 //                                                        -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
 
-// consul 注册地址：consul.huinong.internal
-// rpc 端口：20001
-// rpc 服务名：appuser.rpc
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20001
+// rpc 服务名:appuser.rpc
 
-// 数据库：appuser (MySQL)
-// 缓存：redis 缓存用户信息
+// 数据库:appuser (MySQL)
+// 缓存:redis 缓存用户信息
 
-// 服务职责：
-// 1. 用户信息管理：用户信息查询、用户信息修改、用户信息删除
-// 2. 用户认证管理：用户登录管理、用户注册管理、用户注销管理、用户密码修改
+// 服务职责:
+// 1. 用户信息管理:用户信息查询、用户信息修改、用户信息删除
+// 2. 用户认证管理:用户登录管理、用户注册管理、用户注销管理、用户密码修改
 
 // -- ----------------------------
 // App用户表
@@ -53,7 +53,7 @@ message UserInfo {
     int32 gender = 6;  // 0:未知 1:男 2:女
     string occupation = 7;  // 职业
     string address = 8;  // 地址
-    double income = 9;  // 收入 单位：元
+    double income = 9;  // 收入 单位:元
     int32 status = 10;  // 1:正常 2:冻结 3:禁用
     int64 created_at = 11;  // 创建时间
     int64 updated_at = 12;  // 更新时间

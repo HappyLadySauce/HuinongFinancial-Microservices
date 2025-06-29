@@ -4,20 +4,20 @@ package oauser;
 
 option go_package = "./oauser";
 
-// 服务架构：
+// 服务架构:
 // 用户 -> 前端 -> nginx网关 -> oauser-api -> oauser.rpc -> redis 缓存用户信息 -> 数据库 oauser (MySQL)
 //                                                      -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
 
-// consul 注册地址：consul.huinong.internal
-// rpc 端口：20002
-// rpc 服务名：oauser.rpc
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20002
+// rpc 服务名:oauser.rpc
 
-// 数据库：oauser (MySQL)
-// 缓存：redis 缓存用户信息
+// 数据库:oauser (MySQL)
+// 缓存:redis 缓存用户信息
 
-// 服务职责：
-// 1. 用户信息管理：用户信息查询、用户信息修改、用户注销
-// 2. 用户认证管理：用户登录管理、用户注册管理、用户注销管理、用户密码修改
+// 服务职责:
+// 1. 用户信息管理:用户信息查询、用户信息修改、用户注销
+// 2. 用户认证管理:用户登录管理、用户注册管理、用户注销管理、用户密码修改
 
 // -- ----------------------------
 // 后台用户表
