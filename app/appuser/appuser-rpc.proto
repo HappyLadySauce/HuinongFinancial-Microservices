@@ -2,105 +2,163 @@ syntax = "proto3";
 
 package appuser;
 
-// import "google/protobuf/empty.proto";
-
 option go_package = "./appuser";
 
-// C端用户基础信息
-message AppUserInfo {
-    int64 id = 1;
-    string account = 2; // 手机号
-    string name = 3;
-    string nickname = 4;
-    int32 age = 5;
-    int32 gender = 6;  // 0:未知 1:男 2:女
-    string occupation = 7;
-    string address = 8;
-    double income = 9;
-    int32 status = 10;  // 1:正常 2:冻结 3:禁用
-    int64 created_at = 11;
-    int64 updated_at = 12;
-}
+// consul 注册地址：consul.huinong.internal
+// rpc 端口：20001
+// rpc 服务名：appuser.rpc
 
-// === 用户认证相关 ===
-
-// 根据账号获取用户
-message GetUserByAccountReq {
-    string account = 1;
-}
-
-// 验证用户密码
-message VerifyUserPasswordReq {
-    string account = 1;
-    string password = 2;
-}
-
-// 验证密码后的响应
-message VerifyUserPasswordResp {
-    int64 user_id = 1;
-    int32 status = 2; // 1:正常 2:冻结 3:禁用
-}
-
-// 创建用户(注册)
-message CreateUserReq {
-    string account = 1;
-    string password = 2;
-    string name = 3;
-}
-
-// === 用户信息管理 ===
-
-// 获取用户基础信息
-message GetUserInfoReq {
-    int64 user_id = 1;
-}
-
-// 更新用户档案
-message UpdateUserProfileReq {
-    int64 user_id = 1;
-    string nickname = 2;
-    int32 age = 3;
-    int32 gender = 4;
-    string occupation = 5;
-    string address = 6;
-    double income = 7;
-}
-
-// 获取用户列表
-message GetUserListReq {
-    int32 page = 1;
-    int32 size = 2;
-    string keyword = 3;
-    int32 status = 4;
-}
-
-message GetUserListResp {
-    repeated AppUserInfo users = 1;
-    int64 total = 2;
-}
-
-// 更新用户状态
-message UpdateUserStatusReq {
-    int64 user_id = 1;
-    int32 status = 2;
-    string reason = 3;
-}
-
-// AppUser服务 - App用户管理服务
-// 职责：用户信息管理、认证验证
 // 数据库：appuser (MySQL)
-service AppUser {
-    // 用户认证相关
-    rpc GetUserByAccount(GetUserByAccountReq) returns (AppUserInfo);
-    rpc VerifyUserPassword(VerifyUserPasswordReq) returns (VerifyUserPasswordResp);
-    rpc CreateUser(CreateUserReq) returns (AppUserInfo);
-    
-    // 用户信息管理
-    rpc GetUserInfo(GetUserInfoReq) returns (AppUserInfo);
-    rpc UpdateUserProfile(UpdateUserProfileReq) returns (AppUserInfo);
-    rpc GetUserList(GetUserListReq) returns (GetUserListResp);
-    rpc UpdateUserStatus(UpdateUserStatusReq) returns (AppUserInfo);
+// 缓存：redis 缓存用户信息
+
+// 服务职责：
+// 1. 用户信息管理：用户信息查询、用户信息修改、用户信息删除
+// 2. 用户认证管理：用户登录管理、用户注册管理、用户注销管理、用户密码修改
+
+// -- ----------------------------
+// App用户表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `app_users`;
+// CREATE TABLE `app_users` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+//   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+//   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码哈希',
+//   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户姓名',
+//   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '昵称',
+//   `age` tinyint UNSIGNED DEFAULT 0 COMMENT '年龄',
+//   `gender` tinyint UNSIGNED DEFAULT 0 COMMENT '性别 0:未知 1:男 2:女',
+//   `occupation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '职业',
+//   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系地址',
+//   `income` decimal(10,2) DEFAULT 0.00 COMMENT '月收入',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:正常 2:冻结 3:禁用',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_phone` (`phone`),
+//   KEY `idx_status` (`status`),
+//   KEY `idx_created_at` (`created_at`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
+
+// C端用户基础信息
+message UserInfo {
+    int64 id = 1;  // 用户ID
+    string phone = 2; // 手机号
+    string name = 3;  // 姓名
+    string nickname = 4;  // 昵称
+    int32 age = 5;  // 年龄
+    int32 gender = 6;  // 0:未知 1:男 2:女
+    string occupation = 7;  // 职业
+    string address = 8;  // 地址
+    double income = 9;  // 收入 单位：元
+    int32 status = 10;  // 1:正常 2:冻结 3:禁用
+    int64 created_at = 11;  // 创建时间
+    int64 updated_at = 12;  // 更新时间
 }
 
-// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
-// sed -i "" 's/,omitempty//g' *.pb.go
+// 用户信息管理
+service AppUserService {
+    rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
+    rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
+    rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
+}
+
+// 用户认证管理
+service AppUserAuthService {
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc Register(RegisterReq) returns (RegisterResp);
+    rpc Logout(LogoutReq) returns (LogoutResp);
+    rpc ChangePassword(ChangePasswordReq) returns (ChangePasswordResp);
+}
+
+
+// 获取用户信息
+message GetUserInfoReq {
+    string phone = 1;
+}
+
+message GetUserInfoResp {
+    int32 code = 1;
+    string message = 2;
+    UserInfo user_info = 3;
+}
+// 获取用户信息
+
+
+// 更新用户信息
+message UpdateUserInfoReq {
+    UserInfo user_info = 1;
+}
+
+message UpdateUserInfoResp {
+    int32 code = 1;
+    string message = 2;
+    UserInfo user_info = 3;
+}
+// 更新用户信息
+
+
+
+// 删除用户
+message DeleteUserReq {
+    string phone = 1;
+}
+
+message DeleteUserResp {
+    int32 code = 1;
+    string message = 2;
+}
+// 删除用户
+
+
+//登录
+message LoginReq {
+    string phone = 1;
+    string password = 2;
+}
+
+message LoginResp {
+    int32 code = 1;
+    string message = 2;
+    string token = 3;
+}
+// 登录
+
+
+// 注册
+message RegisterReq {
+    string phone = 1;
+    string password = 2;
+}
+
+message RegisterResp {
+    int32 code = 1;
+    string message = 2;
+    string token = 3;
+}
+// 注册
+
+
+// 注销
+message LogoutReq {
+    string token = 1;
+}
+
+message LogoutResp {
+    int32 code = 1;
+    string message = 2;
+}
+// 注销
+
+
+// 修改密码
+message ChangePasswordReq {
+    string phone = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResp {
+    int32 code = 1;
+    string message = 2;
+}
+// 修改密码

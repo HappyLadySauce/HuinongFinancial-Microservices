@@ -6,55 +6,204 @@ info (
 	version: "v1.0.0"
 )
 
-// ========== 标准响应结构 ==========
-type (
-	// 通用响应
-	CommonResp {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	}
-	// 数据响应
-	DataResp {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data,omitempty"`
-	}
-	// 分页响应
-	PageResp {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data,omitempty"`
-		Total   int64       `json:"total"`
-		Page    int64       `json:"page"`
-		Size    int64       `json:"size"`
-	}
-)
+// consul 调用地址：consul.huinong.internal
+// rpc 端口：20001
+// rpc 服务名：appuser.rpc
 
-// ========== 用户信息 ==========
-type (
-	// 更新个人资料请求
-	UpdateProfileReq {
-		Nickname   string  `json:"nickname,optional"`
-		Age        int     `json:"age,optional"`
-		Gender     int     `json:"gender,optional"` // 0:未知 1:男 2:女
-		Occupation string  `json:"occupation,optional"`
-		Address    string  `json:"address,optional"`
-		Income     float64 `json:"income,optional"`
-	}
-)
+// 服务职责(调用rpc服务实现)：
+// 1. 用户信息管理：用户信息查询、用户信息修改、用户注销
+// 2. 用户认证管理：用户登录管理、用户注册管理、用户注销管理、用户密码修改
 
-// --- C端用户 API (需要 JWT 认证) ---
+// -- ----------------------------
+// App用户表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `app_users`;
+// CREATE TABLE `app_users` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+//   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+//   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码哈希',
+//   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户姓名',
+//   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '昵称',
+//   `age` tinyint UNSIGNED DEFAULT 0 COMMENT '年龄',
+//   `gender` tinyint UNSIGNED DEFAULT 0 COMMENT '性别 0:未知 1:男 2:女',
+//   `occupation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '职业',
+//   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系地址',
+//   `income` decimal(10,2) DEFAULT 0.00 COMMENT '月收入',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:正常 2:冻结 3:禁用',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_phone` (`phone`),
+//   KEY `idx_status` (`status`),
+//   KEY `idx_created_at` (`created_at`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
+
+// Rustful 接口规范
+
+// 用户信息管理
 @server (
+	group:  info
 	jwt:    Auth
-	group:  user
-	prefix: /api/v1/appuser
+	prefix: /api/v1/user
 )
-service appuser {
-	// 个人信息
-	@handler GetUserInfo
-	get /info returns (DataResp)
+service Info {
+	// 获取用户信息
+	@handler GetUserByPhone
+	get /info (GetUserInfoReq) returns (GetUserInfoResp)
 
-	@handler UpdateUserProfile
-	put /profile (UpdateProfileReq) returns (DataResp)
+	// 更新用户信息
+	@handler UpdateUserInfo
+	put /info (UpdateUserInfoReq) returns (UpdateUserInfoResp)
+
+	// 注销用户
+	@handler DeleteUser
+	post /delete (DeleteUserReq) returns (DeleteUserResp)
 }
+
+// 用户认证管理
+@server (
+	group:  auth
+	prefix: /api/v1/auth
+)
+service Auth {
+	// 用户登录
+	@handler Login
+	post /login (LoginReq) returns (LoginResp)
+
+	// 用户注册
+	@handler Register
+	post /register (RegisterReq) returns (RegisterResp)
+}
+
+@server (
+	group:  auth
+	prefix: /api/v1/auth
+)
+service Auth {
+	// 用户注销
+	@handler Logout
+	post /logout returns (LogoutResp)
+
+	// 用户密码修改
+	@handler ChangePassword
+	post /password (ChangePasswordReq) returns (ChangePasswordResp)
+}
+
+
+type UserInfo {
+	Id int64 `json:"id"`
+	Phone string `json:"phone"`
+	Name string `json:"name"`
+	Nickname string `json:"nickname"`
+	Age int `json:"age"`
+	Gender int `json:"gender"`
+	Occupation string `json:"occupation"`
+	Address string `json:"address"`
+	Income float64 `json:"income"`
+	Status int `json:"status"`
+	CreatedAt int64 `json:"created_at"`
+	UpdatedAt int64 `json:"updated_at"`
+}
+
+// 获取用户信息
+type GetUserInfoReq {
+    string phone `json:"phone"`
+}
+
+type GetUserInfoResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+    UserInfo user_info `json:"user_info"`
+}
+// 获取用户信息
+
+
+// 更新用户信息
+type UpdateUserInfoReq {
+    UserInfo user_info `json:"user_info"`
+}
+
+type UpdateUserInfoResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+    UserInfo user_info `json:"user_info"`
+}
+// 更新用户信息
+
+
+
+// 删除用户
+type DeleteUserReq {
+    string phone `json:"phone"`
+}
+
+type DeleteUserResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+}
+// 删除用户
+
+
+//登录
+type LoginReq {
+    string phone `json:"phone"`
+    string password `json:"password"`
+}
+
+type LoginResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+    string token `json:"token"`
+}
+// 登录
+
+
+// 注册
+type RegisterReq {
+    string phone `json:"phone"`
+    string password `json:"password"`
+}
+
+type RegisterResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+    string token `json:"token"`
+}
+// 注册
+
+
+// 注销
+type LogoutReq {
+	string token `json:"token"`
+}
+
+type LogoutResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+}
+// 注销
+
+
+// 修改密码
+type ChangePasswordReq {
+    string phone `json:"phone"`
+    string old_password `json:"old_password"`
+    string new_password `json:"new_password"`
+}
+
+type ChangePasswordResp {
+    int32 code `json:"code"`
+    string message `json:"message"`
+}
+// 修改密码
+
+
+
+
+
+
+
+
+
+
 
