@@ -124,9 +124,12 @@ paths:
               type: string
             phone:
               type: string
+            role:
+              type: string
           required:
           - phone
           - password
+          - role
           type: object
       produces:
       - application/json
@@ -340,7 +343,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-29 15:24:31"
+x-date: "2025-06-29 15:51:17"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

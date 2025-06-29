@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"time"
 
 	"rpc/internal/pkg/constants"
 	"rpc/internal/pkg/logger"
@@ -40,27 +39,25 @@ func (l *LogoutLogic) Logout(in *oauser.LogoutReq) (*oauser.LogoutResp, error) {
 		}, nil
 	}
 
-	// 验证 token 有效性
-	claims, err := utils.ParseToken(in.Token, l.svcCtx.Config.JwtAuth.AccessSecret)
+	// 验证 token 有效性和获取用户信息
+	claims, err := utils.ValidateAndGetClaims(in.Token, l.svcCtx.Config.JwtAuth.AccessSecret)
 	if err != nil {
-		log.WithError(err).Warn("Token解析失败")
+		log.WithError(err).Warn("Token验证失败")
+		// 根据错误类型返回不同的错误码
+		if err.Error() == "token expired" {
+			return &oauser.LogoutResp{
+				Code:    constants.CodeTokenExpired,
+				Message: constants.GetMessage(constants.CodeTokenExpired),
+			}, nil
+		}
 		return &oauser.LogoutResp{
 			Code:    constants.CodeTokenInvalid,
 			Message: constants.GetMessage(constants.CodeTokenInvalid),
 		}, nil
 	}
 
-	// 检查 token 是否过期
-	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
-		log.Warn("Token已过期")
-		return &oauser.LogoutResp{
-			Code:    constants.CodeTokenExpired,
-			Message: constants.GetMessage(constants.CodeTokenExpired),
-		}, nil
-	}
-
 	// 检查用户类型
-	if claims.UserType != "oa" {
+	if !claims.IsOAUser() {
 		log.Warn("Token用户类型不匹配")
 		return &oauser.LogoutResp{
 			Code:    constants.CodeTokenInvalid,
@@ -74,6 +71,7 @@ func (l *LogoutLogic) Logout(in *oauser.LogoutReq) (*oauser.LogoutResp, error) {
 
 	log.WithField("user_id", claims.UserID).
 		WithField("phone", claims.Phone).
+		WithField("role", claims.Role).
 		Info("后台用户注销成功")
 
 	return &oauser.LogoutResp{

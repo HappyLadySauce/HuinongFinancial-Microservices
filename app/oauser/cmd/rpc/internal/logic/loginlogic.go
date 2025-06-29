@@ -71,7 +71,7 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 	}
 
 	// 检查用户状态
-	if user.Status == 2 {
+	if user.Status == constants.UserStatusDisabled {
 		log.Warn("用户账号被禁用")
 		return &oauser.LoginResp{
 			Code:    constants.CodeUserDisabled,
@@ -88,11 +88,12 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 		}, nil
 	}
 
-	// 生成 JWT token
+	// 生成包含角色信息的 JWT token
 	token, err := utils.GenerateToken(
 		int64(user.Id),
 		user.Phone,
-		"oa",
+		"oa",      // 用户类型：后台用户
+		user.Role, // 用户角色：admin/operator
 		l.svcCtx.Config.JwtAuth.AccessSecret,
 		l.svcCtx.Config.JwtAuth.AccessExpire,
 	)
@@ -104,7 +105,10 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 		}, nil
 	}
 
-	log.WithField("user_id", user.Id).WithField("role", user.Role).Info("后台用户登录成功")
+	log.WithField("user_id", user.Id).
+		WithField("role", user.Role).
+		Info("后台用户登录成功")
+
 	return &oauser.LoginResp{
 		Code:    constants.CodeSuccess,
 		Message: constants.GetMessage(constants.CodeSuccess),

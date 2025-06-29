@@ -352,6 +352,7 @@ func (x *UpdateUserInfoResp) GetUserInfo() *UserInfo {
 type DeleteUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Phone         string                 `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
+	CallerToken   string                 `protobuf:"bytes,2,opt,name=caller_token,json=callerToken,proto3" json:"caller_token,omitempty"` // 调用者的JWT Token，用于权限验证
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -389,6 +390,13 @@ func (*DeleteUserReq) Descriptor() ([]byte, []int) {
 func (x *DeleteUserReq) GetPhone() string {
 	if x != nil {
 		return x.Phone
+	}
+	return ""
+}
+
+func (x *DeleteUserReq) GetCallerToken() string {
+	if x != nil {
+		return x.CallerToken
 	}
 	return ""
 }
@@ -563,6 +571,7 @@ type RegisterReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Phone         string                 `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Role          string                 `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -607,6 +616,13 @@ func (x *RegisterReq) GetPhone() string {
 func (x *RegisterReq) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *RegisterReq) GetRole() string {
+	if x != nil {
+		return x.Role
 	}
 	return ""
 }
@@ -911,9 +927,10 @@ const file_oauser_rpc_proto_rawDesc = "" +
 	"\x12UpdateUserInfoResp\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12-\n" +
-	"\tuser_info\x18\x03 \x01(\v2\x10.oauser.UserInfoR\buserInfo\"%\n" +
+	"\tuser_info\x18\x03 \x01(\v2\x10.oauser.UserInfoR\buserInfo\"H\n" +
 	"\rDeleteUserReq\x12\x14\n" +
-	"\x05phone\x18\x01 \x01(\tR\x05phone\">\n" +
+	"\x05phone\x18\x01 \x01(\tR\x05phone\x12!\n" +
+	"\fcaller_token\x18\x02 \x01(\tR\vcallerToken\">\n" +
 	"\x0eDeleteUserResp\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"<\n" +
@@ -923,10 +940,11 @@ const file_oauser_rpc_proto_rawDesc = "" +
 	"\tLoginResp\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
-	"\x05token\x18\x03 \x01(\tR\x05token\"?\n" +
+	"\x05token\x18\x03 \x01(\tR\x05token\"S\n" +
 	"\vRegisterReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"R\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\"R\n" +
 	"\fRegisterResp\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +

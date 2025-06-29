@@ -6,6 +6,7 @@ import (
 	"api/internal/logic/info"
 	"api/internal/svc"
 	"api/internal/types"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
@@ -17,7 +18,7 @@ func DeleteUserHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
-		l := info.NewDeleteUserLogic(r.Context(), svcCtx)
+		l := info.NewDeleteUserLogic(r.Context(), svcCtx, r)
 		resp, err := l.DeleteUser(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

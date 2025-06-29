@@ -56,6 +56,7 @@ type LogoutResp struct {
 type RegisterReq struct {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
+	Role     string `json:"role"`
 }
 
 type RegisterResp struct {

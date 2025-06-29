@@ -99,6 +99,7 @@ message UpdateUserInfoResp {
 // 删除用户
 message DeleteUserReq {
     string phone = 1;
+    string caller_token = 2;  // 调用者的JWT Token，用于权限验证
 }
 
 message DeleteUserResp {

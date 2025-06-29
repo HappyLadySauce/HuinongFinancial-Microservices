@@ -4,6 +4,7 @@ import (
 	"model"
 	"rpc/internal/config"
 	"rpc/internal/pkg/logger"
+	"rpc/internal/pkg/utils"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -11,6 +12,7 @@ import (
 type ServiceContext struct {
 	Config      config.Config
 	OaUserModel model.OaUsersModel
+	JwtUtils    *utils.JWTUtils
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -33,5 +35,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:      c,
 		OaUserModel: model.NewOaUsersModel(conn, c.CacheConf),
+		JwtUtils:    utils.NewJWTUtils(c.JwtAuth.AccessSecret),
 	}
 }

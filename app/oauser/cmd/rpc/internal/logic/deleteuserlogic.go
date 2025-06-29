@@ -40,6 +40,40 @@ func (l *DeleteUserLogic) DeleteUser(in *oauser.DeleteUserReq) (*oauser.DeleteUs
 		}, nil
 	}
 
+	// 权限验证：只有管理员才能删除用户
+	if in.CallerToken == "" {
+		log.Warn("缺少调用者身份验证信息")
+		return &oauser.DeleteUserResp{
+			Code:    constants.CodeUnauthorized,
+			Message: "缺少身份验证信息",
+		}, nil
+	}
+
+	// 验证调用者Token
+	claims, err := l.svcCtx.JwtUtils.ValidateAndGetClaims(in.CallerToken)
+	if err != nil {
+		log.WithError(err).Warn("调用者Token验证失败")
+		return &oauser.DeleteUserResp{
+			Code:    constants.CodeUnauthorized,
+			Message: "身份验证失败",
+		}, nil
+	}
+
+	// 检查调用者是否为管理员
+	if !claims.IsAdmin() {
+		log.WithField("caller_role", claims.Role).Warn("权限不足，只有管理员才能删除用户")
+		return &oauser.DeleteUserResp{
+			Code:    constants.CodeForbidden,
+			Message: "权限不足，只有管理员才能删除用户",
+		}, nil
+	}
+
+	log.WithFields(map[string]interface{}{
+		"caller_phone": claims.Phone,
+		"caller_id":    claims.UserID,
+		"caller_role":  claims.Role,
+	}).Info("管理员权限验证通过")
+
 	// 验证手机号格式
 	phoneRegex := `^1[3-9]\d{9}$`
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)

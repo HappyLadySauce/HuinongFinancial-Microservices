@@ -30,7 +30,7 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
+	log := logger.WithContext(l.ctx).WithField("phone", in.Phone).WithField("role", in.Role)
 	log.Info("后台用户注册请求")
 
 	// 参数验证
@@ -59,6 +59,20 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInvalidParams,
 			Message: "密码长度至少6位",
+		}, nil
+	}
+
+	// 验证角色有效性
+	role := in.Role
+	if role == "" {
+		// 如果没有指定角色，默认为普通操作员
+		role = constants.RoleOperator
+	}
+	if role != constants.RoleAdmin && role != constants.RoleOperator {
+		log.Warn("无效的用户角色")
+		return &oauser.RegisterResp{
+			Code:    constants.CodeInvalidParams,
+			Message: "无效的用户角色，只支持 admin 或 operator",
 		}, nil
 	}
 
@@ -98,7 +112,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		Nickname:     "",
 		Age:          0,
 		Gender:       constants.GenderUnknown,
-		Role:         constants.RoleOperator, // 默认为普通操作员
+		Role:         role, // 使用验证后的角色
 		Status:       constants.UserStatusNormal,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
@@ -124,11 +138,12 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		}, nil
 	}
 
-	// 生成 JWT token
+	// 生成包含角色信息的 JWT token
 	token, err := utils.GenerateToken(
 		userID,
 		in.Phone,
-		"oa",
+		"oa", // 用户类型：后台用户
+		role, // 用户角色：admin/operator
 		l.svcCtx.Config.JwtAuth.AccessSecret,
 		l.svcCtx.Config.JwtAuth.AccessExpire,
 	)
@@ -140,7 +155,10 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		}, nil
 	}
 
-	log.WithField("user_id", userID).Info("后台用户注册成功")
+	log.WithField("user_id", userID).
+		WithField("role", role).
+		Info("后台用户注册成功")
+
 	return &oauser.RegisterResp{
 		Code:    constants.CodeSuccess,
 		Message: constants.GetMessage(constants.CodeSuccess),
