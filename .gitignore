@@ -8,5 +8,9 @@
 .vscode/
 .DS_Store
 
+# skywalking
 skywalking/
 apache-skywalking-apm-10.2.0.tar.gz
+apache-skywalking-go-0.6.0-bin.tgz
+apache-skywalking-go-0.6.0-src.tgz
+apache-skywalking-go-0.6.0-bin
