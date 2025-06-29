@@ -1,6 +1,31 @@
+# AppUser RPC 服务配置
 Name: appuserrpc.rpc
-ListenOn: 0.0.0.0:8080
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: appuserrpc.rpc
+ListenOn: 0.0.0.0:20001
+
+# Consul 服务注册配置
+# 作用：将本服务注册到 Consul，以便其他服务可以发现并调用
+Consul:
+  Host: consul.huinong.internal
+  Key: appuserrpc.rpc # 服务在 Consul 中的唯一标识
+  Token: "331c00f9-bd87-2383-4394-548a0e66dea9"
+
+# MySQL 数据库配置
+# 数据库：appuser，用户名：appuser，密码：appuser
+MySQL:
+  DataSource: appuser:appuser@tcp(10.10.10.6:3306)/appuser?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+# Redis 缓存配置
+# 作用：go-zero model 自动使用 redis 缓存高频查询 (如 FindOne)，提升性能
+CacheConf:
+  - Host: 10.10.10.6:6379
+    Type: node
+    Pass: "ChinaSkills@"
+
+# 日志配置
+Log:
+  ServiceName: appuserrpc
+  Mode: file # 本地开发记入文件，K8s中应使用 console
+  Path: logs
+  Level: info
+  KeepDays: 7
+  Compress: true

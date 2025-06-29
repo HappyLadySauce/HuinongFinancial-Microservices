@@ -1,0 +1,4 @@
+{"@timestamp":"2025-06-29T10:10:40.900Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 11.428167ms for target={service='oauserrpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-29T10:10:49.827Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
+{"@timestamp":"2025-06-29T10:10:58.572Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 35.048035ms for target={service='oauserrpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-29T10:11:01.536Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:138","content":"[Consul resolver] Watch has been finished","level":"info"}
