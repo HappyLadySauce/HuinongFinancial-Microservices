@@ -59,15 +59,14 @@ message UserInfo {
     int64 updated_at = 12;  // 更新时间
 }
 
-// 用户信息管理
-service AppUserService {
+// AppUser服务 - 包含用户信息管理和认证管理
+service AppUser {
+    // 用户信息管理
     rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
     rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
     rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
-}
-
-// 用户认证管理
-service AppUserAuthService {
+    
+    // 用户认证管理
     rpc Login(LoginReq) returns (LoginResp);
     rpc Register(RegisterReq) returns (RegisterResp);
     rpc Logout(LogoutReq) returns (LogoutResp);

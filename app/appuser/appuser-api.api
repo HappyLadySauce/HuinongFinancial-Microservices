@@ -9,18 +9,14 @@ info (
 // 服务架构:
 // 用户 -> 前端 -> nginx网关 -> appuser-api -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
 //                                                        -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
-
 // API 服务端口:10001
-
 // 无数据库、无缓存 直接调用rpc服务实现
 // consul 调用地址:consul.huinong.internal
 // rpc 端口:20001
 // rpc 服务名:appuser.rpc
-
 // 服务职责(调用rpc服务实现):
 // 1. 用户信息管理:用户信息查询、用户信息修改、用户注销
 // 2. 用户认证管理:用户登录管理、用户注册管理、用户注销管理、用户密码修改
-
 // -- ----------------------------
 // App用户表
 // -- ----------------------------
@@ -44,7 +40,6 @@ info (
 //   KEY `idx_status` (`status`),
 //   KEY `idx_created_at` (`created_at`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
-
 // 数据结构定义
 type UserInfo {
 	Id         int64   `json:"id"`
@@ -189,14 +184,4 @@ service appuser {
 	@handler ChangePassword
 	post /password (ChangePasswordReq) returns (ChangePasswordResp)
 }
-
-
-
-
-
-
-
-
-
-
 
