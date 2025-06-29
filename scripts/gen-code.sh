@@ -33,7 +33,7 @@ show_help() {
     echo ""
     echo "参数说明:"
     echo "  service_name: 服务名称 (auth|appuser|oauser|loan|loanproduct|leaseproduct|lease)"
-    echo "  type:         生成类型 (api|rpc|model|migrate|all|clean|tidy)"
+    echo "  type:         生成类型 (api|rpc|model|migrate|all|clean|tidy|workspace)"
     echo ""
     echo "示例:"
     echo "  $0 auth api              # 生成auth服务的API代码"
@@ -50,6 +50,8 @@ show_help() {
     echo "  $0 auth clean            # 清理auth服务生成的代码"
     echo "  $0 auth tidy             # 对auth服务的API和RPC目录执行go mod tidy"
     echo "  $0 all tidy              # 对所有服务的API和RPC目录执行go mod tidy"
+    echo "  $0 auth workspace        # 设置auth服务的Go工作区"
+    echo "  $0 all workspace         # 设置所有服务的Go工作区"
     echo ""
     echo "支持的服务:"
     echo "  auth         - 认证服务 (Redis + JWT，无Model)"
@@ -72,7 +74,7 @@ TYPE=$2
 
 # 支持的服务列表
 SERVICES=("auth" "appuser" "oauser" "loan" "loanproduct" "leaseproduct" "lease")
-TYPES=("api" "rpc" "model" "migrate" "all" "clean" "tidy")
+TYPES=("api" "rpc" "model" "migrate" "all" "clean" "tidy" "workspace")
 
 # 验证服务名称
 if [[ "$SERVICE_NAME" != "all" ]] && [[ ! " ${SERVICES[@]} " =~ " ${SERVICE_NAME} " ]]; then
@@ -140,6 +142,66 @@ run_go_mod_tidy() {
         else
             echo -e "${YELLOW}⚠ $service_name $code_type go mod tidy 出现警告，但不影响使用${NC}"
         fi
+    fi
+}
+
+# 设置Go工作区
+setup_go_workspace() {
+    local service=$1
+    local cmd_dir="$PROJECT_ROOT/app/$service/cmd"
+    
+    echo -e "${GREEN}设置 $service 服务的Go工作区...${NC}"
+    
+    # 进入cmd目录
+    cd "$cmd_dir"
+    
+    # 检查是否已存在go.work文件
+    if [[ -f "go.work" ]]; then
+        echo -e "${YELLOW}go.work 文件已存在，重新初始化...${NC}"
+        rm -f "go.work"
+    fi
+    
+    # 初始化工作区
+    echo -e "${BLUE}初始化 Go 工作区...${NC}"
+    go work init
+    
+    # 添加所有存在的模块到工作区
+    local modules=()
+    
+    if [[ -d "api" ]] && [[ -f "api/go.mod" ]]; then
+        modules+=("api")
+    fi
+    
+    if [[ -d "rpc" ]] && [[ -f "rpc/go.mod" ]]; then
+        modules+=("rpc")
+    fi
+    
+    if [[ -d "model" ]] && [[ -f "model/go.mod" ]]; then
+        modules+=("model")
+    fi
+    
+    # 添加模块到工作区
+    for module in "${modules[@]}"; do
+        echo -e "${BLUE}添加 $module 模块到工作区...${NC}"
+        go work use "$module"
+    done
+    
+    if [[ ${#modules[@]} -gt 0 ]]; then
+        echo -e "${GREEN}✓ $service Go工作区设置完成，包含模块: ${modules[*]}${NC}"
+        
+        # 显示工作区信息
+        echo -e "${BLUE}工作区配置:${NC}"
+        cat go.work | sed 's/^/    /'
+        
+        # 执行go work sync同步依赖
+        echo -e "${BLUE}同步工作区依赖...${NC}"
+        if go work sync 2>/dev/null; then
+            echo -e "${GREEN}✓ 工作区依赖同步完成${NC}"
+        else
+            echo -e "${YELLOW}⚠ 工作区依赖同步出现警告，但不影响使用${NC}"
+        fi
+    else
+        echo -e "${YELLOW}未找到任何可用模块，跳过工作区设置${NC}"
     fi
 }
 
@@ -410,6 +472,9 @@ tidy_service() {
     fi
     
     echo -e "${GREEN}✓ $service 服务 go mod tidy 完成${NC}"
+    
+    # 设置Go工作区
+    setup_go_workspace $service
 }
 
 # 生成所有代码
@@ -420,6 +485,9 @@ generate_all() {
     generate_rpc $service
     migrate_database $service
     generate_model $service
+    
+    # 设置Go工作区
+    setup_go_workspace $service
 }
 
 # 为所有服务生成指定类型的代码
@@ -449,6 +517,9 @@ generate_all_services() {
                 ;;
             "tidy")
                 tidy_service $service
+                ;;
+            "workspace")
+                setup_go_workspace $service
                 ;;
         esac
         echo ""
@@ -513,9 +584,12 @@ main() {
             "tidy")
                 tidy_service $SERVICE_NAME
                 ;;
+            "workspace")
+                setup_go_workspace $SERVICE_NAME
+                ;;
         esac
         
-        if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]]; then
+        if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]]; then
             echo ""
             show_structure $SERVICE_NAME
         fi
@@ -526,7 +600,7 @@ main() {
     echo -e "${GREEN}          操作完成！                   ${NC}"
     echo -e "${GREEN}========================================${NC}"
     
-    if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]]; then
+    if [[ "$TYPE" != "clean" ]] && [[ "$TYPE" != "tidy" ]] && [[ "$TYPE" != "workspace" ]]; then
         echo ""
         echo -e "${YELLOW}下一步操作:${NC}"
         echo "1. 检查生成的代码是否正确"
@@ -547,12 +621,17 @@ main() {
         echo -e "${YELLOW}依赖管理:${NC}"
         echo "- 执行go mod tidy: $0 $SERVICE_NAME tidy"
         echo "- 批量执行go mod tidy: $0 all tidy"
+        echo "- 设置Go工作区: $0 $SERVICE_NAME workspace"
+        echo "- 批量设置Go工作区: $0 all workspace"
     elif [[ "$TYPE" == "clean" ]]; then
         echo ""
         echo -e "${YELLOW}代码已清理，可重新生成${NC}"
     elif [[ "$TYPE" == "tidy" ]]; then
         echo ""
         echo -e "${YELLOW}go mod tidy 已完成，依赖已更新${NC}"
+    elif [[ "$TYPE" == "workspace" ]]; then
+        echo ""
+        echo -e "${YELLOW}Go工作区已设置完成，现在可以在cmd目录中进行跨模块开发${NC}"
     fi
 }
 
