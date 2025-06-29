@@ -1,410 +1,147 @@
 syntax = "v1"
 
 info (
-	title:   "租赁产品服务"
-	desc:    "租赁产品管理、设备库存管理、价格策略管理、设备维护记录管理"
-	author:  "租赁产品服务开发组"
-	version: "1.0"
+	title:   "租赁产品API"
+	desc:    "提供租赁产品查询和管理功能"
+	author:  "Huinong"
+	email:   "dev@huinong.com"
+	version: "v1.0.0"
 )
 
 // ========== 基础数据结构 ==========
-// 租赁产品信息
-type LeaseProduct {
-	Id               int64                  `json:"id"` // 产品ID
-	ProductCode      string                 `json:"product_code"` // 产品编码
-	Name             string                 `json:"name"` // 产品名称
-	Type             string                 `json:"type"` // 产品类型
-	Category         string                 `json:"category"` // 产品分类
-	Machinery        string                 `json:"machinery"` // 机械设备名称
-	Brand            string                 `json:"brand"` // 品牌
-	Model            string                 `json:"model"` // 型号
-	DailyRate        float64                `json:"daily_rate"` // 日租金
-	WeeklyRate       float64                `json:"weekly_rate"` // 周租金
-	MonthlyRate      float64                `json:"monthly_rate"` // 月租金
-	YearlyRate       float64                `json:"yearly_rate"` // 年租金
-	Deposit          float64                `json:"deposit"` // 押金
-	MaxDuration      int64                  `json:"max_duration"` // 最大租期(天)
-	MinDuration      int64                  `json:"min_duration"` // 最小租期(天)
-	Description      string                 `json:"description"` // 产品描述
-	Specifications   map[string]interface{} `json:"specifications"` // 技术规格
-	Features         []string               `json:"features"` // 产品特色
-	Requirements     []string               `json:"requirements"` // 租用要求
-	RiskFactors      []string               `json:"risk_factors"` // 风险因素
-	MaintenanceInfo  map[string]interface{} `json:"maintenance_info"` // 维护信息
-	Images           []string               `json:"images"` // 产品图片
-	Tags             string                 `json:"tags"` // 标签
-	InventoryCount   int64                  `json:"inventory_count"` // 库存总数
-	AvailableCount   int64                  `json:"available_count"` // 可用数量
-	MaintenanceCount int64                  `json:"maintenance_count"` // 维护中数量
-	RentedCount      int64                  `json:"rented_count"` // 已租出数量
-	Status           int64                  `json:"status"` // 状态 1:启用 0:禁用
-	SortOrder        int64                  `json:"sort_order"` // 排序
-	CreatedAt        int64                  `json:"created_at"` // 创建时间
-	UpdatedAt        int64                  `json:"updated_at"` // 更新时间
-}
-
-// 设备库存信息
-type Equipment {
-	Id              int64   `json:"id"` // 设备ID
-	ProductCode     string  `json:"product_code"` // 产品编码
-	EquipmentId     string  `json:"equipment_id"` // 设备编号
-	SerialNumber    string  `json:"serial_number"` // 序列号
-	PurchaseDate    string  `json:"purchase_date"` // 购买日期
-	PurchasePrice   float64 `json:"purchase_price"` // 购买价格
-	CurrentValue    float64 `json:"current_value"` // 当前价值
-	Location        string  `json:"location"` // 存放位置
-	ConditionLevel  string  `json:"condition_level"` // 设备状况 excellent:优秀 good:良好 fair:一般 poor:较差
-	LastMaintenance string  `json:"last_maintenance"` // 上次维护时间
-	NextMaintenance string  `json:"next_maintenance"` // 下次维护时间
-	Status          int64   `json:"status"` // 状态 1:可用 2:租出 3:维护中 4:报废 5:丢失
-	Notes           string  `json:"notes"` // 备注
-	CreatedAt       int64   `json:"created_at"` // 创建时间
-	UpdatedAt       int64   `json:"updated_at"` // 更新时间
-}
-
-// 价格策略
-type PricingStrategy {
-	Id                 int64                  `json:"id"` // 策略ID
-	ProductCode        string                 `json:"product_code"` // 产品编码
-	StrategyName       string                 `json:"strategy_name"` // 策略名称
-	DurationMin        int64                  `json:"duration_min"` // 最小期限
-	DurationMax        int64                  `json:"duration_max"` // 最大期限
-	BaseDailyRate      float64                `json:"base_daily_rate"` // 基础日租金
-	WeeklyDiscount     float64                `json:"weekly_discount"` // 周租折扣(%)
-	MonthlyDiscount    float64                `json:"monthly_discount"` // 月租折扣(%)
-	YearlyDiscount     float64                `json:"yearly_discount"` // 年租折扣(%)
-	QuantityDiscount   map[string]interface{} `json:"quantity_discount"` // 数量折扣
-	SeasonalAdjustment map[string]interface{} `json:"seasonal_adjustment"` // 季节调整
-	EffectiveDate      string                 `json:"effective_date"` // 生效日期
-	Status             int64                  `json:"status"` // 状态 1:启用 0:禁用
-	CreatedAt          int64                  `json:"created_at"` // 创建时间
-	UpdatedAt          int64                  `json:"updated_at"` // 更新时间
-}
-
-// 维护记录
-type MaintenanceRecord {
-	Id                  int64    `json:"id"` // 记录ID
-	EquipmentId         string   `json:"equipment_id"` // 设备编号
-	MaintenanceType     string   `json:"maintenance_type"` // 维护类型
-	MaintenanceDate     string   `json:"maintenance_date"` // 维护日期
-	MaintenanceCost     float64  `json:"maintenance_cost"` // 维护费用
-	MaintenanceContent  string   `json:"maintenance_content"` // 维护内容
-	MaintenanceStaff    string   `json:"maintenance_staff"` // 维护人员
-	PartsReplaced       []string `json:"parts_replaced"` // 更换部件
-	BeforeCondition     string   `json:"before_condition"` // 维护前状况
-	AfterCondition      string   `json:"after_condition"` // 维护后状况
-	NextMaintenanceDate string   `json:"next_maintenance_date"` // 下次维护日期
-	Notes               string   `json:"notes"` // 备注
-	CreatedAt           int64    `json:"created_at"` // 创建时间
-	UpdatedAt           int64    `json:"updated_at"` // 更新时间
-}
-
-// 产品分类
-type LeaseProductCategory {
-	Id          int64                  `json:"id"` // 分类ID
-	Code        string                 `json:"code"` // 分类编码
-	Name        string                 `json:"name"` // 分类名称
-	ParentId    int64                  `json:"parent_id"` // 父级ID
-	Level       int64                  `json:"level"` // 层级
-	Icon        string                 `json:"icon"` // 图标
-	Description string                 `json:"description"` // 描述
-	SortOrder   int64                  `json:"sort_order"` // 排序
-	Status      int64                  `json:"status"` // 状态
-	Children    []LeaseProductCategory `json:"children"` // 子分类
-	CreatedAt   int64                  `json:"created_at"` // 创建时间
-	UpdatedAt   int64                  `json:"updated_at"` // 更新时间
-}
-
-// ========== 请求响应结构 ==========
-// 租赁产品列表请求
-type ListLeaseProductsRequest {
-	Page     int64  `form:"page,default=1"` // 页码
-	Size     int64  `form:"size,default=10"` // 每页数量
-	Category string `form:"category,optional"` // 产品分类
-	Brand    string `form:"brand,optional"` // 品牌
-	Status   int64  `form:"status,optional"` // 状态
-	Keyword  string `form:"keyword,optional"` // 关键词
-}
-
-type ListLeaseProductsResponse {
-	List  []LeaseProduct `json:"list"` // 产品列表
-	Total int64          `json:"total"` // 总数
-	Page  int64          `json:"page"` // 当前页
-	Size  int64          `json:"size"` // 每页数量
-}
-
-// 租赁产品详情请求
-type GetLeaseProductRequest {
-	ProductCode string `path:"product_code"` // 产品编码
-}
-
-type GetLeaseProductResponse {
-	*LeaseProduct
-	PricingStrategies []PricingStrategy `json:"pricing_strategies"` // 价格策略
-	EquipmentList     []Equipment       `json:"equipment_list"` // 设备列表
-}
-
-// 创建租赁产品请求
-type CreateLeaseProductRequest {
-	ProductCode    string                 `json:"product_code"` // 产品编码
-	Name           string                 `json:"name"` // 产品名称
-	Type           string                 `json:"type"` // 产品类型
-	Category       string                 `json:"category"` // 产品分类
-	Machinery      string                 `json:"machinery"` // 机械设备名称
-	Brand          string                 `json:"brand"` // 品牌
-	Model          string                 `json:"model"` // 型号
-	DailyRate      float64                `json:"daily_rate"` // 日租金
-	WeeklyRate     float64                `json:"weekly_rate"` // 周租金
-	MonthlyRate    float64                `json:"monthly_rate"` // 月租金
-	YearlyRate     float64                `json:"yearly_rate,optional"` // 年租金
-	Deposit        float64                `json:"deposit"` // 押金
-	MaxDuration    int64                  `json:"max_duration"` // 最大租期(天)
-	MinDuration    int64                  `json:"min_duration"` // 最小租期(天)
-	Description    string                 `json:"description"` // 产品描述
-	Specifications map[string]interface{} `json:"specifications"` // 技术规格
-	Features       []string               `json:"features"` // 产品特色
-	Requirements   []string               `json:"requirements"` // 租用要求
-	RiskFactors    []string               `json:"risk_factors"` // 风险因素
-	Tags           string                 `json:"tags"` // 标签
-}
-
-// 更新租赁产品请求
-type UpdateLeaseProductRequest {
-	ProductCode    string                 `path:"product_code"` // 产品编码
-	Name           string                 `json:"name,optional"` // 产品名称
-	Type           string                 `json:"type,optional"` // 产品类型
-	Category       string                 `json:"category,optional"` // 产品分类
-	Machinery      string                 `json:"machinery,optional"` // 机械设备名称
-	Brand          string                 `json:"brand,optional"` // 品牌
-	Model          string                 `json:"model,optional"` // 型号
-	DailyRate      float64                `json:"daily_rate,optional"` // 日租金
-	WeeklyRate     float64                `json:"weekly_rate,optional"` // 周租金
-	MonthlyRate    float64                `json:"monthly_rate,optional"` // 月租金
-	YearlyRate     float64                `json:"yearly_rate,optional"` // 年租金
-	Deposit        float64                `json:"deposit,optional"` // 押金
-	MaxDuration    int64                  `json:"max_duration,optional"` // 最大租期(天)
-	MinDuration    int64                  `json:"min_duration,optional"` // 最小租期(天)
-	Description    string                 `json:"description,optional"` // 产品描述
-	Specifications map[string]interface{} `json:"specifications,optional"` // 技术规格
-	Features       []string               `json:"features,optional"` // 产品特色
-	Requirements   []string               `json:"requirements,optional"` // 租用要求
-	RiskFactors    []string               `json:"risk_factors,optional"` // 风险因素
-	Tags           string                 `json:"tags,optional"` // 标签
-	Status         int64                  `json:"status,optional"` // 状态
-}
-
-// 删除租赁产品请求
-type DeleteLeaseProductRequest {
-	ProductCode string `path:"product_code"` // 产品编码
-}
-
-// 设备库存列表请求
-type ListEquipmentRequest {
-	ProductCode string `path:"product_code"` // 产品编码
-	Page        int64  `form:"page,default=1"` // 页码
-	Size        int64  `form:"size,default=10"` // 每页数量
-	Status      int64  `form:"status,optional"` // 状态
-	Condition   string `form:"condition,optional"` // 设备状况
-}
-
-type ListEquipmentResponse {
-	List  []Equipment `json:"list"` // 设备列表
-	Total int64       `json:"total"` // 总数
-	Page  int64       `json:"page"` // 当前页
-	Size  int64       `json:"size"` // 每页数量
-}
-
-// 添加设备库存请求
-type AddEquipmentRequest {
-	ProductCode    string  `path:"product_code"` // 产品编码
-	EquipmentId    string  `json:"equipment_id"` // 设备编号
-	SerialNumber   string  `json:"serial_number"` // 序列号
-	PurchaseDate   string  `json:"purchase_date"` // 购买日期
-	PurchasePrice  float64 `json:"purchase_price"` // 购买价格
-	Location       string  `json:"location"` // 存放位置
-	ConditionLevel string  `json:"condition_level"` // 设备状况
-}
-
-// 更新设备状态请求
-type UpdateEquipmentStatusRequest {
-	EquipmentId string `path:"equipment_id"` // 设备编号
-	Status      int64  `json:"status"` // 状态
-	Notes       string `json:"notes,optional"` // 备注
-}
-
-// 价格策略列表请求
-type ListPricingStrategiesRequest {
-	ProductCode string `path:"product_code"` // 产品编码
-}
-
-type ListPricingStrategiesResponse {
-	List []PricingStrategy `json:"list"` // 价格策略列表
-}
-
-// 创建价格策略请求
-type CreatePricingStrategyRequest {
-	ProductCode        string                 `path:"product_code"` // 产品编码
-	StrategyName       string                 `json:"strategy_name"` // 策略名称
-	DurationMin        int64                  `json:"duration_min"` // 最小期限
-	DurationMax        int64                  `json:"duration_max"` // 最大期限
-	BaseDailyRate      float64                `json:"base_daily_rate"` // 基础日租金
-	WeeklyDiscount     float64                `json:"weekly_discount"` // 周租折扣(%)
-	MonthlyDiscount    float64                `json:"monthly_discount"` // 月租折扣(%)
-	YearlyDiscount     float64                `json:"yearly_discount,optional"` // 年租折扣(%)
-	QuantityDiscount   map[string]interface{} `json:"quantity_discount,optional"` // 数量折扣
-	SeasonalAdjustment map[string]interface{} `json:"seasonal_adjustment,optional"` // 季节调整
-	EffectiveDate      string                 `json:"effective_date"` // 生效日期
-}
-
-// 维护记录列表请求
-type ListMaintenanceRecordsRequest {
-	EquipmentId string `path:"equipment_id"` // 设备编号
-	Page        int64  `form:"page,default=1"` // 页码
-	Size        int64  `form:"size,default=10"` // 每页数量
-}
-
-type ListMaintenanceRecordsResponse {
-	List  []MaintenanceRecord `json:"list"` // 维护记录列表
-	Total int64               `json:"total"` // 总数
-	Page  int64               `json:"page"` // 当前页
-	Size  int64               `json:"size"` // 每页数量
-}
-
-// 添加维护记录请求
-type AddMaintenanceRecordRequest {
-	EquipmentId         string   `path:"equipment_id"` // 设备编号
-	MaintenanceType     string   `json:"maintenance_type"` // 维护类型
-	MaintenanceDate     string   `json:"maintenance_date"` // 维护日期
-	MaintenanceCost     float64  `json:"maintenance_cost"` // 维护费用
-	MaintenanceContent  string   `json:"maintenance_content"` // 维护内容
-	MaintenanceStaff    string   `json:"maintenance_staff"` // 维护人员
-	PartsReplaced       []string `json:"parts_replaced,optional"` // 更换部件
-	BeforeCondition     string   `json:"before_condition"` // 维护前状况
-	AfterCondition      string   `json:"after_condition"` // 维护后状况
-	NextMaintenanceDate string   `json:"next_maintenance_date"` // 下次维护日期
-	Notes               string   `json:"notes,optional"` // 备注
-}
-
-// 产品分类树请求
-type ListLeaseProductCategoriesRequest {}
-
-type ListLeaseProductCategoriesResponse {
-	List []LeaseProductCategory `json:"list"` // 分类树
-}
-
-// 创建产品分类请求
-type CreateLeaseProductCategoryRequest {
-	Code        string `json:"code"` // 分类编码
-	Name        string `json:"name"` // 分类名称
-	ParentId    int64  `json:"parent_id"` // 父级ID
-	Description string `json:"description,optional"` // 描述
-	Icon        string `json:"icon,optional"` // 图标
-}
-
-// 价格计算请求
-type CalculateRentalPriceRequest {
-	ProductCode string `json:"product_code"` // 产品编码
-	Duration    int64  `json:"duration"` // 租期(天)
-	Quantity    int64  `json:"quantity"` // 数量
-	Season      string `json:"season,optional"` // 季节
-}
-
-type CalculateRentalPriceResponse {
-	DailyRate      float64 `json:"daily_rate"` // 日租金
-	TotalAmount    float64 `json:"total_amount"` // 总金额
-	Deposit        float64 `json:"deposit"` // 押金
-	DiscountRate   float64 `json:"discount_rate"` // 折扣率
-	DiscountReason string  `json:"discount_reason"` // 折扣原因
-}
-
-// 库存检查请求
-type CheckInventoryAvailabilityRequest {
-	ProductCode string `json:"product_code"` // 产品编码
-	Quantity    int64  `json:"quantity"` // 数量
-	StartDate   string `json:"start_date"` // 开始日期
-	EndDate     string `json:"end_date"` // 结束日期
-}
-
-type CheckInventoryAvailabilityResponse {
-	Available             bool     `json:"available"` // 是否可用
-	AvailableCount        int64    `json:"available_count"` // 可用数量
-	AvailableEquipmentIds []string `json:"available_equipment_ids"` // 可用设备ID列表
-}
-
-// ========== API接口定义 ==========
-@server (
-	group:  leaseproduct
-	prefix: /api/v1
+type (
+	// 租赁产品信息
+	LeaseProduct {
+		Id             int64   `json:"id"`
+		ProductCode    string  `json:"product_code"`
+		Name           string  `json:"name"`
+		Type           string  `json:"type"`
+		Machinery      string  `json:"machinery"`
+		Brand          string  `json:"brand"`
+		Model          string  `json:"model"`
+		DailyRate      float64 `json:"daily_rate"`
+		Deposit        float64 `json:"deposit"`
+		MaxDuration    int64   `json:"max_duration"`
+		MinDuration    int64   `json:"min_duration"`
+		Description    string  `json:"description"`
+		InventoryCount int64   `json:"inventory_count"`
+		AvailableCount int64   `json:"available_count"`
+		Status         int64   `json:"status"`
+		CreatedAt      int64   `json:"created_at"`
+		UpdatedAt      int64   `json:"updated_at"`
+	}
 )
-service LeaseProductApi {
-	// 租赁产品管理
+
+// ========== 请求结构 ==========
+type (
+	// 查询产品列表
+	ListLeaseProductsReq {
+		Page    int64  `form:"page,default=1"`
+		Size    int64  `form:"size,default=10"`
+		Type    string `form:"type,optional"`
+		Brand   string `form:"brand,optional"`
+		Status  int32  `form:"status,optional"`
+		Keyword string `form:"keyword,optional"`
+	}
+
+	ListLeaseProductsResp {
+		List  []LeaseProduct `json:"list"`
+		Total int64          `json:"total"`
+	}
+
+	// 创建租赁产品
+	CreateLeaseProductReq {
+		ProductCode    string  `json:"product_code"`
+		Name           string  `json:"name"`
+		Type           string  `json:"type"`
+		Machinery      string  `json:"machinery"`
+		Brand          string  `json:"brand"`
+		Model          string  `json:"model"`
+		DailyRate      float64 `json:"daily_rate"`
+		Deposit        float64 `json:"deposit"`
+		MaxDuration    int32   `json:"max_duration"`
+		MinDuration    int32   `json:"min_duration"`
+		Description    string  `json:"description"`
+		InventoryCount int32   `json:"inventory_count"`
+	}
+
+	// 更新租赁产品
+	UpdateLeaseProductReq {
+		ProductCode string  `path:"productCode"`
+		Name        string  `json:"name"`
+		Type        string  `json:"type"`
+		Machinery   string  `json:"machinery"`
+		Brand       string  `json:"brand"`
+		Model       string  `json:"model"`
+		DailyRate   float64 `json:"daily_rate"`
+		Deposit     float64 `json:"deposit"`
+		MaxDuration int32   `json:"max_duration"`
+		MinDuration int32   `json:"min_duration"`
+		Description string  `json:"description"`
+		Status      int32   `json:"status"`
+	}
+
+	// 检查库存可用性
+	CheckInventoryReq {
+		ProductCode string `json:"product_code"`
+		Quantity    int32  `json:"quantity"`
+		StartDate   string `json:"start_date"`
+		EndDate     string `json:"end_date"`
+	}
+
+	CheckInventoryResp {
+		Available      bool  `json:"available"`
+		AvailableCount int32 `json:"available_count"`
+	}
+)
+
+// ========== C端用户API (公开接口) ==========
+@server (
+	group:  product
+	prefix: /api/v1/leaseproduct
+)
+service leaseproduct {
 	@doc "获取租赁产品列表"
 	@handler ListLeaseProducts
-	get /lease-products (ListLeaseProductsRequest) returns (ListLeaseProductsResponse)
+	get /products (ListLeaseProductsReq) returns (ListLeaseProductsResp)
 
 	@doc "获取租赁产品详情"
 	@handler GetLeaseProduct
-	get /lease-products/:product_code (GetLeaseProductRequest) returns (GetLeaseProductResponse)
+	get /products/:productCode returns (LeaseProduct)
+
+	@doc "检查库存可用性"
+	@handler CheckInventoryAvailability
+	post /products/check-inventory (CheckInventoryReq) returns (CheckInventoryResp)
+}
+
+// ========== B端管理API (需要管理员权限) ==========
+@server (
+	jwt:        Auth
+	middleware: AdminAuth
+	group:      admin
+	prefix:     /api/v1/admin/leaseproduct
+)
+service leaseproduct {
+	@doc "获取所有租赁产品列表"
+	@handler ListAllLeaseProducts
+	get /products (ListLeaseProductsReq) returns (ListLeaseProductsResp)
+
+	@doc "获取租赁产品详情"
+	@handler GetLeaseProductDetail
+	get /products/:productCode returns (LeaseProduct)
 
 	@doc "创建租赁产品"
 	@handler CreateLeaseProduct
-	post /lease-products (CreateLeaseProductRequest)
+	post /products (CreateLeaseProductReq) returns (LeaseProduct)
 
 	@doc "更新租赁产品"
 	@handler UpdateLeaseProduct
-	put /lease-products/:product_code (UpdateLeaseProductRequest)
+	put /products/:productCode (UpdateLeaseProductReq) returns (LeaseProduct)
 
 	@doc "删除租赁产品"
 	@handler DeleteLeaseProduct
-	delete /lease-products/:product_code (DeleteLeaseProductRequest)
-
-	// 设备库存管理
-	@doc "获取设备库存列表"
-	@handler ListEquipment
-	get /lease-products/:product_code/inventory (ListEquipmentRequest) returns (ListEquipmentResponse)
-
-	@doc "添加设备库存"
-	@handler AddEquipment
-	post /lease-products/:product_code/inventory (AddEquipmentRequest)
-
-	@doc "更新设备状态"
-	@handler UpdateEquipmentStatus
-	put /equipment/:equipment_id/status (UpdateEquipmentStatusRequest)
-
-	// 价格策略管理
-	@doc "获取价格策略列表"
-	@handler ListPricingStrategies
-	get /lease-products/:product_code/pricing-strategies (ListPricingStrategiesRequest) returns (ListPricingStrategiesResponse)
-
-	@doc "创建价格策略"
-	@handler CreatePricingStrategy
-	post /lease-products/:product_code/pricing-strategies (CreatePricingStrategyRequest)
-
-	// 维护记录管理
-	@doc "获取设备维护记录"
-	@handler ListMaintenanceRecords
-	get /equipment/:equipment_id/maintenance (ListMaintenanceRecordsRequest) returns (ListMaintenanceRecordsResponse)
-
-	@doc "添加维护记录"
-	@handler AddMaintenanceRecord
-	post /equipment/:equipment_id/maintenance (AddMaintenanceRecordRequest)
-
-	// 产品分类管理
-	@doc "获取租赁产品分类树"
-	@handler ListLeaseProductCategories
-	get /lease-product-categories/tree (ListLeaseProductCategoriesRequest) returns (ListLeaseProductCategoriesResponse)
-
-	@doc "创建产品分类"
-	@handler CreateLeaseProductCategory
-	post /lease-product-categories (CreateLeaseProductCategoryRequest)
-
-	// 业务功能接口
-	@doc "价格计算"
-	@handler CalculateRentalPrice
-	post /lease-products/calculate-price (CalculateRentalPriceRequest) returns (CalculateRentalPriceResponse)
-
-	@doc "库存检查"
-	@handler CheckInventoryAvailability
-	post /lease-products/check-availability (CheckInventoryAvailabilityRequest) returns (CheckInventoryAvailabilityResponse)
+	delete /products/:productCode
 }
+
+// goctl api go -api *.api -dir ../  -style=goZero
 

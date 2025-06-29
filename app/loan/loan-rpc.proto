@@ -6,276 +6,207 @@ import "google/protobuf/empty.proto";
 
 option go_package = "./loan";
 
-// === 服务定义 ===
-service LoanService {
-    // --- 贷款申请 ---
-    rpc CreateLoanApplication(CreateLoanApplicationReq) returns (LoanApplicationInfo);
-    rpc GetLoanApplication(GetLoanApplicationReq) returns (LoanApplicationInfo);
-    rpc ListLoanApplications(ListLoanApplicationsReq) returns (ListLoanApplicationsResp);
-    rpc UpdateLoanApplication(UpdateLoanApplicationReq) returns (LoanApplicationInfo);
-    rpc SubmitLoanApplication(SubmitLoanApplicationReq) returns (google.protobuf.Empty);
-    rpc CancelLoanApplication(CancelLoanApplicationReq) returns (google.protobuf.Empty);
-    rpc GetApplicationDetail(GetApplicationDetailReq) returns (GetApplicationDetailResp);
-    
-    // --- 贷款审批 ---
-    rpc ApproveLoanApplication(ApproveLoanApplicationReq) returns (google.protobuf.Empty);
-    rpc ListApprovalHistory(ListApprovalHistoryReq) returns (ListApprovalHistoryResp);
-    
-    // --- 合同管理 ---
-    rpc CreateLoanContract(CreateLoanContractReq) returns (LoanContractInfo);
-    rpc GetLoanContract(GetLoanContractReq) returns (LoanContractInfo);
-    rpc ListLoanContracts(ListLoanContractsReq) returns (ListLoanContractsResp);
-    rpc UpdateContractStatus(UpdateContractStatusReq) returns (google.protobuf.Empty);
-    rpc GetContractDetail(GetContractDetailReq) returns (GetContractDetailResp);
-    
-    // --- 还款管理 ---
-    rpc GetRepaymentPlan(GetRepaymentPlanReq) returns (GetRepaymentPlanResp);
-    rpc MakeRepayment(MakeRepaymentReq) returns (RepaymentRecordInfo);
-    rpc ListRepayments(ListRepaymentsReq) returns (ListRepaymentsResp);
-    
-    // --- 文档管理 ---
-    rpc UploadLoanDocument(UploadLoanDocumentReq) returns (LoanDocumentInfo);
-    rpc ListLoanDocuments(ListLoanDocumentsReq) returns (ListLoanDocumentsResp);
-    rpc ReviewLoanDocument(ReviewLoanDocumentReq) returns (google.protobuf.Empty);
-    rpc DeleteLoanDocument(DeleteLoanDocumentReq) returns (google.protobuf.Empty);
-    
-    // --- 统计与查询 ---
-    rpc GetLoanStatistics(GetLoanStatisticsReq) returns (GetLoanStatisticsResp);
-}
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> loan-api -> loan.rpc -> redis 缓存贷款信息 -> 数据库 loan (MySQL)
+//                                                  -> loanproduct.rpc -> redis 缓存产品信息 -> 数据库 loanproduct (MySQL)
+//                                                  -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
 
-// === 基础数据结构 ===
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20003
+// rpc 服务名:loan.rpc
 
-// 贷款申请信息
+// 数据库:loan (MySQL)
+// 缓存:redis 缓存贷款申请信息
+
+// 服务职责:
+// 1. 贷款申请管理:贷款申请创建、查询、修改、撤销
+// 2. 贷款审批管理:申请审批、审批记录查询
+
+// -- ----------------------------
+// 贷款申请表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `loan_applications`;
+// CREATE TABLE `loan_applications` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '申请ID',
+//   `application_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请编号',
+//   `user_id` bigint UNSIGNED NOT NULL COMMENT '用户ID',
+//   `applicant_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请人姓名',
+//   `product_id` bigint UNSIGNED NOT NULL COMMENT '贷款产品ID',
+//   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请名称',
+//   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '贷款类型',
+//   `amount` decimal(15,2) NOT NULL COMMENT '申请金额',
+//   `duration` int UNSIGNED NOT NULL COMMENT '贷款期限(月)',
+//   `purpose` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '贷款用途',
+//   `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending' COMMENT '状态 pending/approved/rejected/cancelled',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_application_id` (`application_id`),
+//   KEY `idx_user_id` (`user_id`),
+//   KEY `idx_product_id` (`product_id`),
+//   KEY `idx_status` (`status`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款申请表';
+
+// -- ----------------------------
+// 贷款审批记录表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `loan_approvals`;
+// CREATE TABLE `loan_approvals` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '审批ID',
+//   `application_id` bigint UNSIGNED NOT NULL COMMENT '申请ID',
+//   `auditor_id` bigint UNSIGNED NOT NULL COMMENT '审核员ID',
+//   `auditor_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核员姓名',
+//   `action` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审批动作 approve/reject',
+//   `suggestions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '审批意见',
+//   `approved_amount` decimal(15,2) DEFAULT NULL COMMENT '批准金额',
+//   `approved_duration` int UNSIGNED DEFAULT NULL COMMENT '批准期限(月)',
+//   `interest_rate` decimal(5,2) DEFAULT NULL COMMENT '利率(%)',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   PRIMARY KEY (`id`),
+//   KEY `idx_application_id` (`application_id`),
+//   KEY `idx_auditor_id` (`auditor_id`),
+//   KEY `idx_action` (`action`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款审批记录表';
+
+// 贷款申请基础信息
 message LoanApplicationInfo {
-    int64 id = 1;
-    string applicationId = 2;
-    int64 userId = 3;
-    int64 loanProductId = 5;
-    double amount = 8;
-    int32 loanTerm = 9; // in months
-    string purpose = 10;
-    string status = 12;  // pending, submitted, approved, rejected, cancelled
-    int64 createdAt = 17;
-    int64 updatedAt = 18;
+    int64 id = 1;  // 申请ID
+    string application_id = 2; // 申请编号
+    int64 user_id = 3;  // 用户ID
+    string applicant_name = 4;  // 申请人姓名
+    int64 product_id = 5;  // 贷款产品ID
+    string name = 6;  // 申请名称
+    string type = 7;  // 贷款类型
+    double amount = 8;  // 申请金额
+    int32 duration = 9;  // 贷款期限(月)
+    string purpose = 10;  // 贷款用途
+    string status = 11;  // 状态 pending/approved/rejected/cancelled
+    int64 created_at = 12;  // 创建时间
+    int64 updated_at = 13;  // 更新时间
 }
 
-// 贷款审批记录信息
+// 贷款审批记录基础信息
 message LoanApprovalInfo {
-    int64 id = 1;
-    int64 applicationId = 2;
-    int64 auditorId = 3;
-    string action = 5;  // approve, reject
-    string comment = 6;
-    int64 createdAt = 10;
+    int64 id = 1;  // 审批ID
+    int64 application_id = 2; // 申请ID
+    int64 auditor_id = 3;  // 审核员ID
+    string auditor_name = 4;  // 审核员姓名
+    string action = 5;  // 审批动作 approve/reject
+    string suggestions = 6;  // 审批意见
+    double approved_amount = 7;  // 批准金额
+    int32 approved_duration = 8;  // 批准期限(月)
+    double interest_rate = 9;  // 利率(%)
+    int64 created_at = 10;  // 创建时间
 }
 
-// 贷款合同信息
-message LoanContractInfo {
-    int64 id = 1;
-    int64 applicationId = 2;
-    string contractNo = 3;
-    int64 userId = 4;
-    double amount = 5;
-    int32 term = 6;
-    double interestRate = 7;
-    string status = 11;  // active, completed, overdue, cancelled
-    int64 createdAt = 12;
-    int64 updatedAt = 13;
+// Loan服务 - 包含贷款申请管理和审批管理
+service Loan {
+    // 贷款申请管理
+    rpc CreateLoanApplication(CreateLoanApplicationReq) returns (CreateLoanApplicationResp);
+    rpc GetLoanApplication(GetLoanApplicationReq) returns (GetLoanApplicationResp);
+    rpc ListLoanApplications(ListLoanApplicationsReq) returns (ListLoanApplicationsResp);
+    rpc UpdateLoanApplication(UpdateLoanApplicationReq) returns (UpdateLoanApplicationResp);
+    rpc CancelLoanApplication(CancelLoanApplicationReq) returns (CancelLoanApplicationResp);
+    
+    // 贷款审批管理
+    rpc ApproveLoanApplication(ApproveLoanApplicationReq) returns (ApproveLoanApplicationResp);
+    rpc ListLoanApprovals(ListLoanApprovalsReq) returns (ListLoanApprovalsResp);
 }
 
-// 还款计划信息
-message RepaymentPlanInfo {
-    int64 id = 1;
-    int64 contractId = 2;
-    int32 period = 3;
-    string dueDate = 4;
-    double principal = 5;
-    double interest = 6;
-    double totalAmount = 7;
-    string status = 8;  // pending, paid, overdue
-    int64 paidAt = 9;
-}
-
-// 还款记录信息
-message RepaymentRecordInfo {
-    int64 id = 1;
-    int64 contractId = 2;
-    int64 planId = 3;
-    int32 period = 4;
-    double amount = 5;
-    string paymentMethod = 9;
-    int64 paidAt = 12;
-}
-
-// 贷款文档信息
-message LoanDocumentInfo {
-    int64 id = 1;
-    int64 applicationId = 2;
-    string documentType = 3;  // id_card, income_proof, etc.
-    string name = 4;
-    string url = 5;
-    string status = 7;  // pending, approved, rejected
-}
-
-// === 请求与响应 ===
-
-// --- 贷款申请 ---
+// 创建贷款申请
 message CreateLoanApplicationReq {
-    int64 userId = 1;
-    int64 loanProductId = 2;
-    double amount = 3;
-    int32 loanTerm = 4;
-    string purpose = 5;
+    int64 user_id = 1;
+    int64 product_id = 2;
+    string name = 3;
+    string type = 4;
+    double amount = 5;
+    int32 duration = 6;
+    string purpose = 7;
 }
 
-message GetLoanApplicationReq {
-    string applicationId = 1;
-    }
+message CreateLoanApplicationResp {
+    int32 code = 1;
+    string message = 2;
+    string application_id = 3;
+}
 
+// 获取贷款申请
+message GetLoanApplicationReq {
+    string application_id = 1;
+}
+
+message GetLoanApplicationResp {
+    int32 code = 1;
+    string message = 2;
+    LoanApplicationInfo application_info = 3;
+}
+
+// 获取贷款申请列表
 message ListLoanApplicationsReq {
     int32 page = 1;
     int32 size = 2;
-    int64 userId = 3;
+    int64 user_id = 3;
     string status = 4;
 }
+
 message ListLoanApplicationsResp {
-    repeated LoanApplicationInfo list = 1;
-    int64 total = 2;
+    int32 code = 1;
+    string message = 2;
+    repeated LoanApplicationInfo list = 3;
+    int64 total = 4;
 }
 
+// 更新贷款申请
 message UpdateLoanApplicationReq {
-    string applicationId = 1;
+    string application_id = 1;
     double amount = 2;
-    int32 loanTerm = 3;
+    int32 duration = 3;
     string purpose = 4;
 }
 
-message SubmitLoanApplicationReq {
-    string applicationId = 1;
+message UpdateLoanApplicationResp {
+    int32 code = 1;
+    string message = 2;
+    LoanApplicationInfo application_info = 3;
 }
 
+// 撤销贷款申请
 message CancelLoanApplicationReq {
-    string applicationId = 1;
+    string application_id = 1;
     string reason = 2;
 }
 
-message GetApplicationDetailReq {
-    string applicationId = 1;
-}
-message GetApplicationDetailResp {
-    LoanApplicationInfo application = 1;
-    repeated LoanApprovalInfo approvals = 2;
-    repeated LoanDocumentInfo documents = 3;
-    LoanContractInfo contract = 4;
+message CancelLoanApplicationResp {
+    int32 code = 1;
+    string message = 2;
 }
 
-// --- 贷款审批 ---
+// 审批贷款申请
 message ApproveLoanApplicationReq {
-    string applicationId = 1;
-    string action = 2; // "approve" or "reject"
-    string comment = 3;
+    string application_id = 1;
+    int64 auditor_id = 2;
+    string auditor_name = 3;
+    string action = 4; // approve/reject
+    string suggestions = 5;
+    double approved_amount = 6;
+    int32 approved_duration = 7;
+    double interest_rate = 8;
 }
 
-message ListApprovalHistoryReq {
-    string applicationId = 1;
-}
-message ListApprovalHistoryResp {
-    repeated LoanApprovalInfo list = 1;
+message ApproveLoanApplicationResp {
+    int32 code = 1;
+    string message = 2;
 }
 
-// --- 合同管理 ---
-message CreateLoanContractReq {
-    int64 applicationId = 1;
+// 获取审批记录列表
+message ListLoanApprovalsReq {
+    string application_id = 1;
 }
 
-message GetLoanContractReq {
-    string contractNo = 1;
-    }
-
-message ListLoanContractsReq {
-    int32 page = 1;
-    int32 size = 2;
-    int64 userId = 3;
-    string status = 4;
-}
-message ListLoanContractsResp {
-    repeated LoanContractInfo list = 1;
-    int64 total = 2;
-}
-
-message UpdateContractStatusReq {
-    string contractNo = 1;
-    string status = 2;
-}
-
-message GetContractDetailReq {
-    string contractNo = 1;
-}
-message GetContractDetailResp {
-    LoanContractInfo contract = 1;
-    repeated RepaymentPlanInfo plan = 2;
-}
-
-// --- 还款管理 ---
-message GetRepaymentPlanReq {
-    int64 loanId = 1;
-}
-message GetRepaymentPlanResp {
-    repeated RepaymentPlanInfo list = 1;
-}
-
-message MakeRepaymentReq {
-    int64 planId = 1;
-    double amount = 2;
-    string paymentMethod = 3;
-}
-
-message ListRepaymentsReq {
-    int32 page = 1;
-    int32 size = 2;
-    int64 loanId = 3;
-}
-message ListRepaymentsResp {
-    repeated RepaymentRecordInfo list = 1;
-    int64 total = 2;
-}
-
-// --- 文档管理 ---
-message UploadLoanDocumentReq {
-    int64 applicationId = 1;
-    string documentType = 2;
-    string name = 3;
-    string url = 4;
-}
-
-message ListLoanDocumentsReq {
-    int64 applicationId = 1;
-}
-message ListLoanDocumentsResp {
-    repeated LoanDocumentInfo list = 1;
-}
-
-message ReviewLoanDocumentReq {
-    int64 documentId = 1;
-    string status = 2; // "approved" or "rejected"
-    string remark = 3;
-}
-
-message DeleteLoanDocumentReq {
-    int64 documentId = 1;
-}
-
-// --- 统计 ---
-message GetLoanStatisticsReq {
-    int64 userId = 1; // 0 for all users
-}
-message GetLoanStatisticsResp {
-    int64 totalApplications = 1;
-    int64 pendingApplications = 2;
-    int64 approvedApplications = 3;
-    int64 rejectedApplications = 4;
-    double totalLoanAmount = 5;
-    int64 activeContracts = 6;
+message ListLoanApprovalsResp {
+    int32 code = 1;
+    string message = 2;
+    repeated LoanApprovalInfo list = 3;
 }
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../

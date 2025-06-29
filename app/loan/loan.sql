@@ -35,29 +35,25 @@ CREATE TABLE `loan_applications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款申请表';
 
 -- ----------------------------
--- 贷款合同表
+-- 贷款审批记录表
 -- ----------------------------
-DROP TABLE IF EXISTS `loan_contracts`;
-CREATE TABLE `loan_contracts` (
-  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '合同ID',
+DROP TABLE IF EXISTS `loan_approvals`;
+CREATE TABLE `loan_approvals` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '审批ID',
   `application_id` bigint UNSIGNED NOT NULL COMMENT '申请ID',
-  `contract_no` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '合同编号',
-  `user_id` bigint UNSIGNED NOT NULL COMMENT '用户ID',
-  `amount` decimal(15,2) NOT NULL COMMENT '贷款金额',
-  `duration` int UNSIGNED NOT NULL COMMENT '贷款期限(月)',
-  `interest_rate` decimal(5,2) NOT NULL COMMENT '年利率(%)',
-  `monthly_payment` decimal(10,2) NOT NULL COMMENT '月还款额',
-  `start_date` date NOT NULL COMMENT '放款日期',
-  `end_date` date NOT NULL COMMENT '到期日期',
-  `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'active' COMMENT '状态 active/completed/cancelled',
+  `auditor_id` bigint UNSIGNED NOT NULL COMMENT '审核员ID',
+  `auditor_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核员姓名',
+  `action` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审批动作 approve/reject',
+  `suggestions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '审批意见',
+  `approved_amount` decimal(15,2) DEFAULT NULL COMMENT '批准金额',
+  `approved_duration` int UNSIGNED DEFAULT NULL COMMENT '批准期限(月)',
+  `interest_rate` decimal(5,2) DEFAULT NULL COMMENT '利率(%)',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_contract_no` (`contract_no`),
   KEY `idx_application_id` (`application_id`),
-  KEY `idx_user_id` (`user_id`),
-  KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款合同表';
+  KEY `idx_auditor_id` (`auditor_id`),
+  KEY `idx_action` (`action`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款审批记录表';
 
 -- ----------------------------
 -- 初始化数据
@@ -67,8 +63,8 @@ INSERT INTO `loan_applications` (`application_id`, `user_id`, `applicant_name`, 
 ('LN202506010002', 2, '李四', 2, '农机购买贷款', '经营贷', 200000.00, 36, '购买农机设备', 'pending'),
 ('LN202506020001', 3, '王五', 3, '日常消费贷款', '消费贷', 30000.00, 24, '家庭日常开支', 'approved');
 
-INSERT INTO `loan_contracts` (`application_id`, `contract_no`, `user_id`, `amount`, `duration`, `interest_rate`, `monthly_payment`, `start_date`, `end_date`, `status`) VALUES
-(1, 'HN202506010001', 1, 50000.00, 12, 5.20, 4350.00, '2025-01-01', '2025-12-31', 'active'),
-(3, 'HN202506020001', 3, 30000.00, 24, 7.80, 1380.00, '2025-02-01', '2026-01-31', 'active');
+INSERT INTO `loan_approvals` (`application_id`, `auditor_id`, `auditor_name`, `action`, `suggestions`, `approved_amount`, `approved_duration`, `interest_rate`) VALUES
+(1, 2001, 'B端测试管理员', 'approve', '申请材料完整，收入稳定，同意批准', 50000.00, 12, 5.20),
+(3, 2002, '普通操作员1', 'approve', '消费用途合理，风险可控，建议批准', 30000.00, 24, 7.80);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -29,7 +29,7 @@ CREATE TABLE `lease_products` (
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品描述',
   `inventory_count` int UNSIGNED DEFAULT 0 COMMENT '库存数量',
   `available_count` int UNSIGNED DEFAULT 0 COMMENT '可用数量',
-  `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:可租 2:维护中 3:已租完',
+  `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:上架 2:下架',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),

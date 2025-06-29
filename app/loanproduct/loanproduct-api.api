@@ -1,111 +1,128 @@
+syntax = "v1"
+
 info (
 	title:   "贷款产品API"
-	desc:    "管理贷款产品，包括创建、查询、上下架等"
+	desc:    "提供贷款产品查询和管理功能"
 	author:  "Huinong"
 	email:   "dev@huinong.com"
 	version: "v1.0.0"
 )
 
-// ========== 标准响应结构 ==========
+// ========== 基础数据结构 ==========
 type (
-	// 通用响应，用于不需要返回数据的场景
-	CommonResp {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-	}
-
-	// 数据响应，用于返回单个对象
-	DataResp {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data,omitempty"`
-	}
-
-	// 分页响应，用于返回列表数据
-	PageResp {
-		Code    int         `json:"code"`
-		Message string      `json:"message"`
-		Data    interface{} `json:"data,omitempty"`
-		Total   int64       `json:"total"`
-		Page    int64       `json:"page"`
-		Size    int64       `json:"size"`
+	// 贷款产品信息
+	LoanProductInfo {
+		Id           int64   `json:"id"`
+		ProductCode  string  `json:"product_code"`
+		Name         string  `json:"name"`
+		Type         string  `json:"type"`
+		MaxAmount    float64 `json:"max_amount"`
+		MinAmount    float64 `json:"min_amount"`
+		MaxDuration  int32   `json:"max_duration"`
+		MinDuration  int32   `json:"min_duration"`
+		InterestRate float64 `json:"interest_rate"`
+		Description  string  `json:"description"`
+		Status       int32   `json:"status"`
+		CreatedAt    int64   `json:"created_at"`
+		UpdatedAt    int64   `json:"updated_at"`
 	}
 )
 
-// ========== 产品管理请求 ==========
+// ========== 请求结构 ==========
 type (
+	// 查询产品列表
+	ListLoanProductsReq {
+		Page    int64  `form:"page,default=1"`
+		Size    int64  `form:"size,default=10"`
+		Type    string `form:"type,optional"`
+		Status  int32  `form:"status,optional"`
+		Keyword string `form:"keyword,optional"`
+	}
+
+	ListLoanProductsResp {
+		List  []LoanProductInfo `json:"list"`
+		Total int64             `json:"total"`
+	}
+
 	// 创建贷款产品
 	CreateLoanProductReq {
-		Name              string   `json:"name"`              // 产品名称
-		MinAmount         float64  `json:"minAmount"`         // 最低贷款金额
-		MaxAmount         float64  `json:"maxAmount"`         // 最高贷款金额
-		MinTerm           int32    `json:"minTerm"`           // 最短贷款期限(月)
-		MaxTerm           int32    `json:"maxTerm"`           // 最长贷款期限(月)
-		InterestRate      float64  `json:"interestRate"`      // 年利率
-		RepaymentMethod   string   `json:"repaymentMethod"`   // 还款方式
-		RequiredDocuments []string `json:"requiredDocuments"` // 申请所需材料
+		ProductCode  string  `json:"product_code"`
+		Name         string  `json:"name"`
+		Type         string  `json:"type"`
+		MaxAmount    float64 `json:"max_amount"`
+		MinAmount    float64 `json:"min_amount"`
+		MaxDuration  int32   `json:"max_duration"`
+		MinDuration  int32   `json:"min_duration"`
+		InterestRate float64 `json:"interest_rate"`
+		Description  string  `json:"description"`
 	}
 
 	// 更新贷款产品
 	UpdateLoanProductReq {
-		Id                int64    `path:"id"`
-		Name              string   `json:"name,optional"`
-		MinAmount         float64  `json:"minAmount,optional"`
-		MaxAmount         float64  `json:"maxAmount,optional"`
-		MinTerm           int32    `json:"minTerm,optional"`
-		MaxTerm           int32    `json:"maxTerm,optional"`
-		InterestRate      float64  `json:"interestRate,optional"`
-		RepaymentMethod   string   `json:"repaymentMethod,optional"`
-		RequiredDocuments []string `json:"requiredDocuments,optional"`
+		Id           int64   `path:"id"`
+		Name         string  `json:"name"`
+		Type         string  `json:"type"`
+		MaxAmount    float64 `json:"max_amount"`
+		MinAmount    float64 `json:"min_amount"`
+		MaxDuration  int32   `json:"max_duration"`
+		MinDuration  int32   `json:"min_duration"`
+		InterestRate float64 `json:"interest_rate"`
+		Description  string  `json:"description"`
 	}
 
-	// 更新产品状态 (上架/下架)
-	UpdateLoanProductStatusReq {
-		Id     int64  `path:"id"`
-		Status string `json:"status" validate:"oneof=active inactive"` // 状态
-	}
-)
-
-// ========== 列表查询请求 ==========
-type (
-	// 查询贷款产品列表
-	ListLoanProductsReq {
-		Page   int64  `form:"page,default=1"`
-		Size   int64  `form:"size,default=10"`
-		Status string `form:"status,optional"` // 状态
+	// 更新产品状态
+	UpdateProductStatusReq {
+		Id     int64 `path:"id"`
+		Status int32 `json:"status"`
 	}
 )
 
-// --- 公开接口 ---
-@server(
-	group: loanProduct
-	prefix: /api/v1/loan-products
+// ========== C端用户API (公开接口) ==========
+@server (
+	group:  product
+	prefix: /api/v1/loanproduct
 )
 service loanproduct {
+	@doc "获取贷款产品列表"
 	@handler ListLoanProducts
-	get / (ListLoanProductsReq) returns (PageResp)
+	get /products (ListLoanProductsReq) returns (ListLoanProductsResp)
 
+	@doc "获取贷款产品详情"
 	@handler GetLoanProduct
-	get /:id returns (DataResp)
+	get /products/:id returns (LoanProductInfo)
 }
 
-// --- 管理员接口 ---
-@server(
-	jwt: Auth
+// ========== B端管理API (需要管理员权限) ==========
+@server (
+	jwt:        Auth
 	middleware: AdminAuth
-	group: loanProductAdmin
-	prefix: /api/v1/admin/loan-products
+	group:      admin
+	prefix:     /api/v1/admin/loanproduct
 )
 service loanproduct {
-	@handler AdminCreateLoanProduct
-	post / (CreateLoanProductReq) returns (DataResp)
+	@doc "获取所有贷款产品列表"
+	@handler ListAllLoanProducts
+	get /products (ListLoanProductsReq) returns (ListLoanProductsResp)
 
-	@handler AdminUpdateLoanProduct
-	put /:id (UpdateLoanProductReq) returns (CommonResp)
-	
-	@handler AdminUpdateLoanProductStatus
-	patch /:id/status (UpdateLoanProductStatusReq) returns (CommonResp)
+	@doc "获取贷款产品详情"
+	@handler GetLoanProductDetail
+	get /products/:id returns (LoanProductInfo)
 
-	@handler AdminDeleteLoanProduct
-	delete /:id returns (CommonResp)
+	@doc "创建贷款产品"
+	@handler CreateLoanProduct
+	post /products (CreateLoanProductReq) returns (LoanProductInfo)
+
+	@doc "更新贷款产品"
+	@handler UpdateLoanProduct
+	put /products/:id (UpdateLoanProductReq) returns (LoanProductInfo)
+
+	@doc "删除贷款产品"
+	@handler DeleteLoanProduct
+	delete /products/:id
+
+	@doc "更新产品状态"
+	@handler UpdateProductStatus
+	put /products/:id/status (UpdateProductStatusReq)
 }
+
+// goctl api go -api *.api -dir ../  -style=goZero

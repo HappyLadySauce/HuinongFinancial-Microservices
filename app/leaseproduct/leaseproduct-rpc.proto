@@ -1,314 +1,121 @@
 syntax = "proto3";
 
 package leaseproduct;
+
+import "google/protobuf/empty.proto";
+
 option go_package = "./leaseproduct";
 
-// ========== 基础数据结构 ==========
+// === 基础数据结构 ===
 
 // 租赁产品信息
-message LeaseProduct {
+message LeaseProductInfo {
   int64 id = 1;                     // 产品ID
-  string product_code = 2;          // 产品编码
+  string productCode = 2;           // 产品编码
   string name = 3;                  // 产品名称
-  string type = 4;                  // 产品类型
-  string category = 5;              // 产品分类
-  string machinery = 6;             // 机械设备名称
-  string brand = 7;                 // 品牌
-  string model = 8;                 // 型号
-  double daily_rate = 9;            // 日租金
-  double weekly_rate = 10;          // 周租金
-  double monthly_rate = 11;         // 月租金
-  double yearly_rate = 12;          // 年租金
-  double deposit = 13;              // 押金
-  int64 max_duration = 14;          // 最大租期(天)
-  int64 min_duration = 15;          // 最小租期(天)
-  string description = 16;          // 产品描述
-  string specifications = 17;       // 技术规格(JSON格式)
-  repeated string features = 18;    // 产品特色
-  repeated string requirements = 19; // 租用要求
-  repeated string risk_factors = 20; // 风险因素
-  string maintenance_info = 21;     // 维护信息(JSON格式)
-  repeated string images = 22;      // 产品图片
-  string tags = 23;                 // 标签
-  int64 inventory_count = 24;       // 库存总数
-  int64 available_count = 25;       // 可用数量
-  int64 maintenance_count = 26;     // 维护中数量
-  int64 rented_count = 27;          // 已租出数量
-  int64 status = 28;                // 状态 1:启用 0:禁用
-  int64 sort_order = 29;            // 排序
-  int64 created_at = 30;            // 创建时间
-  int64 updated_at = 31;            // 更新时间
+  string type = 4;                  // 租赁类型
+  string machinery = 5;             // 设备名称
+  string brand = 6;                 // 品牌
+  string model = 7;                 // 型号
+  double dailyRate = 8;             // 日租金
+  double deposit = 9;               // 押金
+  int32 maxDuration = 10;           // 最大租期(天)
+  int32 minDuration = 11;           // 最小租期(天)
+  string description = 12;          // 产品描述
+  int32 inventoryCount = 13;        // 库存数量
+  int32 availableCount = 14;        // 可用数量
+  int32 status = 15;                // 状态 1:上架 2:下架
+  int64 createdAt = 16;             // 创建时间
+  int64 updatedAt = 17;             // 更新时间
 }
 
-// 设备库存信息
-message Equipment {
-  int64 id = 1;                     // 设备ID
-  string product_code = 2;          // 产品编码
-  string equipment_id = 3;          // 设备编号
-  string serial_number = 4;         // 序列号
-  string purchase_date = 5;         // 购买日期
-  double purchase_price = 6;        // 购买价格
-  double current_value = 7;         // 当前价值
-  string location = 8;              // 存放位置
-  string condition_level = 9;       // 设备状况
-  string last_maintenance = 10;     // 上次维护时间
-  string next_maintenance = 11;     // 下次维护时间
-  int64 status = 12;                // 状态 1:可用 2:租出 3:维护中 4:报废 5:丢失
-  string notes = 13;                // 备注
-  int64 created_at = 14;            // 创建时间
-  int64 updated_at = 15;            // 更新时间
-}
-
-// 价格策略
-message PricingStrategy {
-  int64 id = 1;                     // 策略ID
-  string product_code = 2;          // 产品编码
-  string strategy_name = 3;         // 策略名称
-  int64 duration_min = 4;           // 最小期限
-  int64 duration_max = 5;           // 最大期限
-  double base_daily_rate = 6;       // 基础日租金
-  double weekly_discount = 7;       // 周租折扣(%)
-  double monthly_discount = 8;      // 月租折扣(%)
-  double yearly_discount = 9;       // 年租折扣(%)
-  string quantity_discount = 10;    // 数量折扣(JSON格式)
-  string seasonal_adjustment = 11;  // 季节调整(JSON格式)
-  string effective_date = 12;       // 生效日期
-  int64 status = 13;                // 状态 1:启用 0:禁用
-  int64 created_at = 14;            // 创建时间
-  int64 updated_at = 15;            // 更新时间
-}
-
-// 维护记录
-message MaintenanceRecord {
-  int64 id = 1;                     // 记录ID
-  string equipment_id = 2;          // 设备编号
-  string maintenance_type = 3;      // 维护类型
-  string maintenance_date = 4;      // 维护日期
-  double maintenance_cost = 5;      // 维护费用
-  string maintenance_content = 6;   // 维护内容
-  string maintenance_staff = 7;     // 维护人员
-  repeated string parts_replaced = 8; // 更换部件
-  string before_condition = 9;      // 维护前状况
-  string after_condition = 10;     // 维护后状况
-  string next_maintenance_date = 11; // 下次维护日期
-  string notes = 12;                // 备注
-  int64 created_at = 13;            // 创建时间
-  int64 updated_at = 14;            // 更新时间
-}
-
-// 产品分类
-message LeaseProductCategory {
-  int64 id = 1;                     // 分类ID
-  string code = 2;                  // 分类编码
-  string name = 3;                  // 分类名称
-  int64 parent_id = 4;              // 父级ID
-  int64 level = 5;                  // 层级
-  string icon = 6;                  // 图标
-  string description = 7;           // 描述
-  int64 sort_order = 8;             // 排序
-  int64 status = 9;                 // 状态
-  repeated LeaseProductCategory children = 10; // 子分类
-  int64 created_at = 11;            // 创建时间
-  int64 updated_at = 12;            // 更新时间
-}
-
-// ========== 请求响应结构 ==========
+// === 请求响应结构 ===
 
 // 获取租赁产品请求
 message GetLeaseProductReq {
-  string product_code = 1;          // 产品编码
-}
-
-message GetLeaseProductResp {
-  LeaseProduct product = 1;         // 产品信息
+  string productCode = 1;           // 产品编码
 }
 
 // 获取租赁产品列表请求
 message ListLeaseProductsReq {
-  int64 page = 1;                   // 页码
-  int64 size = 2;                   // 每页数量
-  string category = 3;              // 产品分类
+  int32 page = 1;                   // 页码
+  int32 size = 2;                   // 每页数量
+  string type = 3;                  // 产品类型
   string brand = 4;                 // 品牌
-  int64 status = 5;                 // 状态
+  int32 status = 5;                 // 状态
   string keyword = 6;               // 关键词
 }
 
 message ListLeaseProductsResp {
-  repeated LeaseProduct list = 1;   // 产品列表
+  repeated LeaseProductInfo list = 1; // 产品列表
   int64 total = 2;                  // 总数
-  int64 page = 3;                   // 当前页
-  int64 size = 4;                   // 每页数量
 }
 
 // 创建租赁产品请求
 message CreateLeaseProductReq {
-  string product_code = 1;          // 产品编码
+  string productCode = 1;           // 产品编码
   string name = 2;                  // 产品名称
   string type = 3;                  // 产品类型
-  string category = 4;              // 产品分类
-  string machinery = 5;             // 机械设备名称
-  string brand = 6;                 // 品牌
-  string model = 7;                 // 型号
-  double daily_rate = 8;            // 日租金
-  double weekly_rate = 9;           // 周租金
-  double monthly_rate = 10;         // 月租金
-  double yearly_rate = 11;          // 年租金
-  double deposit = 12;              // 押金
-  int64 max_duration = 13;          // 最大租期(天)
-  int64 min_duration = 14;          // 最小租期(天)
-  string description = 15;          // 产品描述
-  string specifications = 16;       // 技术规格(JSON格式)
-  repeated string features = 17;    // 产品特色
-  repeated string requirements = 18; // 租用要求
-  repeated string risk_factors = 19; // 风险因素
-  string tags = 20;                 // 标签
-}
-
-message CreateLeaseProductResp {
-  int64 id = 1;                     // 产品ID
+  string machinery = 4;             // 设备名称
+  string brand = 5;                 // 品牌
+  string model = 6;                 // 型号
+  double dailyRate = 7;             // 日租金
+  double deposit = 8;               // 押金
+  int32 maxDuration = 9;            // 最大租期(天)
+  int32 minDuration = 10;           // 最小租期(天)
+  string description = 11;          // 产品描述
+  int32 inventoryCount = 12;        // 库存数量
 }
 
 // 更新租赁产品请求
 message UpdateLeaseProductReq {
-  string product_code = 1;          // 产品编码
+  string productCode = 1;           // 产品编码
   string name = 2;                  // 产品名称
   string type = 3;                  // 产品类型
-  string category = 4;              // 产品分类
-  string machinery = 5;             // 机械设备名称
-  string brand = 6;                 // 品牌
-  string model = 7;                 // 型号
-  double daily_rate = 8;            // 日租金
-  double weekly_rate = 9;           // 周租金
-  double monthly_rate = 10;         // 月租金
-  double yearly_rate = 11;          // 年租金
-  double deposit = 12;              // 押金
-  int64 max_duration = 13;          // 最大租期(天)
-  int64 min_duration = 14;          // 最小租期(天)
-  string description = 15;          // 产品描述
-  string specifications = 16;       // 技术规格(JSON格式)
-  repeated string features = 17;    // 产品特色
-  repeated string requirements = 18; // 租用要求
-  repeated string risk_factors = 19; // 风险因素
-  string tags = 20;                 // 标签
-  int64 status = 21;                // 状态
-}
-
-message UpdateLeaseProductResp {
+  string machinery = 4;             // 设备名称
+  string brand = 5;                 // 品牌
+  string model = 6;                 // 型号
+  double dailyRate = 7;             // 日租金
+  double deposit = 8;               // 押金
+  int32 maxDuration = 9;            // 最大租期(天)
+  int32 minDuration = 10;           // 最小租期(天)
+  string description = 11;          // 产品描述
+  int32 status = 12;                // 状态
 }
 
 // 删除租赁产品请求
 message DeleteLeaseProductReq {
-  string product_code = 1;          // 产品编码
-}
-
-message DeleteLeaseProductResp {
-}
-
-// 价格计算请求
-message CalculateRentalPriceReq {
-  string product_code = 1;          // 产品编码
-  int64 duration = 2;               // 租期(天)
-  int64 quantity = 3;               // 数量
-  string season = 4;                // 季节
-}
-
-message CalculateRentalPriceResp {
-  double daily_rate = 1;            // 日租金
-  double total_amount = 2;          // 总金额
-  double deposit = 3;               // 押金
-  double discount_rate = 4;         // 折扣率
-  string discount_reason = 5;       // 折扣原因
+  string productCode = 1;           // 产品编码
 }
 
 // 库存检查请求
 message CheckInventoryAvailabilityReq {
-  string product_code = 1;          // 产品编码
-  int64 quantity = 2;               // 数量
-  string start_date = 3;            // 开始日期
-  string end_date = 4;              // 结束日期
+  string productCode = 1;           // 产品编码
+  int32 quantity = 2;               // 数量
+  string startDate = 3;             // 开始日期
+  string endDate = 4;               // 结束日期
 }
 
 message CheckInventoryAvailabilityResp {
   bool available = 1;               // 是否可用
-  int64 available_count = 2;        // 可用数量
-  repeated string available_equipment_ids = 3; // 可用设备ID列表
+  int32 availableCount = 2;         // 可用数量
 }
 
-// 设备分配请求
-message AllocateEquipmentReq {
-  string product_code = 1;          // 产品编码
-  int64 quantity = 2;               // 数量
-  string lease_id = 3;              // 租赁订单ID
-}
-
-message AllocateEquipmentResp {
-  repeated string allocated_equipment_ids = 1; // 已分配设备ID列表
-}
-
-// 设备状态更新请求
-message UpdateEquipmentStatusReq {
-  string equipment_id = 1;          // 设备编号
-  int64 status = 2;                 // 状态
-  string notes = 3;                 // 备注
-}
-
-message UpdateEquipmentStatusResp {
-}
-
-// 获取设备信息请求
-message GetEquipmentReq {
-  string equipment_id = 1;          // 设备编号
-}
-
-message GetEquipmentResp {
-  Equipment equipment = 1;          // 设备信息
-}
-
-// 批量获取设备信息请求
-message BatchGetEquipmentReq {
-  repeated string equipment_ids = 1; // 设备编号列表
-}
-
-message BatchGetEquipmentResp {
-  repeated Equipment equipment_list = 1; // 设备列表
-}
-
-// 获取产品分类请求
-message GetLeaseProductCategoriesReq {
-}
-
-message GetLeaseProductCategoriesResp {
-  repeated LeaseProductCategory categories = 1; // 分类树
-}
-
-// ========== 服务定义 ==========
+// === 服务定义 ===
 
 service LeaseProductService {
   // 产品查询
-  rpc GetLeaseProduct(GetLeaseProductReq) returns (GetLeaseProductResp);
+  rpc GetLeaseProduct(GetLeaseProductReq) returns (LeaseProductInfo);
   rpc ListLeaseProducts(ListLeaseProductsReq) returns (ListLeaseProductsResp);
   
   // 产品管理
-  rpc CreateLeaseProduct(CreateLeaseProductReq) returns (CreateLeaseProductResp);
-  rpc UpdateLeaseProduct(UpdateLeaseProductReq) returns (UpdateLeaseProductResp);
-  rpc DeleteLeaseProduct(DeleteLeaseProductReq) returns (DeleteLeaseProductResp);
-  
-  // 价格计算
-  rpc CalculateRentalPrice(CalculateRentalPriceReq) returns (CalculateRentalPriceResp);
+  rpc CreateLeaseProduct(CreateLeaseProductReq) returns (LeaseProductInfo);
+  rpc UpdateLeaseProduct(UpdateLeaseProductReq) returns (LeaseProductInfo);
+  rpc DeleteLeaseProduct(DeleteLeaseProductReq) returns (google.protobuf.Empty);
   
   // 库存检查
   rpc CheckInventoryAvailability(CheckInventoryAvailabilityReq) returns (CheckInventoryAvailabilityResp);
-  
-  // 设备分配
-  rpc AllocateEquipment(AllocateEquipmentReq) returns (AllocateEquipmentResp);
-  
-  // 设备状态更新
-  rpc UpdateEquipmentStatus(UpdateEquipmentStatusReq) returns (UpdateEquipmentStatusResp);
-  
-  // 设备信息查询
-  rpc GetEquipment(GetEquipmentReq) returns (GetEquipmentResp);
-  rpc BatchGetEquipment(BatchGetEquipmentReq) returns (BatchGetEquipmentResp);
-  
-  // 产品分类
-  rpc GetLeaseProductCategories(GetLeaseProductCategoriesReq) returns (GetLeaseProductCategoriesResp);
-} 
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go 

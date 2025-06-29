@@ -5,58 +5,134 @@ import "google/protobuf/empty.proto";
 
 option go_package = "./lease";
 
-// ========== 基础数据结构 ==========
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> lease-api -> lease.rpc -> redis 缓存租赁信息 -> 数据库 lease (MySQL)
+//                                                     -> leaseproduct.rpc -> redis 缓存产品信息 -> 数据库 leaseproduct (MySQL)
+//                                                     -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
 
-// 租赁申请信息
-message LeaseApplication {
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20004
+// rpc 服务名:lease.rpc
+
+// 数据库:lease (MySQL)
+// 缓存:redis 缓存租赁申请信息
+
+// 服务职责:
+// 1. 租赁申请管理:租赁申请创建、查询、修改、撤销
+// 2. 租赁审批管理:申请审批、审批记录查询
+
+// -- ----------------------------
+// 租赁申请表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `lease_applications`;
+// CREATE TABLE `lease_applications` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '申请ID',
+//   `application_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请编号',
+//   `user_id` bigint UNSIGNED NOT NULL COMMENT '用户ID',
+//   `applicant_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请人姓名',
+//   `product_id` bigint UNSIGNED NOT NULL COMMENT '租赁产品ID',
+//   `product_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品编码',
+//   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '申请名称',
+//   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '租赁类型',
+//   `machinery` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '设备名称',
+//   `start_date` date NOT NULL COMMENT '开始日期',
+//   `end_date` date NOT NULL COMMENT '结束日期',
+//   `duration` int UNSIGNED NOT NULL COMMENT '租期(天)',
+//   `daily_rate` decimal(10,2) NOT NULL COMMENT '日租金',
+//   `total_amount` decimal(10,2) NOT NULL COMMENT '总金额',
+//   `deposit` decimal(10,2) DEFAULT 0.00 COMMENT '押金',
+//   `delivery_address` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '交付地址',
+//   `contact_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系电话',
+//   `purpose` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '使用目的',
+//   `status` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending' COMMENT '状态 pending/approved/rejected/cancelled',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_application_id` (`application_id`),
+//   KEY `idx_user_id` (`user_id`),
+//   KEY `idx_product_id` (`product_id`),
+//   KEY `idx_status` (`status`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租赁申请表';
+
+// -- ----------------------------
+// 租赁审批记录表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `lease_approvals`;
+// CREATE TABLE `lease_approvals` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '审批ID',
+//   `application_id` bigint UNSIGNED NOT NULL COMMENT '申请ID',
+//   `auditor_id` bigint UNSIGNED NOT NULL COMMENT '审核员ID',
+//   `auditor_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审核员姓名',
+//   `action` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '审批动作 approve/reject',
+//   `suggestions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '审批意见',
+//   `approved_duration` int UNSIGNED DEFAULT NULL COMMENT '批准租期(天)',
+//   `approved_amount` decimal(10,2) DEFAULT NULL COMMENT '批准金额',
+//   `approved_deposit` decimal(10,2) DEFAULT NULL COMMENT '批准押金',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   PRIMARY KEY (`id`),
+//   KEY `idx_application_id` (`application_id`),
+//   KEY `idx_auditor_id` (`auditor_id`),
+//   KEY `idx_action` (`action`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租赁审批记录表';
+
+// 租赁申请基础信息
+message LeaseApplicationInfo {
   int64 id = 1;                     // 申请ID
-  string application_no = 2;        // 申请编号
-  int64 customer_id = 3;            // 客户ID
-  string product_code = 4;          // 产品编码
-  string product_name = 5;          // 产品名称
-  int64 quantity = 6;               // 数量
-  int64 duration = 7;               // 租期(天)
-  string start_date = 8;            // 开始日期
-  string end_date = 9;              // 结束日期
-  double rental_amount = 10;        // 租金总额
-  double deposit_amount = 11;       // 押金金额
-  string purpose = 12;              // 租用目的
-  string delivery_address = 13;     // 交付地址
-  string contact_person = 14;       // 联系人
-  string contact_phone = 15;        // 联系电话
-  string application_status = 16;   // 申请状态
-  string approval_status = 17;      // 审批状态
-  string reject_reason = 18;        // 拒绝原因
-  string approval_comments = 19;    // 审批意见
-  int64 approved_by = 20;           // 审批人ID
-  int64 approved_at = 21;           // 审批时间
-  int64 created_at = 22;            // 创建时间
-  int64 updated_at = 23;            // 更新时间
+  string application_id = 2;        // 申请编号
+  int64 user_id = 3;                // 用户ID
+  string applicant_name = 4;        // 申请人姓名
+  int64 product_id = 5;             // 产品ID
+  string product_code = 6;          // 产品编码
+  string name = 7;                  // 申请名称
+  string type = 8;                  // 租赁类型
+  string machinery = 9;             // 设备名称
+  string start_date = 10;           // 开始日期
+  string end_date = 11;             // 结束日期
+  int32 duration = 12;              // 租期(天)
+  double daily_rate = 13;           // 日租金
+  double total_amount = 14;         // 总金额
+  double deposit = 15;              // 押金
+  string delivery_address = 16;     // 交付地址
+  string contact_phone = 17;        // 联系电话
+  string purpose = 18;              // 使用目的
+  string status = 19;               // 状态 pending/approved/rejected/cancelled
+  int64 created_at = 20;            // 创建时间
+  int64 updated_at = 21;            // 更新时间
+}
+
+// 租赁审批记录基础信息
+message LeaseApprovalInfo {
+  int64 id = 1;                     // 审批ID
+  int64 application_id = 2;         // 申请ID
+  int64 auditor_id = 3;             // 审核员ID
+  string auditor_name = 4;          // 审核员姓名
+  string action = 5;                // 审批动作 approve/reject
+  string suggestions = 6;           // 审批意见
+  int32 approved_duration = 7;      // 批准租期(天)
+  double approved_amount = 8;       // 批准金额
+  double approved_deposit = 9;      // 批准押金
+  int64 created_at = 10;            // 创建时间
 }
 
 // 租赁合同信息
-message LeaseContract {
+message LeaseContractInfo {
   int64 id = 1;                     // 合同ID
-  string contract_no = 2;           // 合同编号
-  int64 application_id = 3;         // 申请ID
-  int64 customer_id = 4;            // 客户ID
-  string product_code = 5;          // 产品编码
-  string product_name = 6;          // 产品名称
-  int64 quantity = 7;               // 数量
-  int64 duration = 8;               // 租期(天)
-  string start_date = 9;            // 开始日期
-  string end_date = 10;             // 结束日期
-  double rental_amount = 11;        // 租金总额
-  double deposit_amount = 12;       // 押金金额
-  string equipment_ids = 13;        // 设备编号列表(JSON)
-  string terms = 14;                // 合同条款
-  string delivery_address = 15;     // 交付地址
-  string contact_person = 16;       // 联系人
-  string contact_phone = 17;        // 联系电话
-  string contract_status = 18;      // 合同状态
-  int64 signed_at = 19;             // 签约时间
-  int64 created_at = 20;            // 创建时间
-  int64 updated_at = 21;            // 更新时间
+  int64 applicationId = 2;          // 申请ID
+  string contractNo = 3;            // 合同编号
+  int64 userId = 4;                 // 用户ID
+  int64 productId = 5;              // 产品ID
+  string productCode = 6;           // 产品编码
+  string machinery = 7;             // 设备名称
+  string startDate = 8;             // 开始日期
+  string endDate = 9;               // 结束日期
+  int32 duration = 10;              // 租期(天)
+  double dailyRate = 11;            // 日租金
+  double totalAmount = 12;          // 总金额
+  double deposit = 13;              // 押金
+  string deliveryAddress = 14;      // 交付地址
+  string status = 15;               // 状态 active/completed/cancelled
+  int64 createdAt = 16;             // 创建时间
+  int64 updatedAt = 17;             // 更新时间
 }
 
 // 设备交付记录
@@ -97,104 +173,151 @@ message RentalPayment {
   int64 updated_at = 14;            // 更新时间
 }
 
-// 审批记录
-message ApprovalRecord {
-  int64 id = 1;                     // 记录ID
-  int64 application_id = 2;         // 申请ID
-  string approval_step = 3;         // 审批步骤
-  int64 approver_id = 4;            // 审批人ID
-  string approver_name = 5;         // 审批人姓名
-  string result = 6;                // 审批结果
-  string comments = 7;              // 审批意见
-  int64 approved_at = 8;            // 审批时间
-  int64 created_at = 9;             // 创建时间
+// Lease服务 - 包含租赁申请管理和审批管理
+service Lease {
+  // 租赁申请管理
+  rpc CreateLeaseApplication(CreateLeaseApplicationReq) returns (CreateLeaseApplicationResp);
+  rpc GetLeaseApplication(GetLeaseApplicationReq) returns (GetLeaseApplicationResp);
+  rpc ListLeaseApplications(ListLeaseApplicationsReq) returns (ListLeaseApplicationsResp);
+  rpc UpdateLeaseApplication(UpdateLeaseApplicationReq) returns (UpdateLeaseApplicationResp);
+  rpc CancelLeaseApplication(CancelLeaseApplicationReq) returns (CancelLeaseApplicationResp);
+  
+  // 租赁审批管理
+  rpc ApproveLeaseApplication(ApproveLeaseApplicationReq) returns (ApproveLeaseApplicationResp);
+  rpc ListLeaseApprovals(ListLeaseApprovalsReq) returns (ListLeaseApprovalsResp);
 }
 
-// ========== 服务请求/响应 ==========
-
-// --- 申请管理 ---
-message GetLeaseApplicationReq { string application_no = 1; }
-message GetLeaseApplicationResp { LeaseApplication application = 1; }
-
-message ListLeaseApplicationsReq {
-  int64 page = 1;
-  int64 size = 2;
-  int64 customer_id = 3;
-  string product_code = 4;
-  string application_status = 5;
-  string approval_status = 6;
+// 创建租赁申请
+message CreateLeaseApplicationReq {
+  int64 user_id = 1;
+  int64 product_id = 2;
+  string product_code = 3;
+  string name = 4;
+  string type = 5;
+  string machinery = 6;
   string start_date = 7;
   string end_date = 8;
-  string keyword = 9;
+  int32 duration = 9;
+  double daily_rate = 10;
+  double total_amount = 11;
+  double deposit = 12;
+  string delivery_address = 13;
+  string contact_phone = 14;
+  string purpose = 15;
 }
+
+message CreateLeaseApplicationResp {
+  int32 code = 1;
+  string message = 2;
+  string application_id = 3;
+}
+
+// 获取租赁申请
+message GetLeaseApplicationReq { 
+  string application_id = 1; 
+}
+
+message GetLeaseApplicationResp {
+  int32 code = 1;
+  string message = 2;
+  LeaseApplicationInfo application_info = 3;
+}
+
+// 获取租赁申请列表
+message ListLeaseApplicationsReq {
+  int32 page = 1;
+  int32 size = 2;
+  int64 user_id = 3;
+  string product_code = 4;
+  string status = 5;
+}
+
 message ListLeaseApplicationsResp {
-  repeated LeaseApplication list = 1;
-  int64 total = 2;
+  int32 code = 1;
+  string message = 2;
+  repeated LeaseApplicationInfo list = 3;
+  int64 total = 4;
 }
 
-message CreateLeaseApplicationReq {
-  int64 customer_id = 1;
-  string product_code = 2;
-  int64 quantity = 3;
-  int64 duration = 4;
-  string start_date = 5;
-  string purpose = 6;
-  string delivery_address = 7;
-  string contact_person = 8;
-  string contact_phone = 9;
-}
-message CreateLeaseApplicationResp { string application_no = 1; }
-
+// 更新租赁申请
 message UpdateLeaseApplicationReq {
-  string application_no = 1;
+  string application_id = 1;
   string purpose = 2;
   string delivery_address = 3;
-  string contact_person = 4;
-  string contact_phone = 5;
+  string contact_phone = 4;
 }
 
-message SubmitLeaseApplicationReq { string application_no = 1; }
-message ApproveLeaseApplicationReq {
-  string application_no = 1;
-  string result = 2;
-  string comments = 3;
-  int64 approver_id = 4;
+message UpdateLeaseApplicationResp {
+  int32 code = 1;
+  string message = 2;
+  LeaseApplicationInfo application_info = 3;
 }
+
+// 撤销租赁申请
 message CancelLeaseApplicationReq {
-  string application_no = 1;
+  string application_id = 1;
   string reason = 2;
 }
 
+message CancelLeaseApplicationResp {
+  int32 code = 1;
+  string message = 2;
+}
+
+// 审批租赁申请
+message ApproveLeaseApplicationReq {
+  string application_id = 1;
+  int64 auditor_id = 2;
+  string auditor_name = 3;
+  string action = 4; // approve/reject
+  string suggestions = 5;
+  int32 approved_duration = 6;
+  double approved_amount = 7;
+  double approved_deposit = 8;
+}
+
+message ApproveLeaseApplicationResp {
+  int32 code = 1;
+  string message = 2;
+}
+
+// 获取审批记录列表
+message ListLeaseApprovalsReq {
+  string application_id = 1;
+}
+
+message ListLeaseApprovalsResp {
+  int32 code = 1;
+  string message = 2;
+  repeated LeaseApprovalInfo list = 3;
+}
+
+// === 服务请求/响应 ===
+
 // --- 合同管理 ---
-message GetLeaseContractReq { string contract_no = 1; }
-message GetLeaseContractResp { LeaseContract contract = 1; }
+message CreateLeaseContractReq {
+  int64 applicationId = 1;
+}
+
+message GetLeaseContractReq { 
+  string contractNo = 1; 
+}
 
 message ListLeaseContractsReq {
-  int64 page = 1;
-  int64 size = 2;
-  int64 customer_id = 3;
-  string product_code = 4;
-  string contract_status = 5;
-  string start_date = 6;
-  string end_date = 7;
-  string keyword = 8;
+  int32 page = 1;
+  int32 size = 2;
+  int64 userId = 3;
+  string productCode = 4;
+  string status = 5;
 }
 message ListLeaseContractsResp {
-  repeated LeaseContract list = 1;
+  repeated LeaseContractInfo list = 1;
   int64 total = 2;
 }
 
-message CreateLeaseContractReq {
-  int64 application_id = 1;
-  string terms = 2;
-}
-message CreateLeaseContractResp { string contract_no = 1; }
-
-message SignLeaseContractReq { string contract_no = 1; }
-message ActivateLeaseContractReq { string contract_no = 1; }
-message TerminateLeaseContractReq {
-  string contract_no = 1;
-  string reason = 2;
+message UpdateContractStatusReq {
+  string contractNo = 1;
+  string status = 2;
 }
 
 // --- 交付管理 ---
@@ -262,54 +385,24 @@ message ListRentalPaymentsResp {
   int64 total = 2;
 }
 
-// --- 统计与风控 ---
-message GetLeaseStatisticsReq {
-  string start_date = 1;
-  string end_date = 2;
-}
-message GetLeaseStatisticsResp {
-  int64 total_applications = 1;
-  int64 approved_applications = 2;
-  int64 active_contracts = 3;
-  double total_revenue = 4;
-  double pending_payments = 5;
-  double overdue_payments = 6;
-}
-
-message AssessLeaseRiskReq {
-  int64 customer_id = 1;
-  string product_code = 2;
-  int64 quantity = 3;
-  int64 duration = 4;
-  double rental_amount = 5;
-}
-message AssessLeaseRiskResp {
-  string risk_level = 1;
-  double risk_score = 2;
-  bool is_approved = 3;
-  double max_amount = 4;
-  string recommendation = 5;
-  repeated string risk_factors = 6;
-}
-
-// ========== 服务定义 ==========
+// === 服务定义 ===
 service LeaseService {
   // 申请管理
-  rpc GetLeaseApplication(GetLeaseApplicationReq) returns (GetLeaseApplicationResp);
+  rpc CreateLeaseApplication(CreateLeaseApplicationReq) returns (LeaseApplicationInfo);
+  rpc GetLeaseApplication(GetLeaseApplicationReq) returns (LeaseApplicationInfo);
   rpc ListLeaseApplications(ListLeaseApplicationsReq) returns (ListLeaseApplicationsResp);
-  rpc CreateLeaseApplication(CreateLeaseApplicationReq) returns (CreateLeaseApplicationResp);
-  rpc UpdateLeaseApplication(UpdateLeaseApplicationReq) returns (google.protobuf.Empty);
-  rpc SubmitLeaseApplication(SubmitLeaseApplicationReq) returns (google.protobuf.Empty);
-  rpc ApproveLeaseApplication(ApproveLeaseApplicationReq) returns (google.protobuf.Empty);
+  rpc UpdateLeaseApplication(UpdateLeaseApplicationReq) returns (LeaseApplicationInfo);
   rpc CancelLeaseApplication(CancelLeaseApplicationReq) returns (google.protobuf.Empty);
   
+  // 审批管理
+  rpc ApproveLeaseApplication(ApproveLeaseApplicationReq) returns (google.protobuf.Empty);
+  rpc ListLeaseApprovals(ListLeaseApprovalsReq) returns (ListLeaseApprovalsResp);
+  
   // 合同管理
-  rpc GetLeaseContract(GetLeaseContractReq) returns (GetLeaseContractResp);
+  rpc CreateLeaseContract(CreateLeaseContractReq) returns (LeaseContractInfo);
+  rpc GetLeaseContract(GetLeaseContractReq) returns (LeaseContractInfo);
   rpc ListLeaseContracts(ListLeaseContractsReq) returns (ListLeaseContractsResp);
-  rpc CreateLeaseContract(CreateLeaseContractReq) returns (CreateLeaseContractResp);
-  rpc SignLeaseContract(SignLeaseContractReq) returns (google.protobuf.Empty);
-  rpc ActivateLeaseContract(ActivateLeaseContractReq) returns (google.protobuf.Empty);
-  rpc TerminateLeaseContract(TerminateLeaseContractReq) returns (google.protobuf.Empty);
+  rpc UpdateContractStatus(UpdateContractStatusReq) returns (google.protobuf.Empty);
   
   // 交付管理
   rpc CreateDeliveryRecord(CreateDeliveryRecordReq) returns (CreateDeliveryRecordResp);
@@ -320,8 +413,4 @@ service LeaseService {
   rpc CreateRentalPayment(CreateRentalPaymentReq) returns (CreateRentalPaymentResp);
   rpc PayRental(PayRentalReq) returns (google.protobuf.Empty);
   rpc ListRentalPayments(ListRentalPaymentsReq) returns (ListRentalPaymentsResp);
-  
-  // 统计与风控
-  rpc GetLeaseStatistics(GetLeaseStatisticsReq) returns (GetLeaseStatisticsResp);
-  rpc AssessLeaseRisk(AssessLeaseRiskReq) returns (AssessLeaseRiskResp);
 } 
