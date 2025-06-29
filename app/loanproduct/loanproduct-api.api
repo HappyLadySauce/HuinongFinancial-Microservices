@@ -20,7 +20,6 @@ info (
 // 1. 贷款产品信息管理:产品创建、查询、修改、删除
 // 2. 产品状态管理:产品上下架状态控制
 // 3. 为C端提供产品查询接口，为B端提供产品管理接口
-
 // -- ----------------------------
 // 贷款产品表
 // -- ----------------------------
@@ -44,7 +43,6 @@ info (
 //   KEY `idx_type` (`type`),
 //   KEY `idx_status` (`status`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款产品表';
-
 // ========== 基础数据结构 ==========
 type (
 	// 贷款产品信息
@@ -69,18 +67,18 @@ type (
 type (
 	// 查询产品列表
 	ListLoanProductsReq {
-		Page    int64  `form:"page,default=1"`
-		Size    int64  `form:"size,default=10"`
+		Page    int32  `form:"page,default=1"`      // 修改为int32统一分页参数
+		Size    int32  `form:"size,default=10"`     // 修改为int32统一分页参数
 		Type    string `form:"type,optional"`
 		Status  int32  `form:"status,optional"`
 		Keyword string `form:"keyword,optional"`
 	}
-
 	ListLoanProductsResp {
-		List  []LoanProductInfo `json:"list"`
-		Total int64             `json:"total"`
+		Code    int32             `json:"code"`    // 添加标准响应格式
+		Message string            `json:"message"` // 添加标准响应格式
+		List    []LoanProductInfo `json:"list"`
+		Total   int64             `json:"total"`
 	}
-
 	// 创建贷款产品
 	CreateLoanProductReq {
 		ProductCode  string  `json:"product_code"`
@@ -93,7 +91,11 @@ type (
 		InterestRate float64 `json:"interest_rate"`
 		Description  string  `json:"description"`
 	}
-
+	CreateLoanProductResp {
+		Code    int32           `json:"code"`    // 添加标准响应格式
+		Message string          `json:"message"` // 添加标准响应格式
+		Data    LoanProductInfo `json:"data"`    // 添加数据字段
+	}
 	// 更新贷款产品
 	UpdateLoanProductReq {
 		Id           int64   `path:"id"`
@@ -106,11 +108,30 @@ type (
 		InterestRate float64 `json:"interest_rate"`
 		Description  string  `json:"description"`
 	}
-
+	UpdateLoanProductResp {
+		Code    int32           `json:"code"`    // 添加标准响应格式
+		Message string          `json:"message"` // 添加标准响应格式
+		Data    LoanProductInfo `json:"data"`    // 添加数据字段
+	}
+	// 获取产品详情响应
+	GetLoanProductResp {
+		Code    int32           `json:"code"`    // 添加标准响应格式
+		Message string          `json:"message"` // 添加标准响应格式
+		Data    LoanProductInfo `json:"data"`    // 添加数据字段
+	}
 	// 更新产品状态
 	UpdateProductStatusReq {
 		Id     int64 `path:"id"`
 		Status int32 `json:"status"`
+	}
+	UpdateProductStatusResp {
+		Code    int32 `json:"code"`    // 添加标准响应格式
+		Message string `json:"message"` // 添加标准响应格式
+	}
+	// 删除产品响应
+	DeleteLoanProductResp {
+		Code    int32  `json:"code"`    // 添加标准响应格式
+		Message string `json:"message"` // 添加标准响应格式
 	}
 )
 
@@ -126,7 +147,7 @@ service loanproduct {
 
 	@doc "获取贷款产品详情"
 	@handler GetLoanProduct
-	get /products/:id returns (LoanProductInfo)
+	get /products/:id returns (GetLoanProductResp)
 }
 
 // ========== B端管理API (需要管理员权限) ==========
@@ -143,23 +164,23 @@ service loanproduct {
 
 	@doc "获取贷款产品详情"
 	@handler GetLoanProductDetail
-	get /products/:id returns (LoanProductInfo)
+	get /products/:id returns (GetLoanProductResp)
 
 	@doc "创建贷款产品"
 	@handler CreateLoanProduct
-	post /products (CreateLoanProductReq) returns (LoanProductInfo)
+	post /products (CreateLoanProductReq) returns (CreateLoanProductResp)
 
 	@doc "更新贷款产品"
 	@handler UpdateLoanProduct
-	put /products/:id (UpdateLoanProductReq) returns (LoanProductInfo)
+	put /products/:id (UpdateLoanProductReq) returns (UpdateLoanProductResp)
 
 	@doc "删除贷款产品"
 	@handler DeleteLoanProduct
-	delete /products/:id
+	delete /products/:id returns (DeleteLoanProductResp)
 
 	@doc "更新产品状态"
 	@handler UpdateProductStatus
-	put /products/:id/status (UpdateProductStatusReq)
+	put /products/:id/status (UpdateProductStatusReq) returns (UpdateProductStatusResp)
 }
 
 // goctl api go -api *.api -dir ../  -style=goZero

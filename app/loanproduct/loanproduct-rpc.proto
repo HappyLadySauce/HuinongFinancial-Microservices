@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package loanproduct;
 
-import "google/protobuf/empty.proto";
-
 option go_package = "./loanproduct";
 
 // 服务架构:
@@ -66,11 +64,43 @@ message LoanProductInfo {
     int64 updatedAt = 13;
 }
 
+// 添加删除操作响应
+message DeleteLoanProductResp {
+    int32 code = 1;
+    string message = 2;
+}
+
+// 添加状态更新响应  
+message UpdateProductStatusResp {
+    int32 code = 1;
+    string message = 2;
+}
+
+// 标准响应格式
+message GetLoanProductResp {
+    int32 code = 1;
+    string message = 2;
+    LoanProductInfo data = 3;
+}
+
+message CreateLoanProductResp {
+    int32 code = 1;
+    string message = 2;
+    LoanProductInfo data = 3;
+}
+
+message UpdateLoanProductResp {
+    int32 code = 1;
+    string message = 2;
+    LoanProductInfo data = 3;
+}
+
 // === 请求与响应 ===
 
-// 获取贷款产品
+// 获取贷款产品 - 支持通过ID或产品编码查询
 message GetLoanProductReq {
-    int64 id = 1;
+    int64 id = 1;                       // 产品ID (可选)
+    string productCode = 2;             // 产品编码 (可选)
 }
 
 // 获取贷款产品列表
@@ -83,8 +113,10 @@ message ListLoanProductsReq {
 }
 
 message ListLoanProductsResp {
-    repeated LoanProductInfo list = 1;
-    int64 total = 2;
+    int32 code = 1;                      // 响应码
+    string message = 2;                  // 响应消息
+    repeated LoanProductInfo list = 3;   // 产品列表
+    int64 total = 4;                     // 总数
 }
 
 // 创建贷款产品
@@ -127,14 +159,14 @@ message UpdateProductStatusReq {
 // === 服务定义 ===
 service LoanProductService {
     // 产品查询
-    rpc GetLoanProduct(GetLoanProductReq) returns (LoanProductInfo);
+    rpc GetLoanProduct(GetLoanProductReq) returns (GetLoanProductResp);
     rpc ListLoanProducts(ListLoanProductsReq) returns (ListLoanProductsResp);
     
     // 产品管理
-    rpc CreateLoanProduct(CreateLoanProductReq) returns (LoanProductInfo);
-    rpc UpdateLoanProduct(UpdateLoanProductReq) returns (LoanProductInfo);
-    rpc DeleteLoanProduct(DeleteLoanProductReq) returns (google.protobuf.Empty);
-    rpc UpdateProductStatus(UpdateProductStatusReq) returns (google.protobuf.Empty);
+    rpc CreateLoanProduct(CreateLoanProductReq) returns (CreateLoanProductResp);
+    rpc UpdateLoanProduct(UpdateLoanProductReq) returns (UpdateLoanProductResp);
+    rpc DeleteLoanProduct(DeleteLoanProductReq) returns (DeleteLoanProductResp);
+    rpc UpdateProductStatus(UpdateProductStatusReq) returns (UpdateProductStatusResp);
 }
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../

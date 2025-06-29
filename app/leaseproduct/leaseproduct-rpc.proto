@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package leaseproduct;
 
-import "google/protobuf/empty.proto";
-
 option go_package = "./leaseproduct";
 
 // 服务架构:
@@ -76,6 +74,31 @@ message LeaseProductInfo {
   int64 updatedAt = 17;             // 更新时间
 }
 
+// 添加删除操作响应
+message DeleteLeaseProductResp {
+  int32 code = 1;
+  string message = 2;
+}
+
+// 标准响应格式
+message GetLeaseProductResp {
+  int32 code = 1;
+  string message = 2;
+  LeaseProductInfo data = 3;
+}
+
+message CreateLeaseProductResp {
+  int32 code = 1;
+  string message = 2;
+  LeaseProductInfo data = 3;
+}
+
+message UpdateLeaseProductResp {
+  int32 code = 1;
+  string message = 2;
+  LeaseProductInfo data = 3;
+}
+
 // === 请求响应结构 ===
 
 // 获取租赁产品请求
@@ -94,8 +117,10 @@ message ListLeaseProductsReq {
 }
 
 message ListLeaseProductsResp {
-  repeated LeaseProductInfo list = 1; // 产品列表
-  int64 total = 2;                  // 总数
+  int32 code = 1;                     // 响应码
+  string message = 2;                 // 响应消息
+  repeated LeaseProductInfo list = 3; // 产品列表
+  int64 total = 4;                    // 总数
 }
 
 // 创建租赁产品请求
@@ -144,25 +169,27 @@ message CheckInventoryAvailabilityReq {
 }
 
 message CheckInventoryAvailabilityResp {
-  bool available = 1;               // 是否可用
-  int32 availableCount = 2;         // 可用数量
+  int32 code = 1;                   // 响应码
+  string message = 2;               // 响应消息
+  bool available = 3;               // 是否可用
+  int32 availableCount = 4;         // 可用数量
 }
 
 // === 服务定义 ===
 
 service LeaseProductService {
   // 产品查询
-  rpc GetLeaseProduct(GetLeaseProductReq) returns (LeaseProductInfo);
+  rpc GetLeaseProduct(GetLeaseProductReq) returns (GetLeaseProductResp);
   rpc ListLeaseProducts(ListLeaseProductsReq) returns (ListLeaseProductsResp);
   
   // 产品管理
-  rpc CreateLeaseProduct(CreateLeaseProductReq) returns (LeaseProductInfo);
-  rpc UpdateLeaseProduct(UpdateLeaseProductReq) returns (LeaseProductInfo);
-  rpc DeleteLeaseProduct(DeleteLeaseProductReq) returns (google.protobuf.Empty);
+  rpc CreateLeaseProduct(CreateLeaseProductReq) returns (CreateLeaseProductResp);
+  rpc UpdateLeaseProduct(UpdateLeaseProductReq) returns (UpdateLeaseProductResp);
+  rpc DeleteLeaseProduct(DeleteLeaseProductReq) returns (DeleteLeaseProductResp);
   
   // 库存检查
   rpc CheckInventoryAvailability(CheckInventoryAvailabilityReq) returns (CheckInventoryAvailabilityResp);
 }
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
-// sed -i "" 's/,omitempty//g' *.pb.go 
+// sed -i "" 's/,omitempty//g' *.pb.go

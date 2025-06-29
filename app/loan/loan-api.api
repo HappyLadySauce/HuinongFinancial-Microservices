@@ -46,19 +46,19 @@ info (
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款申请表';
 // 数据结构定义
 type LoanApplicationInfo {
-	Id            int64  `json:"id"`
-	ApplicationId string `json:"application_id"`
-	UserId        int64  `json:"user_id"`
-	ApplicantName string `json:"applicant_name"`
-	ProductId     int64  `json:"product_id"`
-	Name          string `json:"name"`
-	Type          string `json:"type"`
+	Id            int64   `json:"id"`
+	ApplicationId string  `json:"application_id"`
+	UserId        int64   `json:"user_id"`
+	ApplicantName string  `json:"applicant_name"`
+	ProductId     int64   `json:"product_id"`
+	Name          string  `json:"name"`
+	Type          string  `json:"type"`
 	Amount        float64 `json:"amount"`
-	Duration      int32  `json:"duration"`
-	Purpose       string `json:"purpose"`
-	Status        string `json:"status"`
-	CreatedAt     int64  `json:"created_at"`
-	UpdatedAt     int64  `json:"updated_at"`
+	Duration      int32   `json:"duration"`
+	Purpose       string  `json:"purpose"`
+	Status        string  `json:"status"`
+	CreatedAt     int64   `json:"created_at"`
+	UpdatedAt     int64   `json:"updated_at"`
 }
 
 // 创建贷款申请请求响应
@@ -90,8 +90,8 @@ type GetLoanApplicationResp {
 
 // 获取贷款申请列表请求响应
 type ListLoanApplicationsReq {
-	Page   int64  `form:"page,default=1"`
-	Size   int64  `form:"size,default=10"`
+	Page   int32  `form:"page,default=1"`       // 修改为int32统一分页参数
+	Size   int32  `form:"size,default=10"`      // 修改为int32统一分页参数
 	UserId int64  `form:"user_id,optional"`
 	Status string `form:"status,optional"`
 }
