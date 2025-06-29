@@ -41,60 +41,7 @@ info (
 //   UNIQUE KEY `uk_phone` (`phone`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='后台用户表';
 
-// Rustful 接口规范
-
-// 用户信息管理
-@server (
-	group:  info
-	jwt:    Auth
-	prefix: /api/v1/user
-)
-service Info {
-	// 获取用户信息
-	@handler GetUserByPhone
-	get /info (GetUserInfoReq) returns (GetUserInfoResp)
-
-	// 更新用户信息
-	@handler UpdateUserInfo
-	put /info (UpdateUserInfoReq) returns (UpdateUserInfoResp)
-
-	// 注销用户
-	@handler DeleteUser
-	post /delete (DeleteUserReq) returns (DeleteUserResp)
-}
-
-// 用户认证管理 (公开接口)
-@server (
-	group:  auth
-	prefix: /api/v1/auth
-)
-service Auth {
-	// 用户登录
-	@handler Login
-	post /login (LoginReq) returns (LoginResp)
-
-	// 用户注册
-	@handler Register
-	post /register (RegisterReq) returns (RegisterResp)
-}
-
-// 用户认证管理 (需要认证)
-@server (
-	group:  auth_jwt
-	jwt:    Auth
-	prefix: /api/v1/auth
-)
-service AuthJWT {
-	// 用户注销
-	@handler Logout
-	post /logout (LogoutReq) returns (LogoutResp)
-
-	// 用户密码修改
-	@handler ChangePassword
-	post /password (ChangePasswordReq) returns (ChangePasswordResp)
-}
-
-
+// 数据结构定义
 type UserInfo {
 	Id        int64  `json:"id"`
 	Phone     string `json:"phone"`
@@ -108,7 +55,7 @@ type UserInfo {
 	UpdatedAt int64  `json:"updated_at"`
 }
 
-// 获取用户信息
+// 获取用户信息请求响应
 type GetUserInfoReq {
 	Phone string `json:"phone"`
 }
@@ -118,10 +65,8 @@ type GetUserInfoResp {
 	Message  string   `json:"message"`
 	UserInfo UserInfo `json:"user_info"`
 }
-// 获取用户信息
 
-
-// 更新用户信息
+// 更新用户信息请求响应
 type UpdateUserInfoReq {
 	UserInfo UserInfo `json:"user_info"`
 }
@@ -131,11 +76,8 @@ type UpdateUserInfoResp {
 	Message  string   `json:"message"`
 	UserInfo UserInfo `json:"user_info"`
 }
-// 更新用户信息
 
-
-
-// 删除用户
+// 删除用户请求响应
 type DeleteUserReq {
 	Phone string `json:"phone"`
 }
@@ -144,10 +86,8 @@ type DeleteUserResp {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
 }
-// 删除用户
 
-
-//登录
+// 登录请求响应
 type LoginReq {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
@@ -158,10 +98,8 @@ type LoginResp {
 	Message string `json:"message"`
 	Token   string `json:"token"`
 }
-// 登录
 
-
-// 注册
+// 注册请求响应
 type RegisterReq {
 	Phone    string `json:"phone"`
 	Password string `json:"password"`
@@ -172,10 +110,8 @@ type RegisterResp {
 	Message string `json:"message"`
 	Token   string `json:"token"`
 }
-// 注册
 
-
-// 注销
+// 注销请求响应
 type LogoutReq {
 	Token string `json:"token"`
 }
@@ -184,10 +120,8 @@ type LogoutResp {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
 }
-// 注销
 
-
-// 修改密码
+// 修改密码请求响应
 type ChangePasswordReq {
 	Phone       string `json:"phone"`
 	OldPassword string `json:"old_password"`
@@ -198,4 +132,54 @@ type ChangePasswordResp {
 	Code    int32  `json:"code"`
 	Message string `json:"message"`
 }
-// 修改密码
+
+// 用户认证管理 (公开接口)
+@server (
+	group:  auth
+	prefix: /api/v1/auth
+)
+service oauser {
+	// 用户登录
+	@handler Login
+	post /login (LoginReq) returns (LoginResp)
+
+	// 用户注册
+	@handler Register
+	post /register (RegisterReq) returns (RegisterResp)
+}
+
+// 用户信息管理 (需要JWT认证)
+@server (
+	group:  info
+	jwt:    Auth
+	prefix: /api/v1/user
+)
+service oauser {
+	// 获取用户信息
+	@handler GetUserByPhone
+	get /info (GetUserInfoReq) returns (GetUserInfoResp)
+
+	// 更新用户信息
+	@handler UpdateUserInfo
+	put /info (UpdateUserInfoReq) returns (UpdateUserInfoResp)
+
+	// 注销用户
+	@handler DeleteUser
+	post /delete (DeleteUserReq) returns (DeleteUserResp)
+}
+
+// 用户认证管理 (需要JWT认证)
+@server (
+	group:  auth_jwt
+	jwt:    Auth
+	prefix: /api/v1/auth
+)
+service oauser {
+	// 用户注销
+	@handler Logout
+	post /logout (LogoutReq) returns (LogoutResp)
+
+	// 用户密码修改
+	@handler ChangePassword
+	post /password (ChangePasswordReq) returns (ChangePasswordResp)
+}
