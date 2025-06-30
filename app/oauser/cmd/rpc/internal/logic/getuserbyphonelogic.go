@@ -2,11 +2,9 @@ package logic
 
 import (
 	"context"
-	"regexp"
 
 	"model"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/svc"
 	"rpc/oauser"
 
@@ -29,47 +27,35 @@ func NewGetUserByPhoneLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 
 // 用户信息管理
 func (l *GetUserByPhoneLogic) GetUserByPhone(in *oauser.GetUserInfoReq) (*oauser.GetUserInfoResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
-	log.Info("获取后台用户信息请求")
+	l.Infof("获取后台用户信息请求, phone: %s", in.Phone)
 
 	// 参数验证
 	if in.Phone == "" {
-		log.Warn("手机号参数为空")
+		l.Infof("手机号参数为空")
 		return &oauser.GetUserInfoResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
 		}, nil
 	}
 
-	// 验证手机号格式
-	phoneRegex := `^1[3-9]\d{9}$`
-	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
-	if !matched {
-		log.Warn("手机号格式无效")
-		return &oauser.GetUserInfoResp{
-			Code:    constants.CodePhoneInvalid,
-			Message: constants.GetMessage(constants.CodePhoneInvalid),
-		}, nil
-	}
-
-	// 查找用户
+	// 查询用户信息
 	user, err := l.svcCtx.OaUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &oauser.GetUserInfoResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &oauser.GetUserInfoResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	// 构建用户信息响应
+	// 构造返回的用户信息
 	userInfo := &oauser.UserInfo{
 		Id:        int64(user.Id),
 		Phone:     user.Phone,
@@ -83,7 +69,8 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *oauser.GetUserInfoReq) (*oauser
 		UpdatedAt: user.UpdatedAt.Unix(),
 	}
 
-	log.WithField("user_id", user.Id).WithField("role", user.Role).Info("获取用户信息成功")
+	l.Infof("获取后台用户信息成功, user_id: %d", user.Id)
+
 	return &oauser.GetUserInfoResp{
 		Code:     constants.CodeSuccess,
 		Message:  constants.GetMessage(constants.CodeSuccess),

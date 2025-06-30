@@ -6,7 +6,6 @@ import (
 
 	"model"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/svc"
 	"rpc/oauser"
 
@@ -28,12 +27,11 @@ func NewUpdateUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 }
 
 func (l *UpdateUserInfoLogic) UpdateUserInfo(in *oauser.UpdateUserInfoReq) (*oauser.UpdateUserInfoResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.UserInfo.Phone)
-	log.Info("更新后台用户信息请求")
+	l.Infof("更新后台用户信息请求, phone: %s", in.UserInfo.Phone)
 
 	// 参数验证
 	if in.UserInfo == nil || in.UserInfo.Phone == "" {
-		log.Warn("用户信息参数无效")
+		l.Infof("用户信息参数无效")
 		return &oauser.UpdateUserInfoResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -46,13 +44,13 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *oauser.UpdateUserInfoReq) (*oau
 	existingUser, err := l.svcCtx.OaUserModel.FindOneByPhone(l.ctx, userInfo.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &oauser.UpdateUserInfoResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &oauser.UpdateUserInfoResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -61,7 +59,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *oauser.UpdateUserInfoReq) (*oau
 
 	// 检查用户状态
 	if existingUser.Status == constants.UserStatusDisabled {
-		log.Warn("用户账号被禁用")
+		l.Infof("用户账号被禁用")
 		return &oauser.UpdateUserInfoResp{
 			Code:    constants.CodeUserDisabled,
 			Message: constants.GetMessage(constants.CodeUserDisabled),
@@ -69,66 +67,54 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *oauser.UpdateUserInfoReq) (*oau
 	}
 
 	// 更新用户信息
-	updateUser := &model.OaUsers{
-		Id:           existingUser.Id,
-		Phone:        existingUser.Phone,        // 手机号不允许修改
-		PasswordHash: existingUser.PasswordHash, // 密码不在此处修改
-		Name:         userInfo.Name,
-		Nickname:     userInfo.Nickname,
-		Age:          uint64(userInfo.Age),
-		Gender:       uint64(userInfo.Gender),
-		Role:         userInfo.Role,
-		Status:       uint64(userInfo.Status),
-		CreatedAt:    existingUser.CreatedAt,
-		UpdatedAt:    time.Now(),
+	existingUser.Name = userInfo.Name
+	existingUser.Nickname = userInfo.Nickname
+	existingUser.Age = uint64(userInfo.Age)
+	existingUser.Gender = uint64(userInfo.Gender)
+	existingUser.UpdatedAt = time.Now()
+
+	// 如果提供了角色信息，也更新角色（需要权限控制）
+	if userInfo.Role != "" {
+		if userInfo.Role == constants.RoleAdmin || userInfo.Role == constants.RoleOperator {
+			existingUser.Role = userInfo.Role
+		} else {
+			l.Infof("无效的用户角色")
+			return &oauser.UpdateUserInfoResp{
+				Code:    constants.CodeInvalidParams,
+				Message: "无效的用户角色，只支持 admin 或 operator",
+			}, nil
+		}
 	}
 
-	// 验证角色有效性
-	if updateUser.Role != constants.RoleAdmin && updateUser.Role != constants.RoleOperator {
-		log.Warn("无效的用户角色")
-		return &oauser.UpdateUserInfoResp{
-			Code:    constants.CodeInvalidParams,
-			Message: "无效的用户角色",
-		}, nil
-	}
-
-	// 验证状态有效性
-	if updateUser.Status != constants.UserStatusNormal && updateUser.Status != constants.UserStatusDisabled {
-		log.Warn("无效的用户状态")
-		return &oauser.UpdateUserInfoResp{
-			Code:    constants.CodeInvalidParams,
-			Message: "无效的用户状态",
-		}, nil
-	}
-
-	// 执行更新
-	err = l.svcCtx.OaUserModel.Update(l.ctx, updateUser)
+	// 保存到数据库
+	err = l.svcCtx.OaUserModel.Update(l.ctx, existingUser)
 	if err != nil {
-		log.WithError(err).Error("更新用户失败")
+		l.Errorf("更新用户信息失败: %v", err)
 		return &oauser.UpdateUserInfoResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	// 构建响应用户信息
-	responseUserInfo := &oauser.UserInfo{
-		Id:        int64(updateUser.Id),
-		Phone:     updateUser.Phone,
-		Name:      updateUser.Name,
-		Nickname:  updateUser.Nickname,
-		Age:       int32(updateUser.Age),
-		Gender:    int32(updateUser.Gender),
-		Role:      updateUser.Role,
-		Status:    int32(updateUser.Status),
-		CreatedAt: updateUser.CreatedAt.Unix(),
-		UpdatedAt: updateUser.UpdatedAt.Unix(),
+	// 构造返回的用户信息
+	updatedUserInfo := &oauser.UserInfo{
+		Id:        int64(existingUser.Id),
+		Phone:     existingUser.Phone,
+		Name:      existingUser.Name,
+		Nickname:  existingUser.Nickname,
+		Age:       int32(existingUser.Age),
+		Gender:    int32(existingUser.Gender),
+		Role:      existingUser.Role,
+		Status:    int32(existingUser.Status),
+		CreatedAt: existingUser.CreatedAt.Unix(),
+		UpdatedAt: existingUser.UpdatedAt.Unix(),
 	}
 
-	log.WithField("user_id", updateUser.Id).Info("更新用户信息成功")
+	l.Infof("更新后台用户信息成功, user_id: %d", existingUser.Id)
+
 	return &oauser.UpdateUserInfoResp{
 		Code:     constants.CodeSuccess,
 		Message:  constants.GetMessage(constants.CodeSuccess),
-		UserInfo: responseUserInfo,
+		UserInfo: updatedUserInfo,
 	}, nil
 }

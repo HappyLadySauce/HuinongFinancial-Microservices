@@ -7,7 +7,6 @@ import (
 
 	"model"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/pkg/utils"
 	"rpc/internal/svc"
 	"rpc/oauser"
@@ -30,12 +29,11 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone).WithField("role", in.Role)
-	log.Info("后台用户注册请求")
+	l.Infof("后台用户注册请求, phone: %s, role: %s", in.Phone, in.Role)
 
 	// 参数验证
 	if in.Phone == "" || in.Password == "" {
-		log.Warn("注册参数不完整")
+		l.Infof("注册参数不完整")
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -46,7 +44,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	phoneRegex := `^1[3-9]\d{9}$`
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
-		log.Warn("手机号格式无效")
+		l.Infof("手机号格式无效")
 		return &oauser.RegisterResp{
 			Code:    constants.CodePhoneInvalid,
 			Message: constants.GetMessage(constants.CodePhoneInvalid),
@@ -55,7 +53,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 
 	// 验证密码强度（至少6位）
 	if len(in.Password) < 6 {
-		log.Warn("密码长度不足")
+		l.Infof("密码长度不足")
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInvalidParams,
 			Message: "密码长度至少6位",
@@ -69,7 +67,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		role = constants.RoleOperator
 	}
 	if role != constants.RoleAdmin && role != constants.RoleOperator {
-		log.Warn("无效的用户角色")
+		l.Infof("无效的用户角色")
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInvalidParams,
 			Message: "无效的用户角色，只支持 admin 或 operator",
@@ -79,7 +77,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	// 检查用户是否已存在
 	existingUser, err := l.svcCtx.OaUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil && err != model.ErrNotFound {
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -87,7 +85,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	}
 
 	if existingUser != nil {
-		log.Warn("用户已存在")
+		l.Infof("用户已存在")
 		return &oauser.RegisterResp{
 			Code:    constants.CodeUserExists,
 			Message: constants.GetMessage(constants.CodeUserExists),
@@ -97,7 +95,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	// 密码哈希
 	passwordHash, err := utils.HashPassword(in.Password)
 	if err != nil {
-		log.WithError(err).Error("密码哈希失败")
+		l.Errorf("密码哈希失败: %v", err)
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -121,7 +119,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	// 插入数据库
 	result, err := l.svcCtx.OaUserModel.Insert(l.ctx, newUser)
 	if err != nil {
-		log.WithError(err).Error("创建用户失败")
+		l.Errorf("创建用户失败: %v", err)
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -131,7 +129,7 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 	// 获取新用户ID
 	userID, err := result.LastInsertId()
 	if err != nil {
-		log.WithError(err).Error("获取用户ID失败")
+		l.Errorf("获取用户ID失败: %v", err)
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -147,17 +145,16 @@ func (l *RegisterLogic) Register(in *oauser.RegisterReq) (*oauser.RegisterResp, 
 		l.svcCtx.Config.JwtAuth.AccessSecret,
 		l.svcCtx.Config.JwtAuth.AccessExpire,
 	)
+
 	if err != nil {
-		log.WithError(err).Error("生成token失败")
+		l.Errorf("生成token失败: %v", err)
 		return &oauser.RegisterResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	log.WithField("user_id", userID).
-		WithField("role", role).
-		Info("后台用户注册成功")
+	l.Infof("后台用户注册成功, user_id: %d, role: %s", userID, role)
 
 	return &oauser.RegisterResp{
 		Code:    constants.CodeSuccess,
