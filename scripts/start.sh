@@ -223,6 +223,53 @@ check_status() {
     fi
 }
 
+# 清理指定服务的日志文件
+clean_service_logs() {
+    local service=$1
+    print_message $YELLOW "清理服务 $service 的日志文件..."
+    
+    # 清理脚本生成的该服务日志文件
+    if [[ -d "$LOG_DIR" ]]; then
+        rm -f "$LOG_DIR/$service.log"
+        print_message $GREEN "✓ 脚本日志文件清理完成: $LOG_DIR/$service.log"
+    fi
+    
+    # 清理该服务目录下的logs文件夹
+    local config_info="${SERVICE_CONFIG[$service]}"
+    local work_dir="${config_info##*:}"
+    local logs_dir="$work_dir/logs"
+    
+    if [[ -d "$logs_dir" ]]; then
+        rm -rf "$logs_dir"
+        print_message $GREEN "✓ 服务日志清理完成: $service ($logs_dir)"
+    fi
+}
+
+# 清理所有日志文件
+clean_logs() {
+    print_message $YELLOW "清理旧的日志文件..."
+    
+    # 清理脚本生成的日志文件
+    if [[ -d "$LOG_DIR" ]]; then
+        rm -f "$LOG_DIR"/*.log
+        print_message $GREEN "✓ 脚本日志文件清理完成: $LOG_DIR"
+    fi
+    
+    # 清理各个微服务目录下的logs文件夹
+    for service in "${!SERVICE_CONFIG[@]}"; do
+        local config_info="${SERVICE_CONFIG[$service]}"
+        local work_dir="${config_info##*:}"
+        local logs_dir="$work_dir/logs"
+        
+        if [[ -d "$logs_dir" ]]; then
+            rm -rf "$logs_dir"
+            print_message $GREEN "✓ 服务日志清理完成: $service ($logs_dir)"
+        fi
+    done
+    
+    print_message $GREEN "✓ 所有日志文件清理完成"
+}
+
 # 启动所有服务
 start_all() {
     print_message $GREEN "\n========================================"
@@ -230,6 +277,7 @@ start_all() {
     print_message $GREEN "========================================\n"
     
     create_dirs
+    clean_logs
     
     # 第一阶段：启动RPC服务
     print_message $YELLOW "阶段1: 启动用户管理RPC服务"
@@ -313,18 +361,40 @@ restart_all() {
     start_all
 }
 
+# 列出所有可用服务
+list_services() {
+    echo "可用的服务："
+    echo ""
+    echo "RPC服务:"
+    for service in "${FIRST_RPC_GROUP[@]}" "${SECOND_RPC_GROUP[@]}" "${THIRD_RPC_GROUP[@]}"; do
+        echo "  $service"
+    done
+    echo ""
+    echo "API服务:"
+    for service in "${FIRST_API_GROUP[@]}" "${SECOND_API_GROUP[@]}" "${THIRD_API_GROUP[@]}"; do
+        echo "  $service"
+    done
+}
+
 # 显示帮助信息
 show_help() {
-    echo "用法: $0 {start|stop|restart|status|help}"
+    echo "用法: $0 {start|stop|restart|status|list|help} [service-name]"
     echo ""
-    echo "命令说明:"
-    echo "  start   - 启动所有微服务（先启动RPC，再启动API）"
-    echo "  stop    - 停止所有微服务"
-    echo "  restart - 重启所有微服务"
-    echo "  status  - 查看所有微服务状态"
-    echo "  help    - 显示此帮助信息"
+    echo "全局命令:"
+    echo "  start         - 启动所有微服务（先启动RPC，再启动API）"
+    echo "  stop          - 停止所有微服务"
+    echo "  restart       - 重启所有微服务"
+    echo "  status        - 查看所有微服务状态"
+    echo "  list          - 列出所有可用的服务"
+    echo "  help          - 显示此帮助信息"
     echo ""
-    echo "启动顺序:"
+    echo "单服务命令:"
+    echo "  start <服务名>   - 启动指定的微服务"
+    echo "  stop <服务名>    - 停止指定的微服务"
+    echo "  restart <服务名> - 重启指定的微服务"
+    echo "  status <服务名>  - 查看指定微服务状态"
+    echo ""
+    echo "启动顺序（全部启动时）:"
     echo "  1. 用户管理RPC服务: appuser-rpc, oauser-rpc"
     echo "  2. 产品管理RPC服务: loanproduct-rpc, leaseproduct-rpc"
     echo "  3. 业务RPC服务: loan-rpc, lease-rpc"
@@ -332,30 +402,104 @@ show_help() {
     echo "  5. 产品管理API服务: loanproduct-api, leaseproduct-api"
     echo "  6. 业务API服务: loan-api, lease-api"
     echo ""
-    echo "日志位置: $LOG_DIR"
+    echo "示例:"
+    echo "  $0 start                  # 启动所有服务"
+    echo "  $0 start appuser-rpc      # 仅启动 appuser-rpc 服务"
+    echo "  $0 stop loan-api          # 仅停止 loan-api 服务"
+    echo "  $0 status                 # 查看所有服务状态"
+    echo "  $0 status appuser-api     # 查看 appuser-api 服务状态"
+    echo ""
+    echo "日志位置: $LOG_DIR (脚本日志)"
+    echo "服务日志位置: 各服务工作目录下的 logs/ 文件夹"
     echo "PID文件位置: $PID_DIR"
+}
+
+# 验证服务名是否有效
+validate_service() {
+    local service=$1
+    if [[ -z "${SERVICE_CONFIG[$service]}" ]]; then
+        print_message $RED "错误: 无效的服务名 '$service'"
+        echo ""
+        list_services
+        return 1
+    fi
+    return 0
 }
 
 # 主函数
 main() {
-    case "$1" in
+    local command=$1
+    local service=$2
+    
+    case "$command" in
         start)
-            start_all
+            if [[ -n "$service" ]]; then
+                # 启动单个服务
+                if validate_service "$service"; then
+                    create_dirs
+                    clean_service_logs "$service"
+                    print_message $BLUE "启动单个服务: $service"
+                    start_service "$service"
+                fi
+            else
+                # 启动所有服务
+                start_all
+            fi
             ;;
         stop)
-            stop_all
+            if [[ -n "$service" ]]; then
+                # 停止单个服务
+                if validate_service "$service"; then
+                    print_message $BLUE "停止单个服务: $service"
+                    stop_service "$service"
+                fi
+            else
+                # 停止所有服务
+                stop_all
+            fi
             ;;
         restart)
-            restart_all
+            if [[ -n "$service" ]]; then
+                # 重启单个服务
+                if validate_service "$service"; then
+                    print_message $BLUE "重启单个服务: $service"
+                    stop_service "$service"
+                    sleep 3
+                    create_dirs
+                    clean_service_logs "$service"
+                    start_service "$service"
+                fi
+            else
+                # 重启所有服务
+                restart_all
+            fi
             ;;
         status)
-            show_status
+            if [[ -n "$service" ]]; then
+                # 查看单个服务状态
+                if validate_service "$service"; then
+                    print_message $BLUE "服务状态: $service"
+                    check_status "$service"
+                fi
+            else
+                # 查看所有服务状态
+                show_status
+            fi
+            ;;
+        list)
+            list_services
             ;;
         help|--help|-h)
             show_help
             ;;
+        "")
+            print_message $RED "错误: 缺少命令参数"
+            echo ""
+            show_help
+            exit 1
+            ;;
         *)
-            print_message $RED "错误: 无效的参数 '$1'"
+            print_message $RED "错误: 无效的命令 '$command'"
             echo ""
             show_help
             exit 1

@@ -3,7 +3,6 @@ module rpc
 go 1.24.3
 
 require (
-	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/zeromicro/go-zero v1.8.4
 	github.com/zeromicro/zero-contrib/zrpc/registry/consul v0.0.0-20231030135404-af9ae855016f
 	golang.org/x/crypto v0.36.0

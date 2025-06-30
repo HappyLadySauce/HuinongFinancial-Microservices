@@ -48,17 +48,31 @@ func (l *LogoutLogic) Logout(in *appuser.LogoutReq) (*appuser.LogoutResp, error)
 		}, nil
 	}
 
-	// 检查用户类型，确保是 app 用户
-	if claims.UserType != "app" {
-		l.Infof("用户类型不匹配, user_type: %s", claims.UserType)
+	// 获取用户类型
+	userType, ok := claims["user_type"].(string)
+	if !ok {
+		l.Infof("Token中缺少用户类型信息")
 		return &appuser.LogoutResp{
 			Code:    constants.CodeTokenInvalid,
 			Message: constants.GetMessage(constants.CodeTokenInvalid),
 		}, nil
 	}
 
+	// 检查用户类型，确保是 app 用户
+	if userType != "app" {
+		l.Infof("用户类型不匹配, user_type: %s", userType)
+		return &appuser.LogoutResp{
+			Code:    constants.CodeTokenInvalid,
+			Message: constants.GetMessage(constants.CodeTokenInvalid),
+		}, nil
+	}
+
+	// 获取用户ID和手机号
+	userID, _ := claims["user_id"].(float64) // JWT中数字通常是float64
+	phone, _ := claims["phone"].(string)
+
 	// 记录登出操作
-	l.Infof("用户登出成功, user_id: %d, phone: %s", claims.UserID, claims.Phone)
+	l.Infof("用户登出成功, user_id: %.0f, phone: %s", userID, phone)
 
 	// 在真实场景中，可以考虑以下操作：
 	// 1. 将 token 添加到黑名单 (Redis)

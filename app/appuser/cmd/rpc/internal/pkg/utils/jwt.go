@@ -1,41 +1,33 @@
 package utils
 
 import (
-	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// JWTClaims JWT 载荷
-type JWTClaims struct {
-	UserID   int64  `json:"user_id"`
-	Phone    string `json:"phone"`
-	UserType string `json:"user_type"` // app, oa
-	jwt.RegisteredClaims
-}
-
-// GenerateToken 生成 JWT token
+// GenerateToken 生成 JWT token - 兼容 go-zero JWT 中间件
+// 根据 go-zero 官方文档，使用 jwt.MapClaims
 func GenerateToken(userID int64, phone, userType, secret string, expireSeconds int64) (string, error) {
-	claims := JWTClaims{
-		UserID:   userID,
-		Phone:    phone,
-		UserType: userType,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expireSeconds) * time.Second)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "huinong-financial",
-		},
-	}
+	now := time.Now()
+	iat := now.Unix()
+	exp := now.Add(time.Duration(expireSeconds) * time.Second).Unix()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	claims := make(jwt.MapClaims)
+	claims["exp"] = exp
+	claims["iat"] = iat
+	claims["user_id"] = userID
+	claims["phone"] = phone
+	claims["user_type"] = userType
+
+	token := jwt.New(jwt.SigningMethodHS256)
+	token.Claims = claims
 	return token.SignedString([]byte(secret))
 }
 
-// ParseToken 解析 JWT token
-func ParseToken(tokenString, secret string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+// ParseToken 解析 JWT token - 兼容 go-zero JWT 中间件
+func ParseToken(tokenString, secret string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
 
@@ -43,9 +35,9 @@ func ParseToken(tokenString, secret string) (*JWTClaims, error) {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, errors.New("invalid token")
+	return nil, jwt.ErrInvalidKey
 }

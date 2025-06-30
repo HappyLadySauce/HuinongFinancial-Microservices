@@ -30,7 +30,7 @@ CacheConf:
 
 # JWT 配置
 JwtAuth:
-  AccessSecret: "huinong-appuser-secret"
+  AccessSecret: "huinong-auth-access-secret"
   AccessExpire: 3600
 
 # 日志配置 (go-zero 框架自带)
