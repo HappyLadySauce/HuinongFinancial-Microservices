@@ -6,7 +6,6 @@ import (
 	"model"
 	"rpc/appuser"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -28,12 +27,11 @@ func NewGetUserByPhoneLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 
 // 用户信息管理
 func (l *GetUserByPhoneLogic) GetUserByPhone(in *appuser.GetUserInfoReq) (*appuser.GetUserInfoResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
-	log.Info("获取用户信息请求")
+	l.Infof("获取用户信息请求, phone: %s", in.Phone)
 
 	// 参数验证
 	if in.Phone == "" {
-		log.Warn("手机号参数为空")
+		l.Infof("手机号参数为空")
 		return &appuser.GetUserInfoResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -44,13 +42,13 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *appuser.GetUserInfoReq) (*appus
 	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &appuser.GetUserInfoResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &appuser.GetUserInfoResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -73,7 +71,7 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *appuser.GetUserInfoReq) (*appus
 		UpdatedAt:  user.UpdatedAt.Unix(),
 	}
 
-	log.WithField("user_id", user.Id).Info("获取用户信息成功")
+	l.Infof("获取用户信息成功, user_id: %d", user.Id)
 	return &appuser.GetUserInfoResp{
 		Code:     constants.CodeSuccess,
 		Message:  constants.GetMessage(constants.CodeSuccess),

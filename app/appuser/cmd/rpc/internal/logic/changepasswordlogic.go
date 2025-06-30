@@ -8,7 +8,6 @@ import (
 	"model"
 	"rpc/appuser"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/pkg/utils"
 	"rpc/internal/svc"
 
@@ -31,12 +30,11 @@ func NewChangePasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 
 // 用户认证管理
 func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*appuser.ChangePasswordResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
-	log.Info("修改密码请求")
+	l.Infof("修改密码请求, phone: %s", in.Phone)
 
 	// 参数验证
 	if in.Phone == "" || in.OldPassword == "" || in.NewPassword == "" {
-		log.Warn("修改密码参数不完整")
+		l.Infof("修改密码参数不完整")
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -47,7 +45,7 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	phoneRegex := `^1[3-9]\d{9}$`
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
-		log.Warn("手机号格式无效")
+		l.Infof("手机号格式无效")
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodePhoneInvalid,
 			Message: constants.GetMessage(constants.CodePhoneInvalid),
@@ -56,7 +54,7 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 
 	// 验证新密码长度
 	if len(in.NewPassword) < 6 {
-		log.Warn("新密码长度不足")
+		l.Infof("新密码长度不足")
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodeInvalidParams,
 			Message: "新密码长度不能少于6位",
@@ -67,32 +65,41 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &appuser.ChangePasswordResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	// 验证原密码
+	// 检查用户状态
+	if user.Status != 1 {
+		l.Infof("用户状态异常")
+		return &appuser.ChangePasswordResp{
+			Code:    constants.CodeUserDisabled,
+			Message: constants.GetMessage(constants.CodeUserDisabled),
+		}, nil
+	}
+
+	// 验证旧密码
 	if !utils.CheckPassword(in.OldPassword, user.Password) {
-		log.Warn("原密码错误")
+		l.Infof("旧密码错误")
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodePasswordError,
-			Message: "原密码错误",
+			Message: "旧密码错误",
 		}, nil
 	}
 
 	// 加密新密码
 	hashedNewPassword, err := utils.HashPassword(in.NewPassword)
 	if err != nil {
-		log.WithError(err).Error("新密码加密失败")
+		l.Errorf("新密码加密失败: %v", err)
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -100,32 +107,18 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	}
 
 	// 更新密码
-	updatedUser := &model.AppUsers{
-		Id:         user.Id,
-		Phone:      user.Phone,
-		Password:   hashedNewPassword,
-		Name:       user.Name,
-		Nickname:   user.Nickname,
-		Age:        user.Age,
-		Gender:     user.Gender,
-		Occupation: user.Occupation,
-		Address:    user.Address,
-		Income:     user.Income,
-		Status:     user.Status,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  time.Now(),
-	}
-
-	err = l.svcCtx.AppUserModel.Update(l.ctx, updatedUser)
+	user.Password = hashedNewPassword
+	user.UpdatedAt = time.Now()
+	err = l.svcCtx.AppUserModel.Update(l.ctx, user)
 	if err != nil {
-		log.WithError(err).Error("更新密码失败")
+		l.Errorf("更新密码失败: %v", err)
 		return &appuser.ChangePasswordResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	log.WithField("user_id", user.Id).Info("修改密码成功")
+	l.Infof("修改密码成功, user_id: %d", user.Id)
 	return &appuser.ChangePasswordResp{
 		Code:    constants.CodeSuccess,
 		Message: constants.GetMessage(constants.CodeSuccess),

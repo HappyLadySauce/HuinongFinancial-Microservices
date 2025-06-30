@@ -6,3 +6,9 @@
 {"@timestamp":"2025-06-30T07:06:58.146Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
 {"@timestamp":"2025-06-30T07:11:58.784Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 5.802007ms for target={service='leaserpc.rpc' healthy='false' tag=''}","level":"info"}
 {"@timestamp":"2025-06-30T07:13:26.624Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T07:19:04.239Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 71.109711ms for target={service='leaserpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-30T07:20:00.910Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T07:21:43.139Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 89.6152ms for target={service='leaserpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-30T07:23:36.711Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T07:25:31.830Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 6.095186ms for target={service='leaserpc.rpc' healthy='false' tag=''}","level":"info"}
+{"@timestamp":"2025-06-30T07:33:09.870Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}

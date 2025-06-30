@@ -33,17 +33,6 @@ JwtAuth:
   AccessSecret: "huinong-appuser-secret"
   AccessExpire: 3600
 
-# Logrus 日志配置
-Logger:
-  ServiceName: appuserrpc
-  Mode: file # 本地开发记入文件，K8s中应使用 console
-  Path: logs
-  Level: info
-  KeepDays: 7
-  Compress: true
-  MaxSize: 100
-  MaxBackups: 5
-
 # 日志配置 (go-zero 框架自带)
 Log:
   ServiceName: appuserrpc

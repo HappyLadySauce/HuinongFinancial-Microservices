@@ -6,7 +6,6 @@ import (
 	"model"
 	"rpc/appuser"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -28,12 +27,11 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 
 // 软删除用户（更新状态为删除状态）
 func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.DeleteUserResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
-	log.Info("删除用户请求")
+	l.Infof("删除用户请求, phone: %s", in.Phone)
 
 	// 参数验证
 	if in.Phone == "" {
-		log.Warn("手机号不能为空")
+		l.Infof("手机号不能为空")
 		return &appuser.DeleteUserResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -44,13 +42,13 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &appuser.DeleteUserResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &appuser.DeleteUserResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -59,7 +57,7 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 
 	// 检查用户状态，避免重复删除
 	if user.Status == 4 { // 假设状态 4 表示已删除
-		log.Warn("用户已经被删除")
+		l.Infof("用户已经被删除")
 		return &appuser.DeleteUserResp{
 			Code:    constants.CodeUserAlreadyDeleted,
 			Message: constants.GetMessage(constants.CodeUserAlreadyDeleted),
@@ -70,14 +68,14 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 	user.Status = 4 // 状态 4 表示已删除
 	err = l.svcCtx.AppUserModel.Update(l.ctx, user)
 	if err != nil {
-		log.WithError(err).Error("更新用户状态失败")
+		l.Errorf("更新用户状态失败: %v", err)
 		return &appuser.DeleteUserResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	log.WithField("user_id", user.Id).Info("用户删除成功")
+	l.Infof("用户删除成功, user_id: %d", user.Id)
 	return &appuser.DeleteUserResp{
 		Code:    constants.CodeSuccess,
 		Message: constants.GetMessage(constants.CodeSuccess),

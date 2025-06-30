@@ -4,13 +4,11 @@ go 1.24.3
 
 require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
-	github.com/sirupsen/logrus v1.6.0
 	github.com/zeromicro/go-zero v1.8.4
 	github.com/zeromicro/zero-contrib/zrpc/registry/consul v0.0.0-20231030135404-af9ae855016f
 	golang.org/x/crypto v0.36.0
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
@@ -52,7 +50,6 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

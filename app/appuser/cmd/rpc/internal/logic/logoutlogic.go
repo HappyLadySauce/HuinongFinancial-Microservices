@@ -5,7 +5,6 @@ import (
 
 	"rpc/appuser"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/pkg/utils"
 	"rpc/internal/svc"
 
@@ -28,12 +27,11 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 
 // 用户登出
 func (l *LogoutLogic) Logout(in *appuser.LogoutReq) (*appuser.LogoutResp, error) {
-	log := logger.WithContext(l.ctx)
-	log.Info("用户登出请求")
+	l.Info("用户登出请求")
 
 	// 参数验证
 	if in.Token == "" {
-		log.Warn("Token不能为空")
+		l.Infof("Token不能为空")
 		return &appuser.LogoutResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -43,7 +41,7 @@ func (l *LogoutLogic) Logout(in *appuser.LogoutReq) (*appuser.LogoutResp, error)
 	// 验证 Token 有效性
 	claims, err := utils.ParseToken(in.Token, l.svcCtx.Config.JwtAuth.AccessSecret)
 	if err != nil {
-		log.WithError(err).Warn("Token解析失败")
+		l.Errorf("Token解析失败: %v", err)
 		return &appuser.LogoutResp{
 			Code:    constants.CodeTokenInvalid,
 			Message: constants.GetMessage(constants.CodeTokenInvalid),
@@ -52,7 +50,7 @@ func (l *LogoutLogic) Logout(in *appuser.LogoutReq) (*appuser.LogoutResp, error)
 
 	// 检查用户类型，确保是 app 用户
 	if claims.UserType != "app" {
-		log.WithField("user_type", claims.UserType).Warn("用户类型不匹配")
+		l.Infof("用户类型不匹配, user_type: %s", claims.UserType)
 		return &appuser.LogoutResp{
 			Code:    constants.CodeTokenInvalid,
 			Message: constants.GetMessage(constants.CodeTokenInvalid),
@@ -60,7 +58,7 @@ func (l *LogoutLogic) Logout(in *appuser.LogoutReq) (*appuser.LogoutResp, error)
 	}
 
 	// 记录登出操作
-	log.WithField("user_id", claims.UserID).WithField("phone", claims.Phone).Info("用户登出成功")
+	l.Infof("用户登出成功, user_id: %d, phone: %s", claims.UserID, claims.Phone)
 
 	// 在真实场景中，可以考虑以下操作：
 	// 1. 将 token 添加到黑名单 (Redis)

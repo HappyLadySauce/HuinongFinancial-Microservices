@@ -7,7 +7,6 @@ import (
 	"model"
 	"rpc/appuser"
 	"rpc/internal/pkg/constants"
-	"rpc/internal/pkg/logger"
 	"rpc/internal/pkg/utils"
 	"rpc/internal/svc"
 
@@ -30,12 +29,11 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 // 用户认证管理
 func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
-	log := logger.WithContext(l.ctx).WithField("phone", in.Phone)
-	log.Info("用户登录请求")
+	l.Infof("用户登录请求, phone: %s", in.Phone)
 
 	// 参数验证
 	if in.Phone == "" || in.Password == "" {
-		log.Warn("登录参数不完整")
+		l.Infof("登录参数不完整")
 		return &appuser.LoginResp{
 			Code:    constants.CodeInvalidParams,
 			Message: constants.GetMessage(constants.CodeInvalidParams),
@@ -46,7 +44,7 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	phoneRegex := `^1[3-9]\d{9}$`
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
-		log.Warn("手机号格式无效")
+		l.Infof("手机号格式无效")
 		return &appuser.LoginResp{
 			Code:    constants.CodePhoneInvalid,
 			Message: constants.GetMessage(constants.CodePhoneInvalid),
@@ -57,13 +55,13 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	user, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil {
 		if err == model.ErrNotFound {
-			log.Warn("用户不存在")
+			l.Infof("用户不存在")
 			return &appuser.LoginResp{
 				Code:    constants.CodeUserNotFound,
 				Message: constants.GetMessage(constants.CodeUserNotFound),
 			}, nil
 		}
-		log.WithError(err).Error("查询用户失败")
+		l.Errorf("查询用户失败: %v", err)
 		return &appuser.LoginResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
@@ -72,14 +70,14 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 
 	// 检查用户状态
 	if user.Status == 2 {
-		log.Warn("用户账号被冻结")
+		l.Infof("用户账号被冻结")
 		return &appuser.LoginResp{
 			Code:    constants.CodeUserFrozen,
 			Message: constants.GetMessage(constants.CodeUserFrozen),
 		}, nil
 	}
 	if user.Status == 3 {
-		log.Warn("用户账号被禁用")
+		l.Infof("用户账号被禁用")
 		return &appuser.LoginResp{
 			Code:    constants.CodeUserDisabled,
 			Message: constants.GetMessage(constants.CodeUserDisabled),
@@ -88,7 +86,7 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 
 	// 验证密码
 	if !utils.CheckPassword(in.Password, user.Password) {
-		log.Warn("密码错误")
+		l.Infof("密码错误")
 		return &appuser.LoginResp{
 			Code:    constants.CodePasswordError,
 			Message: constants.GetMessage(constants.CodePasswordError),
@@ -104,14 +102,14 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 		l.svcCtx.Config.JwtAuth.AccessExpire,
 	)
 	if err != nil {
-		log.WithError(err).Error("生成token失败")
+		l.Errorf("生成token失败: %v", err)
 		return &appuser.LoginResp{
 			Code:    constants.CodeInternalError,
 			Message: constants.GetMessage(constants.CodeInternalError),
 		}, nil
 	}
 
-	log.WithField("user_id", user.Id).Info("用户登录成功")
+	l.Infof("用户登录成功, user_id: %d", user.Id)
 	return &appuser.LoginResp{
 		Code:    constants.CodeSuccess,
 		Message: constants.GetMessage(constants.CodeSuccess),

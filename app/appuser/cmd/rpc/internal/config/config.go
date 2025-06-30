@@ -21,15 +21,4 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
-	// Logrus 日志配置
-	Logger struct {
-		ServiceName string
-		Mode        string // file, console
-		Path        string
-		Level       string
-		KeepDays    int
-		Compress    bool
-		MaxSize     int
-		MaxBackups  int
-	}
 }
