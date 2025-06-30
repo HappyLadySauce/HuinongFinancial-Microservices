@@ -533,3 +533,16 @@
 {"@timestamp":"2025-06-30T04:58:56.597Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2025-06-30T04:59:11.315Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
 {"@timestamp":"2025-06-30T04:59:12.324Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:92","content":"deregistered service from consul server.","level":"info"}
+{"@timestamp":"2025-06-30T06:51:26.642Z","caller":"rpc/appuserrpc.go:43","content":"consul register service success: appuserrpc.rpc","level":"info"}
+{"@timestamp":"2025-06-30T06:51:45.648Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:52:04.650Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:52:23.649Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:52:42.646Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:53:01.646Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:53:20.647Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:53:39.646Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:53:58.649Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:54:17.647Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:54:36.646Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:54:55.649Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:55:14.650Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}

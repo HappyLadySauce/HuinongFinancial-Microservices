@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 微服务构建脚本 - 基于go-zero微服务架构，集成SkyWalking监控
+# 微服务构建脚本 - 基于go-zero微服务架构
 # 使用方法：./scripts/build.sh [service_name] [type] [options]
 # 示例：./scripts/build.sh appuser api
 #       ./scripts/build.sh appuser rpc
@@ -17,19 +17,13 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-# SkyWalking配置
-SKYWALKING_AGENT_PATH="app/skywalking-go-agent/skywalking-go-agent-0.6.0-linux-amd64"
-SKYWALKING_IMPORT='_ "github.com/apache/skywalking-go"'
-
 # 帮助信息
 show_help() {
-    echo -e "${BLUE}微服务构建脚本 - HuinongFinancial微服务 + SkyWalking监控${NC}"
+    echo -e "${BLUE}微服务构建脚本 - HuinongFinancial微服务${NC}"
     echo ""
     echo "功能特性:"
     echo "  - 支持构建go-zero微服务应用"
-    echo "  - 自动集成SkyWalking Go Agent监控"
     echo "  - 支持Release和Debug两种构建模式"
-    echo "  - 自动代码注入SkyWalking依赖"
     echo "  - 支持单服务和批量构建"
     echo "  - 构建产物统一输出到bin目录"
     echo ""
@@ -46,7 +40,7 @@ show_help() {
     echo "参数说明:"
     echo "  service_name: 服务名称 (appuser|oauser|loan|loanproduct|leaseproduct|lease)"
     echo "  type:         构建类型 (api|rpc|all|clean|check)"
-    echo "  options:      构建选项 (--release|--debug|--force|--no-skywalking)"
+    echo "  options:      构建选项 (--release|--debug|--force)"
     echo ""
     echo "示例:"
     echo "  $0 appuser api              # 构建appuser的API服务"
@@ -57,7 +51,6 @@ show_help() {
     echo "  $0 all all                  # 构建所有服务的API和RPC"
     echo "  $0 appuser api --release    # Release模式构建appuser API"
     echo "  $0 appuser api --debug      # Debug模式构建appuser API"
-    echo "  $0 appuser api --no-skywalking  # 不集成SkyWalking构建"
     echo "  $0 all clean                # 清理所有构建产物"
     echo "  $0 appuser check            # 检查appuser服务的构建环境"
     echo ""
@@ -65,7 +58,6 @@ show_help() {
     echo "  --release        Release模式：优化编译，去除调试信息，缩小体积"
     echo "  --debug          Debug模式：包含调试信息，不优化（默认）"
     echo "  --force          强制重新构建，忽略文件时间戳"
-    echo "  --no-skywalking  不集成SkyWalking监控"
     echo ""
     echo "支持的服务:"
     echo "  appuser      - App用户服务"
@@ -75,11 +67,6 @@ show_help() {
     echo "  leaseproduct - 租赁产品服务"
     echo "  lease        - 租赁服务"
     echo ""
-    echo "SkyWalking集成说明:"
-    echo "  - Agent路径: $SKYWALKING_AGENT_PATH"
-    echo "  - 自动注入导入: $SKYWALKING_IMPORT"
-    echo "  - 编译参数: -toolexec=\"/path/to/agent\" -a"
-    echo "  - 运行时通过环境变量配置服务名"
 }
 
 # 检查参数
@@ -112,7 +99,6 @@ fi
 # 解析构建选项
 BUILD_MODE="debug"
 FORCE_BUILD=false
-ENABLE_SKYWALKING=true
 
 shift 2  # 移除前两个参数
 while [[ $# -gt 0 ]]; do
@@ -129,10 +115,6 @@ while [[ $# -gt 0 ]]; do
             FORCE_BUILD=true
             shift
             ;;
-        --no-skywalking)
-            ENABLE_SKYWALKING=false
-            shift
-            ;;
         *)
             echo -e "${RED}错误: 未知选项 '$1'${NC}"
             exit 1
@@ -143,14 +125,12 @@ done
 # 获取项目根目录
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 BIN_DIR="$PROJECT_ROOT/bin"
-SKYWALKING_AGENT_FULL_PATH="$PROJECT_ROOT/$SKYWALKING_AGENT_PATH"
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}  HuinongFinancial 微服务构建工具      ${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}项目根目录: $PROJECT_ROOT${NC}"
 echo -e "${BLUE}构建模式: $BUILD_MODE${NC}"
-echo -e "${BLUE}SkyWalking: $([ "$ENABLE_SKYWALKING" == true ] && echo "启用" || echo "禁用")${NC}"
 echo -e "${BLUE}输出目录: $BIN_DIR${NC}"
 
 # 检查Go环境
@@ -170,29 +150,6 @@ check_go_env() {
     if [[ $GO_MAJOR -lt 1 ]] || [[ $GO_MAJOR -eq 1 && $GO_MINOR -lt 18 ]]; then
         echo -e "${YELLOW}警告: 建议使用Go 1.18+版本以获得最佳兼容性${NC}"
     fi
-}
-
-# 检查SkyWalking Agent
-check_skywalking_agent() {
-    if [[ "$ENABLE_SKYWALKING" != true ]]; then
-        echo -e "${YELLOW}SkyWalking监控已禁用${NC}"
-        return 0
-    fi
-    
-    if [[ ! -f "$SKYWALKING_AGENT_FULL_PATH" ]]; then
-        echo -e "${RED}错误: SkyWalking Agent未找到${NC}"
-        echo -e "${YELLOW}预期路径: $SKYWALKING_AGENT_FULL_PATH${NC}"
-        echo -e "${YELLOW}请确保已下载并放置SkyWalking Go Agent${NC}"
-        echo -e "${YELLOW}下载地址: https://skywalking.apache.org/downloads/${NC}"
-        exit 1
-    fi
-    
-    if [[ ! -x "$SKYWALKING_AGENT_FULL_PATH" ]]; then
-        echo -e "${YELLOW}设置SkyWalking Agent执行权限...${NC}"
-        chmod +x "$SKYWALKING_AGENT_FULL_PATH"
-    fi
-    
-    echo -e "${GREEN}✓ SkyWalking Agent检查通过: $SKYWALKING_AGENT_FULL_PATH${NC}"
 }
 
 # 检查服务目录结构
@@ -238,108 +195,6 @@ check_service_structure() {
     return 0
 }
 
-# 注入SkyWalking依赖
-inject_skywalking_import() {
-    local main_file=$1
-    local service=$2
-    local code_type=$3
-    local cmd_dir=$(dirname "$main_file")
-    
-    if [[ "$ENABLE_SKYWALKING" != true ]]; then
-        return 0
-    fi
-    
-    # 检查是否已经注入
-    if grep -q "skywalking-go" "$main_file"; then
-        echo -e "${BLUE}SkyWalking代码依赖已存在，跳过注入${NC}"
-    else
-        echo -e "${YELLOW}注入SkyWalking依赖到 $main_file${NC}"
-        
-        # 创建备份
-        cp "$main_file" "$main_file.bak"
-        
-        # 查找import块，如果存在则在其中添加，否则在package声明后添加
-        if grep -q "^import (" "$main_file"; then
-            # 在import块中添加
-            sed -i.tmp '/^import (/a\
-\t'"$SKYWALKING_IMPORT" "$main_file"
-        elif grep -q "^import " "$main_file"; then
-            # 在单行import后添加
-            sed -i.tmp '/^import /a\
-import '"$SKYWALKING_IMPORT" "$main_file"
-        else
-            # 在package声明后添加
-            sed -i.tmp '/^package /a\
-\
-import '"$SKYWALKING_IMPORT" "$main_file"
-        fi
-        
-        # 清理临时文件
-        rm -f "$main_file.tmp"
-        
-        echo -e "${GREEN}✓ SkyWalking代码依赖注入完成${NC}"
-    fi
-    
-    # 检查并添加go.mod依赖
-    local go_mod_file="$cmd_dir/go.mod"
-    if [[ -f "$go_mod_file" ]]; then
-        if ! grep -q "skywalking-go" "$go_mod_file"; then
-            echo -e "${YELLOW}添加SkyWalking模块依赖到 go.mod${NC}"
-            
-            # 创建go.mod备份
-            cp "$go_mod_file" "$go_mod_file.skywalking_bak"
-            
-            # 添加依赖到go.mod的require块中
-            if grep -q "require (" "$go_mod_file"; then
-                # 在require块中添加
-                sed -i.tmp '/require (/a\
-\tgithub.com/apache/skywalking-go v0.6.0' "$go_mod_file"
-            else
-                # 在文件末尾添加require块
-                echo "" >> "$go_mod_file"
-                echo "require (" >> "$go_mod_file"
-                echo -e "\tgithub.com/apache/skywalking-go v0.6.0" >> "$go_mod_file"
-                echo ")" >> "$go_mod_file"
-            fi
-            
-            # 清理临时文件
-            rm -f "$go_mod_file.tmp"
-            
-            echo -e "${GREEN}✓ SkyWalking模块依赖添加完成${NC}"
-            
-            # 执行go mod tidy来下载依赖
-            echo -e "${BLUE}下载SkyWalking依赖包...${NC}"
-            if go mod tidy 2>/dev/null; then
-                echo -e "${GREEN}✓ 依赖包下载完成${NC}"
-            else
-                echo -e "${YELLOW}⚠ 依赖包下载出现警告，但不影响构建${NC}"
-            fi
-        else
-            echo -e "${BLUE}SkyWalking模块依赖已存在${NC}"
-        fi
-    else
-        echo -e "${YELLOW}⚠ 未找到go.mod文件，跳过模块依赖添加${NC}"
-    fi
-}
-
-# 恢复SkyWalking依赖注入
-restore_main_file() {
-    local main_file=$1
-    local cmd_dir=$(dirname "$main_file")
-    local go_mod_file="$cmd_dir/go.mod"
-    
-    if [[ -f "$main_file.bak" ]]; then
-        mv "$main_file.bak" "$main_file"
-        echo -e "${BLUE}恢复main文件: $main_file${NC}"
-    fi
-    
-    # 如果存在go.mod备份，也要恢复
-    if [[ -f "$go_mod_file.skywalking_bak" ]]; then
-        mv "$go_mod_file.skywalking_bak" "$go_mod_file"
-        echo -e "${BLUE}恢复go.mod文件: $go_mod_file${NC}"
-    fi
-}
-
 # 构建服务
 build_service() {
     local service=$1
@@ -372,17 +227,8 @@ build_service() {
     # 进入源代码目录
     cd "$cmd_dir"
     
-    # 注入SkyWalking依赖
-    inject_skywalking_import "$main_file" "$service" "$code_type"
-    
     # 构建Go编译参数
     local build_args=()
-    
-    # SkyWalking编译参数
-    if [[ "$ENABLE_SKYWALKING" == true ]]; then
-        build_args+=("-toolexec=$SKYWALKING_AGENT_FULL_PATH")
-        build_args+=("-a")  # 强制重新构建所有包
-    fi
     
     # 构建模式参数
     case $BUILD_MODE in
@@ -646,19 +492,9 @@ show_build_results() {
     echo ""
     echo -e "${BLUE}========== 运行说明 ==========${NC}"
     
-    if [[ "$ENABLE_SKYWALKING" == true ]]; then
-        echo -e "${YELLOW}SkyWalking监控已集成，运行时请设置环境变量:${NC}"
-        echo -e "${CYAN}export SW_AGENT_NAME=服务名${NC}"
-        echo -e "${CYAN}export SW_AGENT_SERVER=skywalking-oap地址${NC}"
-        echo ""
-        echo -e "${YELLOW}示例运行命令:${NC}"
-        echo -e "${CYAN}SW_AGENT_NAME=appuser-api ./bin/appuser-api${NC}"
-        echo -e "${CYAN}SW_AGENT_NAME=appuser-rpc ./bin/appuser-rpc${NC}"
-    else
-        echo -e "${YELLOW}直接运行构建的服务:${NC}"
-        echo -e "${CYAN}./bin/appuser-api${NC}"
-        echo -e "${CYAN}./bin/appuser-rpc${NC}"
-    fi
+    echo -e "${YELLOW}直接运行构建的服务:${NC}"
+    echo -e "${CYAN}./bin/appuser-api -f app/appuser/cmd/api/etc/appuser.yaml${NC}"
+    echo -e "${CYAN}./bin/appuser-rpc -f app/appuser/cmd/rpc/etc/appuserrpc.yaml${NC}"
 }
 
 # 主函数
@@ -668,7 +504,6 @@ main() {
     
     # 检查环境
     check_go_env
-    check_skywalking_agent
     
     # 创建输出目录
     mkdir -p "$BIN_DIR"

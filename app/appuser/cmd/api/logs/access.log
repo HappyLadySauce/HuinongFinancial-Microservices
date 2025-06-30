@@ -228,3 +228,4 @@
 {"@timestamp":"2025-06-29T15:03:10.956Z","caller":"proc/shutdown.go:84","content":"Got signal 2, shutting down...","level":"info"}
 {"@timestamp":"2025-06-30T04:57:47.640Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 5.563926ms for target={service='appuserrpc.rpc' healthy='false' tag=''}","level":"info"}
 {"@timestamp":"2025-06-30T04:58:53.224Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T06:51:59.661Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/resolver.go:76","content":"[Consul resolver] 1 endpoints fetched in(+wait) 5.622986ms for target={service='appuserrpc.rpc' healthy='false' tag=''}","level":"info"}

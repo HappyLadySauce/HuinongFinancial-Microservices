@@ -340,3 +340,9 @@
 {"@timestamp":"2025-06-30T04:58:47.586Z","caller":"stat/usage.go:61","content":"CPU: 2m, MEMORY: Alloc=3.2Mi, TotalAlloc=10.4Mi, Sys=19.1Mi, NumGC=5","level":"stat"}
 {"@timestamp":"2025-06-30T04:58:47.644Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 2, total: 0, pass: 0, drop: 0","level":"stat"}
 {"@timestamp":"2025-06-30T04:58:54.224Z","caller":"stat/metrics.go:210","content":"(appuser-api) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}
+{"@timestamp":"2025-06-30T06:52:59.621Z","caller":"stat/usage.go:61","content":"CPU: 125m, MEMORY: Alloc=2.7Mi, TotalAlloc=8.5Mi, Sys=18.3Mi, NumGC=4","level":"stat"}
+{"@timestamp":"2025-06-30T06:52:59.663Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 125, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-30T06:53:59.620Z","caller":"stat/usage.go:61","content":"CPU: 126m, MEMORY: Alloc=3.6Mi, TotalAlloc=11.9Mi, Sys=18.3Mi, NumGC=5","level":"stat"}
+{"@timestamp":"2025-06-30T06:53:59.664Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 126, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-30T06:54:59.620Z","caller":"stat/usage.go:61","content":"CPU: 125m, MEMORY: Alloc=4.4Mi, TotalAlloc=15.3Mi, Sys=18.3Mi, NumGC=6","level":"stat"}
+{"@timestamp":"2025-06-30T06:54:59.663Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 125, total: 0, pass: 0, drop: 0","level":"stat"}

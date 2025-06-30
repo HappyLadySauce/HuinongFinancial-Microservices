@@ -10,9 +10,6 @@ BIN_DIR="$BASE_DIR/bin"
 PID_DIR="/tmp/huinong_pids"
 LOG_DIR="/var/log/huinong"
 
-# SkyWalking配置
-SW_AGENT_SERVER=${SW_AGENT_SERVER:-"skywalking-oap:11800"}
-
 # 服务配置映射 (服务名:配置文件路径:工作目录)
 declare -A SERVICE_CONFIG=(
     ["appuser-rpc"]="$BASE_DIR/app/appuser/cmd/rpc/etc/appuserrpc.yaml:$BASE_DIR/app/appuser/cmd/rpc"
@@ -116,7 +113,7 @@ start_service() {
         return 1
     }
     
-    nohup env SW_AGENT_NAME="$service" SW_AGENT_SERVER="$SW_AGENT_SERVER" "$BIN_DIR/$service" -f "$config_file" > "$LOG_DIR/$service.log" 2>&1 &
+    nohup "$BIN_DIR/$service" -f "$config_file" > "$LOG_DIR/$service.log" 2>&1 &
     local pid=$!
     
     # 保存PID
@@ -334,9 +331,6 @@ show_help() {
     echo "  4. 用户管理API服务: appuser-api, oauser-api"
     echo "  5. 产品管理API服务: loanproduct-api, leaseproduct-api"
     echo "  6. 业务API服务: loan-api, lease-api"
-    echo ""
-    echo "环境变量:"
-    echo "  SW_AGENT_SERVER - SkyWalking OAP服务器地址 (默认: skywalking-oap:11800)"
     echo ""
     echo "日志位置: $LOG_DIR"
     echo "PID文件位置: $PID_DIR"
