@@ -20,7 +20,7 @@ func GetLeaseProductHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := product.NewGetLeaseProductLogic(r.Context(), svcCtx)
-		resp, err := l.GetLeaseProduct(&req)
+		resp, err := l.GetLeaseProduct(req.ProductCode)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

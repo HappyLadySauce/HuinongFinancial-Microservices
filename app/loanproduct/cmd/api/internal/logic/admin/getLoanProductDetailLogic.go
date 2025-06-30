@@ -30,10 +30,7 @@ func (l *GetLoanProductDetailLogic) GetLoanProductDetail(req *types.GetLoanProdu
 	// 将字符串ID转换为int64
 	id, err := strconv.ParseInt(req.Id, 10, 64)
 	if err != nil {
-		return &types.GetLoanProductResp{
-			Code:    400,
-			Message: "无效的产品ID",
-		}, nil
+		return nil, err
 	}
 
 	// 调用RPC服务
@@ -42,24 +39,11 @@ func (l *GetLoanProductDetailLogic) GetLoanProductDetail(req *types.GetLoanProdu
 	})
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
-		return &types.GetLoanProductResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 检查RPC响应
-	if rpcResp.Code != 200 {
-		return &types.GetLoanProductResp{
-			Code:    rpcResp.Code,
-			Message: rpcResp.Message,
-		}, nil
+		return nil, err
 	}
 
 	// 转换响应数据
 	return &types.GetLoanProductResp{
-		Code:    200,
-		Message: "查询成功",
 		Data: types.LoanProductInfo{
 			Id:           rpcResp.Data.Id,
 			ProductCode:  rpcResp.Data.ProductCode,

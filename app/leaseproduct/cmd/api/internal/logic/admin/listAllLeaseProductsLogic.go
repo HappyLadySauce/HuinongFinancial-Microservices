@@ -5,7 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
-	"rpc/leaseproduct"
+	"rpc/leaseproductservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,7 +35,7 @@ func (l *ListAllLeaseProductsLogic) ListAllLeaseProducts(req *types.ListLeasePro
 	}
 
 	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LeaseProductRpc.ListLeaseProducts(l.ctx, &leaseproduct.ListLeaseProductsReq{
+	rpcResp, err := l.svcCtx.LeaseProductRpc.ListLeaseProducts(l.ctx, &leaseproductservice.ListLeaseProductsReq{
 		Page:    req.Page,
 		Size:    req.Size,
 		Type:    req.Type,
@@ -45,18 +45,7 @@ func (l *ListAllLeaseProductsLogic) ListAllLeaseProducts(req *types.ListLeasePro
 	})
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
-		return &types.ListLeaseProductsResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 检查RPC响应
-	if rpcResp.Code != 200 {
-		return &types.ListLeaseProductsResp{
-			Code:    rpcResp.Code,
-			Message: rpcResp.Message,
-		}, nil
+		return nil, err
 	}
 
 	// 转换产品列表数据
@@ -84,9 +73,7 @@ func (l *ListAllLeaseProductsLogic) ListAllLeaseProducts(req *types.ListLeasePro
 	}
 
 	return &types.ListLeaseProductsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    products,
-		Total:   rpcResp.Total,
+		List:  products,
+		Total: rpcResp.Total,
 	}, nil
 }

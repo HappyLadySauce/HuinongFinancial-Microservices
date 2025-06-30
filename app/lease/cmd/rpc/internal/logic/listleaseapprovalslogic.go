@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"rpc/internal/svc"
 	"rpc/lease"
@@ -26,30 +27,21 @@ func NewListLeaseApprovalsLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 func (l *ListLeaseApprovalsLogic) ListLeaseApprovals(in *lease.ListLeaseApprovalsReq) (*lease.ListLeaseApprovalsResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &lease.ListLeaseApprovalsResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请编号不能为空")
 	}
 
 	// 先查询申请是否存在
 	application, err := l.svcCtx.LeaseApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &lease.ListLeaseApprovalsResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 查询审批记录
 	approvals, err := l.svcCtx.LeaseApprovalsModel.FindByApplicationId(l.ctx, int64(application.Id))
 	if err != nil {
 		l.Errorf("查询审批记录失败: %v", err)
-		return &lease.ListLeaseApprovalsResp{
-			Code:    500,
-			Message: "查询审批记录失败",
-		}, nil
+		return nil, fmt.Errorf("查询审批记录失败")
 	}
 
 	// 转换为响应格式
@@ -76,8 +68,6 @@ func (l *ListLeaseApprovalsLogic) ListLeaseApprovals(in *lease.ListLeaseApproval
 	}
 
 	return &lease.ListLeaseApprovalsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    approvalList,
+		List: approvalList,
 	}, nil
 }

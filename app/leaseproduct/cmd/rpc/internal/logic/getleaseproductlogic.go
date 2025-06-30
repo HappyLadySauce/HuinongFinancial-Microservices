@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"rpc/internal/svc"
 	"rpc/leaseproduct"
@@ -27,25 +28,17 @@ func NewGetLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 func (l *GetLeaseProductLogic) GetLeaseProduct(in *leaseproduct.GetLeaseProductReq) (*leaseproduct.GetLeaseProductResp, error) {
 	// 参数验证
 	if in.ProductCode == "" {
-		return &leaseproduct.GetLeaseProductResp{
-			Code:    400,
-			Message: "产品编码不能为空",
-		}, nil
+		return nil, fmt.Errorf("产品编码不能为空")
 	}
 
 	// 根据产品编码查询产品信息
 	product, err := l.svcCtx.LeaseProductModel.FindOneByProductCode(l.ctx, in.ProductCode)
 	if err != nil {
 		l.Errorf("查询产品失败: %v", err)
-		return &leaseproduct.GetLeaseProductResp{
-			Code:    404,
-			Message: "产品不存在",
-		}, nil
+		return nil, fmt.Errorf("产品不存在")
 	}
 
 	return &leaseproduct.GetLeaseProductResp{
-		Code:    200,
-		Message: "查询成功",
 		Data: &leaseproduct.LeaseProductInfo{
 			Id:             int64(product.Id),
 			ProductCode:    product.ProductCode,

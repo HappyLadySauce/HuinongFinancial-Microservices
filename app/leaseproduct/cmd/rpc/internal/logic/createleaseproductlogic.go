@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"model"
 	"rpc/internal/svc"
@@ -30,23 +29,16 @@ func NewCreateLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 func (l *CreateLeaseProductLogic) CreateLeaseProduct(in *leaseproduct.CreateLeaseProductReq) (*leaseproduct.CreateLeaseProductResp, error) {
 	// 参数验证
 	if err := l.validateCreateRequest(in); err != nil {
-		return &leaseproduct.CreateLeaseProductResp{
-			Code:    400,
-			Message: err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	// 检查产品编码是否已存在
 	existingProduct, err := l.svcCtx.LeaseProductModel.FindOneByProductCode(l.ctx, in.ProductCode)
 	if err == nil && existingProduct != nil {
-		return &leaseproduct.CreateLeaseProductResp{
-			Code:    409,
-			Message: "产品编码已存在",
-		}, nil
+		return nil, fmt.Errorf("产品编码已存在")
 	}
 
 	// 创建产品记录
-	now := time.Now()
 	product := &model.LeaseProducts{
 		ProductCode:    in.ProductCode,
 		Name:           in.Name,
@@ -62,32 +54,29 @@ func (l *CreateLeaseProductLogic) CreateLeaseProduct(in *leaseproduct.CreateLeas
 		InventoryCount: uint64(in.InventoryCount),
 		AvailableCount: uint64(in.InventoryCount), // 初始可用数量等于库存数量
 		Status:         1,                         // 默认上架状态
-		CreatedAt:      now,
-		UpdatedAt:      now,
 	}
 
-	_, err = l.svcCtx.LeaseProductModel.Insert(l.ctx, product)
+	result, err := l.svcCtx.LeaseProductModel.Insert(l.ctx, product)
 	if err != nil {
 		l.Errorf("创建产品失败: %v", err)
-		return &leaseproduct.CreateLeaseProductResp{
-			Code:    500,
-			Message: "创建产品失败",
-		}, nil
+		return nil, fmt.Errorf("创建产品失败")
 	}
 
-	// 查询创建后的产品信息
-	createdProduct, err := l.svcCtx.LeaseProductModel.FindOneByProductCode(l.ctx, in.ProductCode)
+	// 获取新创建的产品ID
+	productId, err := result.LastInsertId()
+	if err != nil {
+		l.Errorf("获取新产品ID失败: %v", err)
+		return nil, fmt.Errorf("创建成功但查询失败")
+	}
+
+	// 查询完整的产品信息
+	createdProduct, err := l.svcCtx.LeaseProductModel.FindOne(l.ctx, uint64(productId))
 	if err != nil {
 		l.Errorf("查询创建的产品失败: %v", err)
-		return &leaseproduct.CreateLeaseProductResp{
-			Code:    500,
-			Message: "创建成功但查询失败",
-		}, nil
+		return nil, fmt.Errorf("创建成功但查询失败")
 	}
 
 	return &leaseproduct.CreateLeaseProductResp{
-		Code:    200,
-		Message: "创建成功",
 		Data: &leaseproduct.LeaseProductInfo{
 			Id:             int64(createdProduct.Id),
 			ProductCode:    createdProduct.ProductCode,
@@ -124,17 +113,20 @@ func (l *CreateLeaseProductLogic) validateCreateRequest(in *leaseproduct.CreateL
 	if in.DailyRate <= 0 {
 		return fmt.Errorf("日租金必须大于0")
 	}
-	if in.MinDuration <= 0 {
-		return fmt.Errorf("最小租期必须大于0")
+	if in.Deposit < 0 {
+		return fmt.Errorf("押金不能小于0")
 	}
 	if in.MaxDuration <= 0 {
 		return fmt.Errorf("最大租期必须大于0")
 	}
-	if in.MinDuration > in.MaxDuration {
-		return fmt.Errorf("最小租期不能大于最大租期")
+	if in.MinDuration <= 0 {
+		return fmt.Errorf("最小租期必须大于0")
 	}
-	if in.InventoryCount < 0 {
-		return fmt.Errorf("库存数量不能小于0")
+	if in.MinDuration >= in.MaxDuration {
+		return fmt.Errorf("最小租期不能大于等于最大租期")
+	}
+	if in.InventoryCount <= 0 {
+		return fmt.Errorf("库存数量必须大于0")
 	}
 	if in.Description == "" {
 		return fmt.Errorf("产品描述不能为空")

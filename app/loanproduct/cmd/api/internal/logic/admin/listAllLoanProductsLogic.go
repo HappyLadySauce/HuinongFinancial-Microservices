@@ -44,18 +44,7 @@ func (l *ListAllLoanProductsLogic) ListAllLoanProducts(req *types.ListLoanProduc
 	})
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
-		return &types.ListLoanProductsResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 检查RPC响应
-	if rpcResp.Code != 200 {
-		return &types.ListLoanProductsResp{
-			Code:    rpcResp.Code,
-			Message: rpcResp.Message,
-		}, nil
+		return nil, err
 	}
 
 	// 转换产品列表数据
@@ -79,9 +68,7 @@ func (l *ListAllLoanProductsLogic) ListAllLoanProducts(req *types.ListLoanProduc
 	}
 
 	return &types.ListLoanProductsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    products,
-		Total:   rpcResp.Total,
+		List:  products,
+		Total: rpcResp.Total,
 	}, nil
 }

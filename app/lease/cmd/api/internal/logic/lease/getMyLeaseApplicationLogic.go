@@ -31,21 +31,12 @@ func (l *GetMyLeaseApplicationLogic) GetMyLeaseApplication(applicationId string)
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
-		return &types.GetLeaseApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
-	resp = &types.GetLeaseApplicationResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
-	}
-
-	// 注意：根据lease RPC响应结构，使用ApplicationInfo字段
-	if rpcResp.ApplicationInfo != nil {
-		resp.ApplicationInfo = types.LeaseApplicationInfo{
+	// 转换申请信息
+	return &types.GetLeaseApplicationResp{
+		ApplicationInfo: types.LeaseApplicationInfo{
 			Id:              rpcResp.ApplicationInfo.Id,
 			ApplicationId:   rpcResp.ApplicationInfo.ApplicationId,
 			UserId:          rpcResp.ApplicationInfo.UserId,
@@ -67,8 +58,6 @@ func (l *GetMyLeaseApplicationLogic) GetMyLeaseApplication(applicationId string)
 			Status:          rpcResp.ApplicationInfo.Status,
 			CreatedAt:       rpcResp.ApplicationInfo.CreatedAt,
 			UpdatedAt:       rpcResp.ApplicationInfo.UpdatedAt,
-		}
-	}
-
-	return resp, nil
+		},
+	}, nil
 }

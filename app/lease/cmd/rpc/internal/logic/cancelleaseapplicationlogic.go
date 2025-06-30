@@ -2,10 +2,9 @@ package logic
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
 	"time"
 
-	"model"
 	"rpc/internal/svc"
 	"rpc/lease"
 
@@ -29,87 +28,37 @@ func NewCancelLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 func (l *CancelLeaseApplicationLogic) CancelLeaseApplication(in *lease.CancelLeaseApplicationReq) (*lease.CancelLeaseApplicationResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &lease.CancelLeaseApplicationResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请编号不能为空")
 	}
 
 	// 查询申请信息
 	application, err := l.svcCtx.LeaseApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &lease.CancelLeaseApplicationResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 检查申请状态是否可以撤销
 	if application.Status != "pending" {
-		return &lease.CancelLeaseApplicationResp{
-			Code:    400,
-			Message: "只有待审批状态的申请才可以撤销",
-		}, nil
+		return nil, fmt.Errorf("只有待审批状态的申请才可以撤销")
 	}
 
 	// 更新申请状态为已撤销
-	updatedApplication := &model.LeaseApplications{
-		Id:              application.Id,
-		ApplicationId:   application.ApplicationId,
-		UserId:          application.UserId,
-		ApplicantName:   application.ApplicantName,
-		ProductId:       application.ProductId,
-		ProductCode:     application.ProductCode,
-		Name:            application.Name,
-		Type:            application.Type,
-		Machinery:       application.Machinery,
-		StartDate:       application.StartDate,
-		EndDate:         application.EndDate,
-		Duration:        application.Duration,
-		DailyRate:       application.DailyRate,
-		TotalAmount:     application.TotalAmount,
-		Deposit:         application.Deposit,
-		DeliveryAddress: application.DeliveryAddress,
-		ContactPhone:    application.ContactPhone,
-		Purpose:         application.Purpose,
-		Status:          "cancelled",
-		CreatedAt:       application.CreatedAt,
-		UpdatedAt:       time.Now(),
-	}
+	now := time.Now()
+	application.Status = "cancelled"
+	application.UpdatedAt = now
 
-	err = l.svcCtx.LeaseApplicationsModel.Update(l.ctx, updatedApplication)
+	err = l.svcCtx.LeaseApplicationsModel.Update(l.ctx, application)
 	if err != nil {
 		l.Errorf("撤销申请失败: %v", err)
-		return &lease.CancelLeaseApplicationResp{
-			Code:    500,
-			Message: "撤销申请失败",
-		}, nil
+		return nil, fmt.Errorf("撤销申请失败")
 	}
 
-	// 记录撤销原因（可以创建一个审批记录）
-	if in.Reason != "" {
-		approval := &model.LeaseApprovals{
-			ApplicationId:    application.Id,
-			AuditorId:        uint64(application.UserId), // 用户自己撤销
-			AuditorName:      application.ApplicantName,
-			Action:           "cancel",
-			Suggestions:      sql.NullString{String: "用户撤销: " + in.Reason, Valid: true},
-			ApprovedDuration: sql.NullInt64{Valid: false},
-			ApprovedAmount:   sql.NullFloat64{Valid: false},
-			ApprovedDeposit:  sql.NullFloat64{Valid: false},
-			CreatedAt:        time.Now(),
-		}
+	// 记录撤销原因 (可以考虑在future增加撤销原因字段到数据库)
+	l.Infof("租赁申请已撤销 - 申请编号: %s, 撤销原因: %s", in.ApplicationId, in.Reason)
 
-		_, err = l.svcCtx.LeaseApprovalsModel.Insert(l.ctx, approval)
-		if err != nil {
-			l.Errorf("创建撤销记录失败: %v", err)
-			// 不影响主流程，只记录日志
-		}
-	}
+	// TODO: 可能需要调用其他服务进行后续处理
+	// 比如释放库存预占、发送通知等
 
-	return &lease.CancelLeaseApplicationResp{
-		Code:    200,
-		Message: "申请已撤销",
-	}, nil
+	return &lease.CancelLeaseApplicationResp{}, nil
 }

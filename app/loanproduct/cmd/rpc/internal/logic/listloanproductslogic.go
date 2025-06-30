@@ -64,7 +64,7 @@ func (l *ListLoanProductsLogic) ListLoanProducts(in *loanproduct.ListLoanProduct
 	// 构建WHERE子句
 	whereClause := ""
 	if len(conditions) > 0 {
-		whereClause = "WHERE " + fmt.Sprintf("%s", conditions[0])
+		whereClause = "WHERE " + conditions[0]
 		for i := 1; i < len(conditions); i++ {
 			whereClause += " AND " + conditions[i]
 		}
@@ -74,10 +74,7 @@ func (l *ListLoanProductsLogic) ListLoanProducts(in *loanproduct.ListLoanProduct
 	total, err := l.svcCtx.LoanProductModel.CountWithConditions(l.ctx, whereClause, args)
 	if err != nil {
 		l.Errorf("查询产品总数失败: %v", err)
-		return &loanproduct.ListLoanProductsResp{
-			Code:    500,
-			Message: "查询产品失败",
-		}, nil
+		return nil, fmt.Errorf("查询产品失败")
 	}
 
 	// 查询分页数据
@@ -85,10 +82,7 @@ func (l *ListLoanProductsLogic) ListLoanProducts(in *loanproduct.ListLoanProduct
 	productRows, err := l.svcCtx.LoanProductModel.ListWithConditions(l.ctx, whereClause, args, in.Size, offset)
 	if err != nil && err != sql.ErrNoRows {
 		l.Errorf("查询产品列表失败: %v", err)
-		return &loanproduct.ListLoanProductsResp{
-			Code:    500,
-			Message: "查询产品列表失败",
-		}, nil
+		return nil, fmt.Errorf("查询产品列表失败")
 	}
 
 	// 转换为响应格式
@@ -117,9 +111,7 @@ func (l *ListLoanProductsLogic) ListLoanProducts(in *loanproduct.ListLoanProduct
 	}
 
 	return &loanproduct.ListLoanProductsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    products,
-		Total:   total,
+		List:  products,
+		Total: total,
 	}, nil
 }

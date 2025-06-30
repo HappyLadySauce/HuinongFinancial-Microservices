@@ -33,10 +33,7 @@ func NewCreateLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLeaseApplicationReq) (*lease.CreateLeaseApplicationResp, error) {
 	// 参数验证
 	if err := l.validateCreateRequest(in); err != nil {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	// 1. 调用AppUser RPC验证用户信息并获取用户姓名
@@ -45,25 +42,11 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLea
 	})
 	if err != nil {
 		l.Errorf("调用AppUser服务失败: %v", err)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    500,
-			Message: "用户信息验证失败，请稍后重试",
-		}, nil
-	}
-
-	if userResp.Code != 200 {
-		l.Errorf("用户信息验证失败: %s", userResp.Message)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: userResp.Message,
-		}, nil
+		return nil, fmt.Errorf("用户信息验证失败，请稍后重试")
 	}
 
 	if userResp.UserInfo == nil {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "用户信息不存在",
-		}, nil
+		return nil, fmt.Errorf("用户信息不存在")
 	}
 
 	applicantName := userResp.UserInfo.Name
@@ -77,65 +60,47 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLea
 	})
 	if err != nil {
 		l.Errorf("调用LeaseProduct服务失败: %v", err)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    500,
-			Message: "产品库存检查失败，请稍后重试",
-		}, nil
-	}
-
-	if stockResp.Code != 200 {
-		l.Errorf("产品库存检查失败: %s", stockResp.Message)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: stockResp.Message,
-		}, nil
+		return nil, fmt.Errorf("产品信息验证失败，请稍后重试")
 	}
 
 	if !stockResp.Available {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "产品库存不足或时间段不可用",
-		}, nil
-	}
-
-	// 3. 验证产品是否有效
-	productResp, err := l.svcCtx.LeaseProductClient.GetLeaseProduct(l.ctx, &clients.GetLeaseProductReq{
-		ProductCode: in.ProductCode,
-	})
-	if err != nil {
-		l.Errorf("调用LeaseProduct服务获取产品信息失败: %v", err)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    500,
-			Message: "产品信息获取失败，请稍后重试",
-		}, nil
-	}
-
-	if productResp.Code != 200 || productResp.Data == nil {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "产品不存在或已下架",
-		}, nil
-	}
-
-	// 解析开始和结束日期
-	startDate, err := time.Parse("2006-01-02", in.StartDate)
-	if err != nil {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "开始日期格式错误",
-		}, nil
-	}
-
-	endDate, err := time.Parse("2006-01-02", in.EndDate)
-	if err != nil {
-		return &lease.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "结束日期格式错误",
-		}, nil
+		return nil, fmt.Errorf("产品库存不足或在指定时间段不可用")
 	}
 
 	// 生成申请编号
 	applicationId := l.generateApplicationId()
+
+	// 解析日期
+	startDate, err := time.Parse("2006-01-02", in.StartDate)
+	if err != nil {
+		return nil, fmt.Errorf("开始日期格式错误")
+	}
+
+	endDate, err := time.Parse("2006-01-02", in.EndDate)
+	if err != nil {
+		return nil, fmt.Errorf("结束日期格式错误")
+	}
+
+	// 验证日期逻辑
+	if endDate.Before(startDate) {
+		return nil, fmt.Errorf("结束日期不能早于开始日期")
+	}
+
+	if startDate.Before(time.Now().Truncate(24 * time.Hour)) {
+		return nil, fmt.Errorf("开始日期不能早于今天")
+	}
+
+	// 计算租期
+	duration := int(endDate.Sub(startDate).Hours()/24) + 1
+	if int32(duration) != in.Duration {
+		return nil, fmt.Errorf("租期计算不匹配")
+	}
+
+	// 验证金额计算
+	expectedTotal := in.DailyRate * float64(duration)
+	if in.TotalAmount != expectedTotal {
+		return nil, fmt.Errorf("总金额计算错误")
+	}
 
 	// 创建申请记录
 	now := time.Now()
@@ -165,18 +130,13 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLea
 	_, err = l.svcCtx.LeaseApplicationsModel.Insert(l.ctx, application)
 	if err != nil {
 		l.Errorf("创建租赁申请失败: %v", err)
-		return &lease.CreateLeaseApplicationResp{
-			Code:    500,
-			Message: "创建申请失败",
-		}, nil
+		return nil, fmt.Errorf("创建申请失败")
 	}
 
 	l.Infof("租赁申请创建成功 - 申请编号: %s, 用户: %s (ID: %d), 产品: %s, 时间: %s到%s",
 		applicationId, applicantName, in.UserId, in.ProductCode, in.StartDate, in.EndDate)
 
 	return &lease.CreateLeaseApplicationResp{
-		Code:          200,
-		Message:       "申请创建成功",
 		ApplicationId: applicationId,
 	}, nil
 }

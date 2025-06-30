@@ -33,10 +33,7 @@ func NewCreateLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceConte
 func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanApplicationReq) (*loan.CreateLoanApplicationResp, error) {
 	// 参数验证
 	if err := l.validateCreateRequest(in); err != nil {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	// 1. 调用AppUser RPC验证用户信息并获取用户姓名
@@ -45,25 +42,11 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	})
 	if err != nil {
 		l.Errorf("调用AppUser服务失败: %v", err)
-		return &loan.CreateLoanApplicationResp{
-			Code:    500,
-			Message: "用户信息验证失败，请稍后重试",
-		}, nil
-	}
-
-	if userResp.Code != 200 {
-		l.Errorf("用户信息验证失败: %s", userResp.Message)
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: userResp.Message,
-		}, nil
+		return nil, fmt.Errorf("用户信息验证失败，请稍后重试")
 	}
 
 	if userResp.UserInfo == nil {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: "用户信息不存在",
-		}, nil
+		return nil, fmt.Errorf("用户信息不存在")
 	}
 
 	applicantName := userResp.UserInfo.Name
@@ -74,51 +57,28 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	})
 	if err != nil {
 		l.Errorf("调用LoanProduct服务失败: %v", err)
-		return &loan.CreateLoanApplicationResp{
-			Code:    500,
-			Message: "产品信息验证失败，请稍后重试",
-		}, nil
-	}
-
-	if productResp.Code != 200 {
-		l.Errorf("产品信息验证失败: %s", productResp.Message)
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: productResp.Message,
-		}, nil
+		return nil, fmt.Errorf("产品信息验证失败，请稍后重试")
 	}
 
 	if productResp.Data == nil {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: "产品不存在",
-		}, nil
+		return nil, fmt.Errorf("产品不存在")
 	}
 
 	product := productResp.Data
 
 	// 3. 验证申请金额是否在产品限额内
 	if in.Amount < product.MinAmount || in.Amount > product.MaxAmount {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: fmt.Sprintf("申请金额应在%.2f到%.2f之间", product.MinAmount, product.MaxAmount),
-		}, nil
+		return nil, fmt.Errorf("申请金额应在%.2f到%.2f之间", product.MinAmount, product.MaxAmount)
 	}
 
 	// 4. 验证申请期限是否在产品范围内
 	if int32(in.Duration) < product.MinDuration || int32(in.Duration) > product.MaxDuration {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: fmt.Sprintf("申请期限应在%d到%d个月之间", product.MinDuration, product.MaxDuration),
-		}, nil
+		return nil, fmt.Errorf("申请期限应在%d到%d个月之间", product.MinDuration, product.MaxDuration)
 	}
 
 	// 5. 验证产品状态
 	if product.Status != 1 {
-		return &loan.CreateLoanApplicationResp{
-			Code:    400,
-			Message: "产品已下架，无法申请",
-		}, nil
+		return nil, fmt.Errorf("产品已下架，无法申请")
 	}
 
 	// 生成申请编号
@@ -144,18 +104,13 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	_, err = l.svcCtx.LoanApplicationsModel.Insert(l.ctx, application)
 	if err != nil {
 		l.Errorf("创建贷款申请失败: %v", err)
-		return &loan.CreateLoanApplicationResp{
-			Code:    500,
-			Message: "创建申请失败",
-		}, nil
+		return nil, fmt.Errorf("创建申请失败")
 	}
 
 	l.Infof("贷款申请创建成功 - 申请编号: %s, 用户: %s (ID: %d), 产品: %s (ID: %d), 金额: %.2f, 期限: %d个月",
 		applicationId, applicantName, in.UserId, product.Name, in.ProductId, in.Amount, in.Duration)
 
 	return &loan.CreateLoanApplicationResp{
-		Code:          200,
-		Message:       "申请创建成功",
 		ApplicationId: applicationId,
 	}, nil
 }

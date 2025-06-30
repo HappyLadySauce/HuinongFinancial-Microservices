@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"rpc/internal/svc"
 	"rpc/loan"
@@ -26,30 +27,21 @@ func NewListLoanApprovalsLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 func (l *ListLoanApprovalsLogic) ListLoanApprovals(in *loan.ListLoanApprovalsReq) (*loan.ListLoanApprovalsResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &loan.ListLoanApprovalsResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请编号不能为空")
 	}
 
 	// 先查询申请是否存在
 	application, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &loan.ListLoanApprovalsResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 查询审批记录
 	approvals, err := l.svcCtx.LoanApprovalsModel.FindByApplicationId(l.ctx, int64(application.Id))
 	if err != nil {
 		l.Errorf("查询审批记录失败: %v", err)
-		return &loan.ListLoanApprovalsResp{
-			Code:    500,
-			Message: "查询审批记录失败",
-		}, nil
+		return nil, fmt.Errorf("查询审批记录失败")
 	}
 
 	// 转换为响应格式
@@ -76,8 +68,6 @@ func (l *ListLoanApprovalsLogic) ListLoanApprovals(in *loan.ListLoanApprovalsReq
 	}
 
 	return &loan.ListLoanApprovalsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    approvalList,
+		List: approvalList,
 	}, nil
 }

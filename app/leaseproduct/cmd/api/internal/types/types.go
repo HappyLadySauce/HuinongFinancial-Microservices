@@ -37,7 +37,19 @@ type CreateLeaseProductResp struct {
 	Data LeaseProductInfo `json:"data"` // 添加数据字段
 }
 
+type DeleteLeaseProductReq struct {
+	ProductCode string `path:"productCode"`
+}
+
 type DeleteLeaseProductResp struct {
+}
+
+type GetLeaseProductDetailReq struct {
+	ProductCode string `path:"productCode"`
+}
+
+type GetLeaseProductReq struct {
+	ProductCode string `path:"productCode"`
 }
 
 type GetLeaseProductResp struct {

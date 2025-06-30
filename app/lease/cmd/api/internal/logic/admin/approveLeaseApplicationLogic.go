@@ -26,22 +26,22 @@ func NewApproveLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCon
 }
 
 func (l *ApproveLeaseApplicationLogic) ApproveLeaseApplication(req *types.ApproveLeaseApplicationReq) (resp *types.ApproveLeaseApplicationResp, err error) {
-	// 获取当前管理员用户ID (从JWT中获取)
-	userIdStr := l.ctx.Value("userId").(string)
-	auditorId, err := strconv.ParseInt(userIdStr, 10, 64)
+	// 获取当前审核员ID (从JWT中获取)
+	auditorIdStr := l.ctx.Value("userId").(string)
+	auditorId, err := strconv.ParseInt(auditorIdStr, 10, 64)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("解析审核员ID失败: %v", err)
-		return &types.ApproveLeaseApplicationResp{
-			Code:    400,
-			Message: "审核员ID无效",
-		}, nil
+		return nil, err
 	}
 
-	// 获取审核员姓名 (简化实现，实际应该从用户服务获取)
-	auditorName := "管理员" // TODO: 从用户服务获取真实姓名
+	// 获取审核员姓名 (从JWT中获取或调用用户服务)
+	auditorName := l.ctx.Value("username").(string)
+	if auditorName == "" {
+		auditorName = "系统管理员"
+	}
 
 	// 调用 Lease RPC 审批申请
-	rpcResp, err := l.svcCtx.LeaseRpc.ApproveLeaseApplication(l.ctx, &leaseclient.ApproveLeaseApplicationReq{
+	_, err = l.svcCtx.LeaseRpc.ApproveLeaseApplication(l.ctx, &leaseclient.ApproveLeaseApplicationReq{
 		ApplicationId:    req.ApplicationId,
 		AuditorId:        auditorId,
 		AuditorName:      auditorName,
@@ -53,15 +53,9 @@ func (l *ApproveLeaseApplicationLogic) ApproveLeaseApplication(req *types.Approv
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
-		return &types.ApproveLeaseApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换 RPC 响应为 API 响应
-	return &types.ApproveLeaseApplicationResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
-	}, nil
+	return &types.ApproveLeaseApplicationResp{}, nil
 }

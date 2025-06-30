@@ -26,7 +26,7 @@ func NewListLoanApplicationsLogic(ctx context.Context, svcCtx *svc.ServiceContex
 }
 
 func (l *ListLoanApplicationsLogic) ListLoanApplications(in *loan.ListLoanApplicationsReq) (*loan.ListLoanApplicationsResp, error) {
-	// 参数验证
+	// 参数验证和默认值设置
 	if in.Page <= 0 {
 		in.Page = 1
 	}
@@ -54,7 +54,7 @@ func (l *ListLoanApplicationsLogic) ListLoanApplications(in *loan.ListLoanApplic
 	// 构建WHERE子句
 	whereClause := ""
 	if len(conditions) > 0 {
-		whereClause = "WHERE " + fmt.Sprintf("%s", conditions[0])
+		whereClause = "WHERE " + conditions[0]
 		for i := 1; i < len(conditions); i++ {
 			whereClause += " AND " + conditions[i]
 		}
@@ -64,10 +64,7 @@ func (l *ListLoanApplicationsLogic) ListLoanApplications(in *loan.ListLoanApplic
 	total, err := l.svcCtx.LoanApplicationsModel.CountWithConditions(l.ctx, whereClause, args)
 	if err != nil {
 		l.Errorf("查询申请总数失败: %v", err)
-		return &loan.ListLoanApplicationsResp{
-			Code:    500,
-			Message: "查询申请失败",
-		}, nil
+		return nil, fmt.Errorf("查询申请失败")
 	}
 
 	// 查询分页数据
@@ -75,16 +72,13 @@ func (l *ListLoanApplicationsLogic) ListLoanApplications(in *loan.ListLoanApplic
 	applications, err := l.svcCtx.LoanApplicationsModel.ListWithConditions(l.ctx, whereClause, args, in.Size, offset)
 	if err != nil && err != sql.ErrNoRows {
 		l.Errorf("查询申请列表失败: %v", err)
-		return &loan.ListLoanApplicationsResp{
-			Code:    500,
-			Message: "查询申请列表失败",
-		}, nil
+		return nil, fmt.Errorf("查询申请列表失败")
 	}
 
 	// 转换为响应格式
-	var applicationList []*loan.LoanApplicationInfo
+	var list []*loan.LoanApplicationInfo
 	for _, app := range applications {
-		applicationInfo := &loan.LoanApplicationInfo{
+		list = append(list, &loan.LoanApplicationInfo{
 			Id:            int64(app.Id),
 			ApplicationId: app.ApplicationId,
 			UserId:        int64(app.UserId),
@@ -98,19 +92,16 @@ func (l *ListLoanApplicationsLogic) ListLoanApplications(in *loan.ListLoanApplic
 			Status:        app.Status,
 			CreatedAt:     app.CreatedAt.Unix(),
 			UpdatedAt:     app.UpdatedAt.Unix(),
-		}
-		applicationList = append(applicationList, applicationInfo)
+		})
 	}
 
 	// 如果没有数据，返回空列表
-	if applicationList == nil {
-		applicationList = make([]*loan.LoanApplicationInfo, 0)
+	if list == nil {
+		list = make([]*loan.LoanApplicationInfo, 0)
 	}
 
 	return &loan.ListLoanApplicationsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    applicationList,
-		Total:   total,
+		List:  list,
+		Total: total,
 	}, nil
 }

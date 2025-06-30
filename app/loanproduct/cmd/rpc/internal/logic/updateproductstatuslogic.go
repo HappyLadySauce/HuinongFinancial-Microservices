@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"model"
@@ -28,27 +29,18 @@ func NewUpdateProductStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext
 func (l *UpdateProductStatusLogic) UpdateProductStatus(in *loanproduct.UpdateProductStatusReq) (*loanproduct.UpdateProductStatusResp, error) {
 	// 参数验证
 	if in.Id <= 0 {
-		return &loanproduct.UpdateProductStatusResp{
-			Code:    400,
-			Message: "产品ID不能为空",
-		}, nil
+		return nil, fmt.Errorf("产品ID不能为空")
 	}
 
 	if in.Status != 1 && in.Status != 2 {
-		return &loanproduct.UpdateProductStatusResp{
-			Code:    400,
-			Message: "状态值必须为1(上架)或2(下架)",
-		}, nil
+		return nil, fmt.Errorf("状态值必须为1(上架)或2(下架)")
 	}
 
 	// 检查产品是否存在
 	existingProduct, err := l.svcCtx.LoanProductModel.FindOne(l.ctx, uint64(in.Id))
 	if err != nil {
 		l.Errorf("查询产品失败: %v", err)
-		return &loanproduct.UpdateProductStatusResp{
-			Code:    404,
-			Message: "产品不存在",
-		}, nil
+		return nil, fmt.Errorf("产品不存在")
 	}
 
 	// 更新产品状态
@@ -71,19 +63,8 @@ func (l *UpdateProductStatusLogic) UpdateProductStatus(in *loanproduct.UpdatePro
 	err = l.svcCtx.LoanProductModel.Update(l.ctx, updatedProduct)
 	if err != nil {
 		l.Errorf("更新产品状态失败: %v", err)
-		return &loanproduct.UpdateProductStatusResp{
-			Code:    500,
-			Message: "更新状态失败",
-		}, nil
+		return nil, fmt.Errorf("更新状态失败")
 	}
 
-	statusText := "上架"
-	if in.Status == 2 {
-		statusText = "下架"
-	}
-
-	return &loanproduct.UpdateProductStatusResp{
-		Code:    200,
-		Message: "产品已" + statusText,
-	}, nil
+	return &loanproduct.UpdateProductStatusResp{}, nil
 }

@@ -79,10 +79,7 @@ func (l *ListLeaseProductsLogic) ListLeaseProducts(in *leaseproduct.ListLeasePro
 	total, err := l.svcCtx.LeaseProductModel.CountWithConditions(l.ctx, whereClause, args)
 	if err != nil {
 		l.Errorf("查询产品总数失败: %v", err)
-		return &leaseproduct.ListLeaseProductsResp{
-			Code:    500,
-			Message: "查询产品失败",
-		}, nil
+		return nil, fmt.Errorf("查询产品失败")
 	}
 
 	// 查询分页数据
@@ -90,10 +87,7 @@ func (l *ListLeaseProductsLogic) ListLeaseProducts(in *leaseproduct.ListLeasePro
 	productRows, err := l.svcCtx.LeaseProductModel.ListWithConditions(l.ctx, whereClause, args, in.Size, offset)
 	if err != nil && err != sql.ErrNoRows {
 		l.Errorf("查询产品列表失败: %v", err)
-		return &leaseproduct.ListLeaseProductsResp{
-			Code:    500,
-			Message: "查询产品列表失败",
-		}, nil
+		return nil, fmt.Errorf("查询产品列表失败")
 	}
 
 	// 转换为响应格式
@@ -126,9 +120,7 @@ func (l *ListLeaseProductsLogic) ListLeaseProducts(in *leaseproduct.ListLeasePro
 	}
 
 	return &leaseproduct.ListLeaseProductsResp{
-		Code:    200,
-		Message: "查询成功",
-		List:    products,
-		Total:   total,
+		List:  products,
+		Total: total,
 	}, nil
 }

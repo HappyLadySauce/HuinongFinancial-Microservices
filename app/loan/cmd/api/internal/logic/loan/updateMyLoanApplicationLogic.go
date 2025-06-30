@@ -34,21 +34,12 @@ func (l *UpdateMyLoanApplicationLogic) UpdateMyLoanApplication(req *types.Update
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
-		return &types.UpdateLoanApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 转换 RPC 响应为 API 响应
-	resp = &types.UpdateLoanApplicationResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
+		return nil, err
 	}
 
 	// 转换申请信息
-	if rpcResp.ApplicationInfo != nil {
-		resp.ApplicationInfo = types.LoanApplicationInfo{
+	return &types.UpdateLoanApplicationResp{
+		ApplicationInfo: types.LoanApplicationInfo{
 			Id:            rpcResp.ApplicationInfo.Id,
 			ApplicationId: rpcResp.ApplicationInfo.ApplicationId,
 			UserId:        rpcResp.ApplicationInfo.UserId,
@@ -62,8 +53,6 @@ func (l *UpdateMyLoanApplicationLogic) UpdateMyLoanApplication(req *types.Update
 			Status:        rpcResp.ApplicationInfo.Status,
 			CreatedAt:     rpcResp.ApplicationInfo.CreatedAt,
 			UpdatedAt:     rpcResp.ApplicationInfo.UpdatedAt,
-		}
-	}
-
-	return resp, nil
+		},
+	}, nil
 }

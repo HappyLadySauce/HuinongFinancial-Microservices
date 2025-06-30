@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"model"
 	"rpc/internal/svc"
@@ -30,23 +29,16 @@ func NewCreateLoanProductLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 func (l *CreateLoanProductLogic) CreateLoanProduct(in *loanproduct.CreateLoanProductReq) (*loanproduct.CreateLoanProductResp, error) {
 	// 参数验证
 	if err := l.validateCreateRequest(in); err != nil {
-		return &loanproduct.CreateLoanProductResp{
-			Code:    400,
-			Message: err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	// 检查产品编码是否已存在
 	existingProduct, err := l.svcCtx.LoanProductModel.FindOneByProductCode(l.ctx, in.ProductCode)
 	if err == nil && existingProduct != nil {
-		return &loanproduct.CreateLoanProductResp{
-			Code:    409,
-			Message: "产品编码已存在",
-		}, nil
+		return nil, fmt.Errorf("产品编码已存在")
 	}
 
 	// 创建产品记录
-	now := time.Now()
 	product := &model.LoanProducts{
 		ProductCode:  in.ProductCode,
 		Name:         in.Name,
@@ -58,32 +50,29 @@ func (l *CreateLoanProductLogic) CreateLoanProduct(in *loanproduct.CreateLoanPro
 		InterestRate: in.InterestRate,
 		Description:  in.Description,
 		Status:       1, // 默认上架状态
-		CreatedAt:    now,
-		UpdatedAt:    now,
 	}
 
-	_, err = l.svcCtx.LoanProductModel.Insert(l.ctx, product)
+	result, err := l.svcCtx.LoanProductModel.Insert(l.ctx, product)
 	if err != nil {
 		l.Errorf("创建产品失败: %v", err)
-		return &loanproduct.CreateLoanProductResp{
-			Code:    500,
-			Message: "创建产品失败",
-		}, nil
+		return nil, fmt.Errorf("创建产品失败")
 	}
 
-	// 查询创建后的产品信息
-	createdProduct, err := l.svcCtx.LoanProductModel.FindOneByProductCode(l.ctx, in.ProductCode)
+	// 获取新创建的产品ID
+	productId, err := result.LastInsertId()
+	if err != nil {
+		l.Errorf("获取新产品ID失败: %v", err)
+		return nil, fmt.Errorf("创建成功但查询失败")
+	}
+
+	// 查询完整的产品信息
+	createdProduct, err := l.svcCtx.LoanProductModel.FindOne(l.ctx, uint64(productId))
 	if err != nil {
 		l.Errorf("查询创建的产品失败: %v", err)
-		return &loanproduct.CreateLoanProductResp{
-			Code:    500,
-			Message: "创建成功但查询失败",
-		}, nil
+		return nil, fmt.Errorf("创建成功但查询失败")
 	}
 
 	return &loanproduct.CreateLoanProductResp{
-		Code:    200,
-		Message: "创建成功",
 		Data: &loanproduct.LoanProductInfo{
 			Id:           int64(createdProduct.Id),
 			ProductCode:  createdProduct.ProductCode,
@@ -119,20 +108,20 @@ func (l *CreateLoanProductLogic) validateCreateRequest(in *loanproduct.CreateLoa
 	if in.MinAmount <= 0 {
 		return fmt.Errorf("最小金额必须大于0")
 	}
-	if in.MinAmount > in.MaxAmount {
-		return fmt.Errorf("最小金额不能大于最大金额")
-	}
-	if in.MinDuration <= 0 {
-		return fmt.Errorf("最小期限必须大于0")
+	if in.MinAmount >= in.MaxAmount {
+		return fmt.Errorf("最小金额不能大于等于最大金额")
 	}
 	if in.MaxDuration <= 0 {
 		return fmt.Errorf("最大期限必须大于0")
 	}
-	if in.MinDuration > in.MaxDuration {
-		return fmt.Errorf("最小期限不能大于最大期限")
+	if in.MinDuration <= 0 {
+		return fmt.Errorf("最小期限必须大于0")
 	}
-	if in.InterestRate < 0 {
-		return fmt.Errorf("利率不能小于0")
+	if in.MinDuration >= in.MaxDuration {
+		return fmt.Errorf("最小期限不能大于等于最大期限")
+	}
+	if in.InterestRate <= 0 {
+		return fmt.Errorf("利率必须大于0")
 	}
 	if in.Description == "" {
 		return fmt.Errorf("产品描述不能为空")

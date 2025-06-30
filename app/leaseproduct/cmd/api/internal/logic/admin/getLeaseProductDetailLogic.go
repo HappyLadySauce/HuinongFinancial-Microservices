@@ -5,7 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
-	"rpc/leaseproduct"
+	"rpc/leaseproductservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,30 +26,17 @@ func NewGetLeaseProductDetailLogic(ctx context.Context, svcCtx *svc.ServiceConte
 }
 
 func (l *GetLeaseProductDetailLogic) GetLeaseProductDetail(req *types.GetLeaseProductDetailReq) (resp *types.GetLeaseProductResp, err error) {
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LeaseProductRpc.GetLeaseProduct(l.ctx, &leaseproduct.GetLeaseProductReq{
+	// 调用 LeaseProduct RPC 获取产品详情
+	rpcResp, err := l.svcCtx.LeaseProductRpc.GetLeaseProduct(l.ctx, &leaseproductservice.GetLeaseProductReq{
 		ProductCode: req.ProductCode,
 	})
 	if err != nil {
-		l.Errorf("调用RPC服务失败: %v", err)
-		return &types.GetLeaseProductResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 检查RPC响应
-	if rpcResp.Code != 200 {
-		return &types.GetLeaseProductResp{
-			Code:    rpcResp.Code,
-			Message: rpcResp.Message,
-		}, nil
+		logx.WithContext(l.ctx).Errorf("调用LeaseProduct RPC失败: %v", err)
+		return nil, err
 	}
 
 	// 转换响应数据
 	return &types.GetLeaseProductResp{
-		Code:    200,
-		Message: "查询成功",
 		Data: types.LeaseProductInfo{
 			Id:             rpcResp.Data.Id,
 			ProductCode:    rpcResp.Data.ProductCode,

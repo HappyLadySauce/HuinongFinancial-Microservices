@@ -31,10 +31,7 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLe
 	userId, err := strconv.ParseInt(userIdStr, 10, 64)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("解析用户ID失败: %v", err)
-		return &types.CreateLeaseApplicationResp{
-			Code:    400,
-			Message: "用户ID无效",
-		}, nil
+		return nil, err
 	}
 
 	// 调用 Lease RPC 创建申请
@@ -57,16 +54,11 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLe
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
-		return &types.CreateLeaseApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换 RPC 响应为 API 响应
 	return &types.CreateLeaseApplicationResp{
-		Code:          rpcResp.Code,
-		Message:       rpcResp.Message,
 		ApplicationId: rpcResp.ApplicationId,
 	}, nil
 }

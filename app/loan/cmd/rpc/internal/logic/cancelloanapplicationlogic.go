@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"model"
@@ -29,28 +30,19 @@ func NewCancelLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceConte
 func (l *CancelLoanApplicationLogic) CancelLoanApplication(in *loan.CancelLoanApplicationReq) (*loan.CancelLoanApplicationResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &loan.CancelLoanApplicationResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请编号不能为空")
 	}
 
 	// 查询申请信息
 	application, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &loan.CancelLoanApplicationResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 检查申请状态是否可以撤销
 	if application.Status != "pending" {
-		return &loan.CancelLoanApplicationResp{
-			Code:    400,
-			Message: "只有待审批状态的申请才可以撤销",
-		}, nil
+		return nil, fmt.Errorf("只有待审批状态的申请才可以撤销")
 	}
 
 	// 更新申请状态为已撤销
@@ -73,10 +65,7 @@ func (l *CancelLoanApplicationLogic) CancelLoanApplication(in *loan.CancelLoanAp
 	err = l.svcCtx.LoanApplicationsModel.Update(l.ctx, updatedApplication)
 	if err != nil {
 		l.Errorf("撤销申请失败: %v", err)
-		return &loan.CancelLoanApplicationResp{
-			Code:    500,
-			Message: "撤销申请失败",
-		}, nil
+		return nil, fmt.Errorf("撤销申请失败")
 	}
 
 	// 记录撤销原因（可以创建一个审批记录）
@@ -100,8 +89,5 @@ func (l *CancelLoanApplicationLogic) CancelLoanApplication(in *loan.CancelLoanAp
 		}
 	}
 
-	return &loan.CancelLoanApplicationResp{
-		Code:    200,
-		Message: "申请已撤销",
-	}, nil
+	return &loan.CancelLoanApplicationResp{}, nil
 }

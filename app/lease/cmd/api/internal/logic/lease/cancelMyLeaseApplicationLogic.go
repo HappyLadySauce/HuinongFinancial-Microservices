@@ -26,21 +26,15 @@ func NewCancelMyLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCo
 
 func (l *CancelMyLeaseApplicationLogic) CancelMyLeaseApplication(req *types.CancelLeaseApplicationReq) (resp *types.CancelLeaseApplicationResp, err error) {
 	// 调用 Lease RPC 撤销申请
-	rpcResp, err := l.svcCtx.LeaseRpc.CancelLeaseApplication(l.ctx, &leaseclient.CancelLeaseApplicationReq{
+	_, err = l.svcCtx.LeaseRpc.CancelLeaseApplication(l.ctx, &leaseclient.CancelLeaseApplicationReq{
 		ApplicationId: req.ApplicationId,
 		Reason:        req.Reason,
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
-		return &types.CancelLeaseApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换 RPC 响应为 API 响应
-	return &types.CancelLeaseApplicationResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
-	}, nil
+	return &types.CancelLeaseApplicationResp{}, nil
 }

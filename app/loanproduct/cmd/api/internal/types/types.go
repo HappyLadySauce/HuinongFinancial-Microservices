@@ -19,11 +19,23 @@ type CreateLoanProductResp struct {
 	Data LoanProductInfo `json:"data"` // 添加数据字段
 }
 
+type DeleteLoanProductReq struct {
+	Id string `path:"id"`
+}
+
 type DeleteLoanProductResp struct {
+}
+
+type GetLoanProductReq struct {
+	Id string `path:"id"`
 }
 
 type GetLoanProductResp struct {
 	Data LoanProductInfo `json:"data"` // 添加数据字段
+}
+
+type GetLoanProductDetailReq struct {
+	Id string `path:"id"`
 }
 
 type ListLoanProductsReq struct {
@@ -56,7 +68,7 @@ type LoanProductInfo struct {
 }
 
 type UpdateLoanProductReq struct {
-	Id           int64   `path:"id"`
+	Id           string  `path:"id"`
 	Name         string  `json:"name"`
 	Type         string  `json:"type"`
 	MaxAmount    float64 `json:"max_amount"`
@@ -72,8 +84,8 @@ type UpdateLoanProductResp struct {
 }
 
 type UpdateProductStatusReq struct {
-	Id     int64 `path:"id"`
-	Status int32 `json:"status"`
+	Id     string `path:"id"`
+	Status int32  `json:"status"`
 }
 
 type UpdateProductStatusResp struct {

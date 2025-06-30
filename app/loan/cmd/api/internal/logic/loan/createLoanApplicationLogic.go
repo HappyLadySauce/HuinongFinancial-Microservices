@@ -26,15 +26,12 @@ func NewCreateLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceConte
 }
 
 func (l *CreateLoanApplicationLogic) CreateLoanApplication(req *types.CreateLoanApplicationReq) (resp *types.CreateLoanApplicationResp, err error) {
-	// 获取当前用户ID (从JWT中获取)
+	// 从JWT上下文中获取用户ID
 	userIdStr := l.ctx.Value("userId").(string)
 	userId, err := strconv.ParseInt(userIdStr, 10, 64)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("解析用户ID失败: %v", err)
-		return &types.CreateLoanApplicationResp{
-			Code:    400,
-			Message: "用户ID无效",
-		}, nil
+		return nil, err
 	}
 
 	// 调用 Loan RPC 创建申请
@@ -49,16 +46,11 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(req *types.CreateLoan
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
-		return &types.CreateLoanApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换 RPC 响应为 API 响应
 	return &types.CreateLoanApplicationResp{
-		Code:          rpcResp.Code,
-		Message:       rpcResp.Message,
 		ApplicationId: rpcResp.ApplicationId,
 	}, nil
 }

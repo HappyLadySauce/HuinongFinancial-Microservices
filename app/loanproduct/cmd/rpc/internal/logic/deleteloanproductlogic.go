@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"rpc/internal/svc"
 	"rpc/loanproduct"
@@ -26,20 +27,14 @@ func NewDeleteLoanProductLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 func (l *DeleteLoanProductLogic) DeleteLoanProduct(in *loanproduct.DeleteLoanProductReq) (*loanproduct.DeleteLoanProductResp, error) {
 	// 参数验证
 	if in.Id <= 0 {
-		return &loanproduct.DeleteLoanProductResp{
-			Code:    400,
-			Message: "产品ID不能为空",
-		}, nil
+		return nil, fmt.Errorf("产品ID不能为空")
 	}
 
 	// 检查产品是否存在
 	product, err := l.svcCtx.LoanProductModel.FindOne(l.ctx, uint64(in.Id))
 	if err != nil {
 		l.Errorf("查询产品失败: %v", err)
-		return &loanproduct.DeleteLoanProductResp{
-			Code:    404,
-			Message: "产品不存在",
-		}, nil
+		return nil, fmt.Errorf("产品不存在")
 	}
 
 	// TODO: 检查是否有正在进行的贷款申请
@@ -50,14 +45,8 @@ func (l *DeleteLoanProductLogic) DeleteLoanProduct(in *loanproduct.DeleteLoanPro
 	err = l.svcCtx.LoanProductModel.Delete(l.ctx, product.Id)
 	if err != nil {
 		l.Errorf("删除产品失败: %v", err)
-		return &loanproduct.DeleteLoanProductResp{
-			Code:    500,
-			Message: "删除产品失败",
-		}, nil
+		return nil, fmt.Errorf("删除产品失败")
 	}
 
-	return &loanproduct.DeleteLoanProductResp{
-		Code:    200,
-		Message: "删除成功",
-	}, nil
+	return &loanproduct.DeleteLoanProductResp{}, nil
 }

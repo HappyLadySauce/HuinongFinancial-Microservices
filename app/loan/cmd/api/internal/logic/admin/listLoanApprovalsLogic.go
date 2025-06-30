@@ -31,38 +31,27 @@ func (l *ListLoanApprovalsLogic) ListLoanApprovals(req *types.ListLoanApprovalsR
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
-		return &types.ListLoanApprovalsResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 转换 RPC 响应为 API 响应
-	resp = &types.ListLoanApprovalsResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
+		return nil, err
 	}
 
 	// 转换审批记录列表
-	if len(rpcResp.List) > 0 {
-		resp.List = make([]types.LoanApprovalInfo, len(rpcResp.List))
-		for i, item := range rpcResp.List {
-			resp.List[i] = types.LoanApprovalInfo{
-				Id:               item.Id,
-				ApplicationId:    item.ApplicationId,
-				AuditorId:        item.AuditorId,
-				AuditorName:      item.AuditorName,
-				Action:           item.Action,
-				Suggestions:      item.Suggestions,
-				ApprovedAmount:   item.ApprovedAmount,
-				ApprovedDuration: item.ApprovedDuration,
-				InterestRate:     item.InterestRate,
-				CreatedAt:        item.CreatedAt,
-			}
-		}
-	} else {
-		resp.List = make([]types.LoanApprovalInfo, 0)
+	var approvals []types.LoanApprovalInfo
+	for _, item := range rpcResp.List {
+		approvals = append(approvals, types.LoanApprovalInfo{
+			Id:               item.Id,
+			ApplicationId:    item.ApplicationId,
+			AuditorId:        item.AuditorId,
+			AuditorName:      item.AuditorName,
+			Action:           item.Action,
+			Suggestions:      item.Suggestions,
+			ApprovedAmount:   item.ApprovedAmount,
+			ApprovedDuration: item.ApprovedDuration,
+			InterestRate:     item.InterestRate,
+			CreatedAt:        item.CreatedAt,
+		})
 	}
 
-	return resp, nil
+	return &types.ListLoanApprovalsResp{
+		List: approvals,
+	}, nil
 }

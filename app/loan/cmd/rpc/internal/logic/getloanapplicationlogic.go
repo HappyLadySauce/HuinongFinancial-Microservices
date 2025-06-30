@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 
 	"rpc/internal/svc"
 	"rpc/loan"
@@ -26,42 +27,32 @@ func NewGetLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 func (l *GetLoanApplicationLogic) GetLoanApplication(in *loan.GetLoanApplicationReq) (*loan.GetLoanApplicationResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &loan.GetLoanApplicationResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请ID不能为空")
 	}
 
-	// 根据申请编号查询申请信息
-	application, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
+	// 根据申请ID查询贷款申请
+	loanApplication, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
-		l.Errorf("查询申请失败: %v", err)
-		return &loan.GetLoanApplicationResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		l.Errorf("查询贷款申请失败: %v", err)
+		return nil, fmt.Errorf("贷款申请不存在")
 	}
 
-	// 转换为响应格式
-	applicationInfo := &loan.LoanApplicationInfo{
-		Id:            int64(application.Id),
-		ApplicationId: application.ApplicationId,
-		UserId:        int64(application.UserId),
-		ApplicantName: application.ApplicantName,
-		ProductId:     int64(application.ProductId),
-		Name:          application.Name,
-		Type:          application.Type,
-		Amount:        application.Amount,
-		Duration:      int32(application.Duration),
-		Purpose:       application.Purpose.String,
-		Status:        application.Status,
-		CreatedAt:     application.CreatedAt.Unix(),
-		UpdatedAt:     application.UpdatedAt.Unix(),
-	}
-
+	// 构造响应
 	return &loan.GetLoanApplicationResp{
-		Code:            200,
-		Message:         "查询成功",
-		ApplicationInfo: applicationInfo,
+		ApplicationInfo: &loan.LoanApplicationInfo{
+			Id:            int64(loanApplication.Id),
+			ApplicationId: loanApplication.ApplicationId,
+			UserId:        int64(loanApplication.UserId),
+			ApplicantName: loanApplication.ApplicantName,
+			ProductId:     int64(loanApplication.ProductId),
+			Name:          loanApplication.Name,
+			Type:          loanApplication.Type,
+			Amount:        loanApplication.Amount,
+			Duration:      int32(loanApplication.Duration),
+			Purpose:       loanApplication.Purpose.String,
+			Status:        loanApplication.Status,
+			CreatedAt:     loanApplication.CreatedAt.Unix(),
+			UpdatedAt:     loanApplication.UpdatedAt.Unix(),
+		},
 	}, nil
 }

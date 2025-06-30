@@ -2,14 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 API测试脚本
-测试appuser (C端用户服务) 和 oauser (B端用户服务) 的所有接口
+测试所有微服务模块的接口：
+- appuser (C端用户服务)
+- oauser (B端用户服务) 
+- leaseproduct (租赁产品服务)
+- lease (租赁业务服务)
+- loanproduct (贷款产品服务)
+- loan (贷款业务服务)
 """
 
 import requests
 import json
 import time
 from typing import Optional, Dict, Any
-from config import APPUSER_BASE_URL, OAUSER_BASE_URL, APPUSER_TEST_DATA, OAUSER_TEST_DATA, REQUEST_TIMEOUT, REQUEST_DELAY
+from config import (
+    APPUSER_BASE_URL, OAUSER_BASE_URL, LEASEPRODUCT_BASE_URL, LEASE_BASE_URL, 
+    LOANPRODUCT_BASE_URL, LOAN_BASE_URL, APPUSER_TEST_DATA, OAUSER_TEST_DATA,
+    LEASEPRODUCT_TEST_DATA, LEASE_TEST_DATA, LOANPRODUCT_TEST_DATA, LOAN_TEST_DATA,
+    REQUEST_TIMEOUT, REQUEST_DELAY
+)
 
 class APITester:
     def __init__(self, base_url: str, service_name: str):

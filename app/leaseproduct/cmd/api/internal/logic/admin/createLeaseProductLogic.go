@@ -43,24 +43,11 @@ func (l *CreateLeaseProductLogic) CreateLeaseProduct(req *types.CreateLeaseProdu
 	})
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
-		return &types.CreateLeaseProductResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
-	}
-
-	// 检查RPC响应
-	if rpcResp.Code != 200 {
-		return &types.CreateLeaseProductResp{
-			Code:    rpcResp.Code,
-			Message: rpcResp.Message,
-		}, nil
+		return nil, err
 	}
 
 	// 转换响应数据
 	return &types.CreateLeaseProductResp{
-		Code:    200,
-		Message: "创建成功",
 		Data: types.LeaseProductInfo{
 			Id:             rpcResp.Data.Id,
 			ProductCode:    rpcResp.Data.ProductCode,

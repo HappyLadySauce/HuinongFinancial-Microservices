@@ -31,28 +31,19 @@ func NewApproveLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(in *loan.ApproveLoanApplicationReq) (*loan.ApproveLoanApplicationResp, error) {
 	// 参数验证
 	if err := l.validateApproveRequest(in); err != nil {
-		return &loan.ApproveLoanApplicationResp{
-			Code:    400,
-			Message: err.Error(),
-		}, nil
+		return nil, err
 	}
 
 	// 查询申请信息
 	application, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &loan.ApproveLoanApplicationResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 检查申请状态是否可以审批
 	if application.Status != "pending" {
-		return &loan.ApproveLoanApplicationResp{
-			Code:    400,
-			Message: "申请状态不允许审批",
-		}, nil
+		return nil, fmt.Errorf("申请状态不允许审批")
 	}
 
 	// 开始事务处理
@@ -82,10 +73,7 @@ func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(in *loan.ApproveLoa
 	err = l.svcCtx.LoanApplicationsModel.Update(l.ctx, updatedApplication)
 	if err != nil {
 		l.Errorf("更新申请状态失败: %v", err)
-		return &loan.ApproveLoanApplicationResp{
-			Code:    500,
-			Message: "审批失败",
-		}, nil
+		return nil, fmt.Errorf("审批失败")
 	}
 
 	// 2. 创建审批记录
@@ -104,26 +92,13 @@ func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(in *loan.ApproveLoa
 	_, err = l.svcCtx.LoanApprovalsModel.Insert(l.ctx, approval)
 	if err != nil {
 		l.Errorf("创建审批记录失败: %v", err)
-		return &loan.ApproveLoanApplicationResp{
-			Code:    500,
-			Message: "审批记录创建失败",
-		}, nil
+		return nil, fmt.Errorf("审批记录创建失败")
 	}
 
 	// TODO: 如果是批准，可能需要调用其他服务执行后续操作
 	// 比如发送通知等
 
-	message := "审批成功"
-	if in.Action == "approve" {
-		message = "申请已批准"
-	} else {
-		message = "申请已拒绝"
-	}
-
-	return &loan.ApproveLoanApplicationResp{
-		Code:    200,
-		Message: message,
-	}, nil
+	return &loan.ApproveLoanApplicationResp{}, nil
 }
 
 // validateApproveRequest 验证审批请求参数

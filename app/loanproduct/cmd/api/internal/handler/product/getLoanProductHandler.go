@@ -20,7 +20,7 @@ func GetLoanProductHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := product.NewGetLoanProductLogic(r.Context(), svcCtx)
-		resp, err := l.GetLoanProduct(&req)
+		resp, err := l.GetLoanProduct(req.Id)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

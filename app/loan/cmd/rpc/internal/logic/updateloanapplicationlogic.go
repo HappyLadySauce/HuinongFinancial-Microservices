@@ -2,10 +2,9 @@ package logic
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
 	"time"
 
-	"model"
 	"rpc/internal/svc"
 	"rpc/loan"
 
@@ -29,97 +28,65 @@ func NewUpdateLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceConte
 func (l *UpdateLoanApplicationLogic) UpdateLoanApplication(in *loan.UpdateLoanApplicationReq) (*loan.UpdateLoanApplicationResp, error) {
 	// 参数验证
 	if in.ApplicationId == "" {
-		return &loan.UpdateLoanApplicationResp{
-			Code:    400,
-			Message: "申请编号不能为空",
-		}, nil
+		return nil, fmt.Errorf("申请编号不能为空")
 	}
 
-	// 查询申请信息
+	// 查询申请是否存在
 	application, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询申请失败: %v", err)
-		return &loan.UpdateLoanApplicationResp{
-			Code:    404,
-			Message: "申请不存在",
-		}, nil
+		return nil, fmt.Errorf("申请不存在")
 	}
 
 	// 检查申请状态是否可以修改
 	if application.Status != "pending" {
-		return &loan.UpdateLoanApplicationResp{
-			Code:    400,
-			Message: "只有待审批状态的申请才可以修改",
-		}, nil
+		return nil, fmt.Errorf("只有待审核状态的申请才能修改")
 	}
 
-	// 只允许更新部分字段
-	updatedApplication := &model.LoanApplications{
-		Id:            application.Id,
-		ApplicationId: application.ApplicationId,
-		UserId:        application.UserId,
-		ApplicantName: application.ApplicantName,
-		ProductId:     application.ProductId,
-		Name:          application.Name,
-		Type:          application.Type,
-		Amount:        in.Amount,   // 可更新
-		Duration:      uint64(in.Duration), // 可更新
-		Purpose:       sql.NullString{String: in.Purpose, Valid: in.Purpose != ""}, // 可更新
-		Status:        application.Status,
-		CreatedAt:     application.CreatedAt,
-		UpdatedAt:     time.Now(),
-	}
-
-	// 如果字段为空或为0，保持原值
+	// 验证更新参数
 	if in.Amount <= 0 {
-		updatedApplication.Amount = application.Amount
+		return nil, fmt.Errorf("申请金额必须大于0")
 	}
 	if in.Duration <= 0 {
-		updatedApplication.Duration = application.Duration
-	}
-	if in.Purpose == "" {
-		updatedApplication.Purpose = application.Purpose
+		return nil, fmt.Errorf("贷款期限必须大于0")
 	}
 
-	err = l.svcCtx.LoanApplicationsModel.Update(l.ctx, updatedApplication)
+	// 更新申请信息
+	application.Amount = in.Amount
+	application.Duration = uint64(in.Duration)
+	application.Purpose.String = in.Purpose
+	application.Purpose.Valid = in.Purpose != ""
+	application.UpdatedAt = time.Now()
+
+	err = l.svcCtx.LoanApplicationsModel.Update(l.ctx, application)
 	if err != nil {
 		l.Errorf("更新申请失败: %v", err)
-		return &loan.UpdateLoanApplicationResp{
-			Code:    500,
-			Message: "更新申请失败",
-		}, nil
+		return nil, fmt.Errorf("更新申请失败")
 	}
 
 	// 查询更新后的申请信息
-	updatedApp, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
+	updatedApplication, err := l.svcCtx.LoanApplicationsModel.FindOneByApplicationId(l.ctx, in.ApplicationId)
 	if err != nil {
 		l.Errorf("查询更新后的申请失败: %v", err)
-		return &loan.UpdateLoanApplicationResp{
-			Code:    500,
-			Message: "更新成功但查询失败",
-		}, nil
+		return nil, fmt.Errorf("更新成功但查询失败")
 	}
 
-	// 转换为响应格式
-	applicationInfo := &loan.LoanApplicationInfo{
-		Id:            int64(updatedApp.Id),
-		ApplicationId: updatedApp.ApplicationId,
-		UserId:        int64(updatedApp.UserId),
-		ApplicantName: updatedApp.ApplicantName,
-		ProductId:     int64(updatedApp.ProductId),
-		Name:          updatedApp.Name,
-		Type:          updatedApp.Type,
-		Amount:        updatedApp.Amount,
-		Duration:      int32(updatedApp.Duration),
-		Purpose:       updatedApp.Purpose.String,
-		Status:        updatedApp.Status,
-		CreatedAt:     updatedApp.CreatedAt.Unix(),
-		UpdatedAt:     updatedApp.UpdatedAt.Unix(),
-	}
-
+	// 构造响应
 	return &loan.UpdateLoanApplicationResp{
-		Code:            200,
-		Message:         "更新成功",
-		ApplicationInfo: applicationInfo,
+		ApplicationInfo: &loan.LoanApplicationInfo{
+			Id:            int64(updatedApplication.Id),
+			ApplicationId: updatedApplication.ApplicationId,
+			UserId:        int64(updatedApplication.UserId),
+			ApplicantName: updatedApplication.ApplicantName,
+			ProductId:     int64(updatedApplication.ProductId),
+			Name:          updatedApplication.Name,
+			Type:          updatedApplication.Type,
+			Amount:        updatedApplication.Amount,
+			Duration:      int32(updatedApplication.Duration),
+			Purpose:       updatedApplication.Purpose.String,
+			Status:        updatedApplication.Status,
+			CreatedAt:     updatedApplication.CreatedAt.Unix(),
+			UpdatedAt:     updatedApplication.UpdatedAt.Unix(),
+		},
 	}, nil
 }

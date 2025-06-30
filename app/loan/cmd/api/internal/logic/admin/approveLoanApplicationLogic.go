@@ -26,22 +26,22 @@ func NewApproveLoanApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(req *types.ApproveLoanApplicationReq) (resp *types.ApproveLoanApplicationResp, err error) {
-	// 获取当前管理员用户ID (从JWT中获取)
-	userIdStr := l.ctx.Value("userId").(string)
-	auditorId, err := strconv.ParseInt(userIdStr, 10, 64)
+	// 获取当前审核员ID (从JWT中获取)
+	auditorIdStr := l.ctx.Value("userId").(string)
+	auditorId, err := strconv.ParseInt(auditorIdStr, 10, 64)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("解析审核员ID失败: %v", err)
-		return &types.ApproveLoanApplicationResp{
-			Code:    400,
-			Message: "审核员ID无效",
-		}, nil
+		return nil, err
 	}
 
-	// 获取审核员姓名 (简化实现，实际应该从用户服务获取)
-	auditorName := "管理员" // TODO: 从用户服务获取真实姓名
+	// 获取审核员姓名 (从JWT中获取或调用用户服务)
+	auditorName := l.ctx.Value("username").(string)
+	if auditorName == "" {
+		auditorName = "系统管理员"
+	}
 
 	// 调用 Loan RPC 审批申请
-	rpcResp, err := l.svcCtx.LoanRpc.ApproveLoanApplication(l.ctx, &loanclient.ApproveLoanApplicationReq{
+	_, err = l.svcCtx.LoanRpc.ApproveLoanApplication(l.ctx, &loanclient.ApproveLoanApplicationReq{
 		ApplicationId:    req.ApplicationId,
 		AuditorId:        auditorId,
 		AuditorName:      auditorName,
@@ -53,15 +53,9 @@ func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(req *types.ApproveL
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
-		return &types.ApproveLoanApplicationResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换 RPC 响应为 API 响应
-	return &types.ApproveLoanApplicationResp{
-		Code:    rpcResp.Code,
-		Message: rpcResp.Message,
-	}, nil
+	return &types.ApproveLoanApplicationResp{}, nil
 }
