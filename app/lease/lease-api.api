@@ -117,8 +117,8 @@ type ListLeaseApplicationsReq {
 }
 
 type ListLeaseApplicationsResp {
-	List    []LeaseApplicationInfo `json:"list"`
-	Total   int64                  `json:"total"`
+	List  []LeaseApplicationInfo `json:"list"`
+	Total int64                  `json:"total"`
 }
 
 // 更新租赁申请请求响应
@@ -139,8 +139,7 @@ type CancelLeaseApplicationReq {
 	Reason        string `json:"reason"`
 }
 
-type CancelLeaseApplicationResp {
-}
+type CancelLeaseApplicationResp {}
 
 // 审批租赁申请请求响应
 type ApproveLeaseApplicationReq {
@@ -152,8 +151,7 @@ type ApproveLeaseApplicationReq {
 	ApprovedDeposit  float64 `json:"approved_deposit"`
 }
 
-type ApproveLeaseApplicationResp {
-}
+type ApproveLeaseApplicationResp {}
 
 // 审批记录信息
 type LeaseApprovalInfo {
@@ -175,7 +173,7 @@ type ListLeaseApprovalsReq {
 }
 
 type ListLeaseApprovalsResp {
-	List    []LeaseApprovalInfo `json:"list"`
+	List []LeaseApprovalInfo `json:"list"`
 }
 
 // C端用户租赁申请管理 (需要JWT认证)

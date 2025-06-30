@@ -73,10 +73,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "list": {
                   "description": "修改数据类型名称",
                   "type": "array",
@@ -160,10 +156,6 @@
                       }
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 },
                 "total": {
                   "type": "integer"
@@ -253,10 +245,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -337,10 +325,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -358,24 +342,12 @@
         ],
         "summary": "获取租赁产品详情",
         "operationId": "adminGetLeaseProductDetail",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "productCode",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -456,10 +428,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -548,10 +516,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -632,10 +596,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -643,9 +603,6 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
         "produces": [
           "application/json"
         ],
@@ -654,27 +611,11 @@
         ],
         "summary": "删除租赁产品",
         "operationId": "adminDeleteLeaseProduct",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "productCode",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -738,10 +679,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "list": {
                   "description": "修改数据类型名称",
                   "type": "array",
@@ -826,10 +763,6 @@
                     }
                   }
                 },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
-                },
                 "total": {
                   "type": "integer"
                 }
@@ -893,14 +826,6 @@
                 },
                 "available_count": {
                   "type": "integer"
-                },
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -918,24 +843,12 @@
         ],
         "summary": "获取租赁产品详情",
         "operationId": "productGetLeaseProduct",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "productCode",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -1016,10 +929,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -1028,7 +937,7 @@
       }
     }
   },
-  "x-date": "2025-06-30 04:11:39",
+  "x-date": "2025-06-30 10:30:11",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

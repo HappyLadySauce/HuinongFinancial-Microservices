@@ -73,8 +73,7 @@ type DeleteUserReq {
 	Phone string `json:"phone"`
 }
 
-type DeleteUserResp {
-}
+type DeleteUserResp {}
 
 // 登录请求响应
 type LoginReq {
@@ -83,7 +82,7 @@ type LoginReq {
 }
 
 type LoginResp {
-	Token   string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
+	Token string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 
 // 注册请求响应
@@ -94,16 +93,13 @@ type RegisterReq {
 }
 
 type RegisterResp {
-	Token   string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
+	Token string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 
 // 注销请求响应 (从JWT上下文获取用户信息，无需传递token)
-type LogoutReq {
-	// 移除 token 字段，改为从 JWT 认证上下文中获取用户信息
-}
+type LogoutReq {}
 
-type LogoutResp {
-}
+type LogoutResp {}
 
 // 修改密码请求响应
 type ChangePasswordReq {
@@ -112,8 +108,7 @@ type ChangePasswordReq {
 	NewPassword string `json:"new_password"`
 }
 
-type ChangePasswordResp {
-}
+type ChangePasswordResp {}
 
 // 用户认证管理 (公开接口)
 @server (

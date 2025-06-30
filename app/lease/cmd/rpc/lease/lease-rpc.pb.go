@@ -503,9 +503,7 @@ func (x *CreateLeaseApplicationReq) GetPurpose() string {
 
 type CreateLeaseApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationId string                 `protobuf:"bytes,3,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
+	ApplicationId string                 `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -538,20 +536,6 @@ func (x *CreateLeaseApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateLeaseApplicationResp.ProtoReflect.Descriptor instead.
 func (*CreateLeaseApplicationResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *CreateLeaseApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CreateLeaseApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *CreateLeaseApplicationResp) GetApplicationId() string {
@@ -608,9 +592,7 @@ func (x *GetLeaseApplicationReq) GetApplicationId() string {
 
 type GetLeaseApplicationResp struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Code            int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationInfo *LeaseApplicationInfo  `protobuf:"bytes,3,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
+	ApplicationInfo *LeaseApplicationInfo  `protobuf:"bytes,1,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -643,20 +625,6 @@ func (x *GetLeaseApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetLeaseApplicationResp.ProtoReflect.Descriptor instead.
 func (*GetLeaseApplicationResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *GetLeaseApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetLeaseApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *GetLeaseApplicationResp) GetApplicationInfo() *LeaseApplicationInfo {
@@ -745,10 +713,8 @@ func (x *ListLeaseApplicationsReq) GetStatus() string {
 
 type ListLeaseApplicationsResp struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Code          int32                   `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                  `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	List          []*LeaseApplicationInfo `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`
-	Total         int64                   `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	List          []*LeaseApplicationInfo `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                   `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -781,20 +747,6 @@ func (x *ListLeaseApplicationsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLeaseApplicationsResp.ProtoReflect.Descriptor instead.
 func (*ListLeaseApplicationsResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ListLeaseApplicationsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLeaseApplicationsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLeaseApplicationsResp) GetList() []*LeaseApplicationInfo {
@@ -882,9 +834,7 @@ func (x *UpdateLeaseApplicationReq) GetContactPhone() string {
 
 type UpdateLeaseApplicationResp struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Code            int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationInfo *LeaseApplicationInfo  `protobuf:"bytes,3,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
+	ApplicationInfo *LeaseApplicationInfo  `protobuf:"bytes,1,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -917,20 +867,6 @@ func (x *UpdateLeaseApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateLeaseApplicationResp.ProtoReflect.Descriptor instead.
 func (*UpdateLeaseApplicationResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *UpdateLeaseApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateLeaseApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *UpdateLeaseApplicationResp) GetApplicationInfo() *LeaseApplicationInfo {
@@ -995,8 +931,6 @@ func (x *CancelLeaseApplicationReq) GetReason() string {
 
 type CancelLeaseApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1029,20 +963,6 @@ func (x *CancelLeaseApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CancelLeaseApplicationResp.ProtoReflect.Descriptor instead.
 func (*CancelLeaseApplicationResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *CancelLeaseApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CancelLeaseApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 审批租赁申请
@@ -1148,8 +1068,6 @@ func (x *ApproveLeaseApplicationReq) GetApprovedDeposit() float64 {
 
 type ApproveLeaseApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1182,20 +1100,6 @@ func (x *ApproveLeaseApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ApproveLeaseApplicationResp.ProtoReflect.Descriptor instead.
 func (*ApproveLeaseApplicationResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *ApproveLeaseApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ApproveLeaseApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 获取审批记录列表
@@ -1245,9 +1149,7 @@ func (x *ListLeaseApprovalsReq) GetApplicationId() string {
 
 type ListLeaseApprovalsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	List          []*LeaseApprovalInfo   `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`
+	List          []*LeaseApprovalInfo   `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1280,20 +1182,6 @@ func (x *ListLeaseApprovalsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLeaseApprovalsResp.ProtoReflect.Descriptor instead.
 func (*ListLeaseApprovalsResp) Descriptor() ([]byte, []int) {
 	return file_lease_rpc_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *ListLeaseApprovalsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLeaseApprovalsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLeaseApprovalsResp) GetList() []*LeaseApprovalInfo {
@@ -1369,43 +1257,33 @@ const file_lease_rpc_proto_rawDesc = "" +
 	"\adeposit\x18\f \x01(\x01R\adeposit\x12)\n" +
 	"\x10delivery_address\x18\r \x01(\tR\x0fdeliveryAddress\x12#\n" +
 	"\rcontact_phone\x18\x0e \x01(\tR\fcontactPhone\x12\x18\n" +
-	"\apurpose\x18\x0f \x01(\tR\apurpose\"q\n" +
-	"\x1aCreateLeaseApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12%\n" +
-	"\x0eapplication_id\x18\x03 \x01(\tR\rapplicationId\"?\n" +
+	"\apurpose\x18\x0f \x01(\tR\apurpose\"C\n" +
+	"\x1aCreateLeaseApplicationResp\x12%\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"?\n" +
 	"\x16GetLeaseApplicationReq\x12%\n" +
-	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"\x8f\x01\n" +
-	"\x17GetLeaseApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12F\n" +
-	"\x10application_info\x18\x03 \x01(\v2\x1b.lease.LeaseApplicationInfoR\x0fapplicationInfo\"\x96\x01\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"a\n" +
+	"\x17GetLeaseApplicationResp\x12F\n" +
+	"\x10application_info\x18\x01 \x01(\v2\x1b.lease.LeaseApplicationInfoR\x0fapplicationInfo\"\x96\x01\n" +
 	"\x18ListLeaseApplicationsReq\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x12\n" +
 	"\x04size\x18\x02 \x01(\x05R\x04size\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12!\n" +
 	"\fproduct_code\x18\x04 \x01(\tR\vproductCode\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\tR\x06status\"\x90\x01\n" +
-	"\x19ListLeaseApplicationsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12/\n" +
-	"\x04list\x18\x03 \x03(\v2\x1b.lease.LeaseApplicationInfoR\x04list\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\x03R\x05total\"\xac\x01\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\"b\n" +
+	"\x19ListLeaseApplicationsResp\x12/\n" +
+	"\x04list\x18\x01 \x03(\v2\x1b.lease.LeaseApplicationInfoR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xac\x01\n" +
 	"\x19UpdateLeaseApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x18\n" +
 	"\apurpose\x18\x02 \x01(\tR\apurpose\x12)\n" +
 	"\x10delivery_address\x18\x03 \x01(\tR\x0fdeliveryAddress\x12#\n" +
-	"\rcontact_phone\x18\x04 \x01(\tR\fcontactPhone\"\x92\x01\n" +
-	"\x1aUpdateLeaseApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12F\n" +
-	"\x10application_info\x18\x03 \x01(\v2\x1b.lease.LeaseApplicationInfoR\x0fapplicationInfo\"Z\n" +
+	"\rcontact_phone\x18\x04 \x01(\tR\fcontactPhone\"d\n" +
+	"\x1aUpdateLeaseApplicationResp\x12F\n" +
+	"\x10application_info\x18\x01 \x01(\v2\x1b.lease.LeaseApplicationInfoR\x0fapplicationInfo\"Z\n" +
 	"\x19CancelLeaseApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x16\n" +
-	"\x06reason\x18\x02 \x01(\tR\x06reason\"J\n" +
-	"\x1aCancelLeaseApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xc0\x02\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"\x1c\n" +
+	"\x1aCancelLeaseApplicationResp\"\xc0\x02\n" +
 	"\x1aApproveLeaseApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x1d\n" +
 	"\n" +
@@ -1415,16 +1293,12 @@ const file_lease_rpc_proto_rawDesc = "" +
 	"\vsuggestions\x18\x05 \x01(\tR\vsuggestions\x12+\n" +
 	"\x11approved_duration\x18\x06 \x01(\x05R\x10approvedDuration\x12'\n" +
 	"\x0fapproved_amount\x18\a \x01(\x01R\x0eapprovedAmount\x12)\n" +
-	"\x10approved_deposit\x18\b \x01(\x01R\x0fapprovedDeposit\"K\n" +
-	"\x1bApproveLeaseApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\">\n" +
+	"\x10approved_deposit\x18\b \x01(\x01R\x0fapprovedDeposit\"\x1d\n" +
+	"\x1bApproveLeaseApplicationResp\">\n" +
 	"\x15ListLeaseApprovalsReq\x12%\n" +
-	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"t\n" +
-	"\x16ListLeaseApprovalsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12,\n" +
-	"\x04list\x18\x03 \x03(\v2\x18.lease.LeaseApprovalInfoR\x04list2\x8b\x05\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"F\n" +
+	"\x16ListLeaseApprovalsResp\x12,\n" +
+	"\x04list\x18\x01 \x03(\v2\x18.lease.LeaseApprovalInfoR\x04list2\x8b\x05\n" +
 	"\x05Lease\x12]\n" +
 	"\x16CreateLeaseApplication\x12 .lease.CreateLeaseApplicationReq\x1a!.lease.CreateLeaseApplicationResp\x12T\n" +
 	"\x13GetLeaseApplication\x12\x1d.lease.GetLeaseApplicationReq\x1a\x1e.lease.GetLeaseApplicationResp\x12Z\n" +

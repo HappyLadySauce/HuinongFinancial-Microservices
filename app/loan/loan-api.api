@@ -80,7 +80,7 @@ type GetLoanApplicationReq {
 	ApplicationId string `json:"application_id"`
 }
 
-type GetLoanApplicationResp {	
+type GetLoanApplicationResp {
 	ApplicationInfo LoanApplicationInfo `json:"application_info"`
 }
 
@@ -93,8 +93,8 @@ type ListLoanApplicationsReq {
 }
 
 type ListLoanApplicationsResp {
-	List    []LoanApplicationInfo `json:"list"`
-	Total   int64                 `json:"total"`
+	List  []LoanApplicationInfo `json:"list"`
+	Total int64                 `json:"total"`
 }
 
 // 更新贷款申请请求响应
@@ -115,8 +115,7 @@ type CancelLoanApplicationReq {
 	Reason        string `json:"reason"`
 }
 
-type CancelLoanApplicationResp {
-}
+type CancelLoanApplicationResp {}
 
 // 审批贷款申请请求响应
 type ApproveLoanApplicationReq {
@@ -128,8 +127,7 @@ type ApproveLoanApplicationReq {
 	InterestRate     float64 `json:"interest_rate"`
 }
 
-type ApproveLoanApplicationResp {
-}
+type ApproveLoanApplicationResp {}
 
 // 审批记录信息
 type LoanApprovalInfo {
@@ -151,7 +149,7 @@ type ListLoanApprovalsReq {
 }
 
 type ListLoanApprovalsResp {
-	List    []LoanApprovalInfo `json:"list"`
+	List []LoanApprovalInfo `json:"list"`
 }
 
 // C端用户贷款申请管理 (需要JWT认证)

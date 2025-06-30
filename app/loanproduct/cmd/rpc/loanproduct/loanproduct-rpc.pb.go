@@ -165,8 +165,6 @@ func (x *LoanProductInfo) GetUpdatedAt() int64 {
 // 添加删除操作响应
 type DeleteLoanProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -201,25 +199,9 @@ func (*DeleteLoanProductResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *DeleteLoanProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *DeleteLoanProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 // 添加状态更新响应
 type UpdateProductStatusResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -254,26 +236,10 @@ func (*UpdateProductStatusResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *UpdateProductStatusResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateProductStatusResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 // 标准响应格式
 type GetLoanProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LoanProductInfo       `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LoanProductInfo       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -308,20 +274,6 @@ func (*GetLoanProductResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetLoanProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetLoanProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *GetLoanProductResp) GetData() *LoanProductInfo {
 	if x != nil {
 		return x.Data
@@ -331,9 +283,7 @@ func (x *GetLoanProductResp) GetData() *LoanProductInfo {
 
 type CreateLoanProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LoanProductInfo       `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LoanProductInfo       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -368,20 +318,6 @@ func (*CreateLoanProductResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *CreateLoanProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CreateLoanProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *CreateLoanProductResp) GetData() *LoanProductInfo {
 	if x != nil {
 		return x.Data
@@ -391,9 +327,7 @@ func (x *CreateLoanProductResp) GetData() *LoanProductInfo {
 
 type UpdateLoanProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LoanProductInfo       `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LoanProductInfo       `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -426,20 +360,6 @@ func (x *UpdateLoanProductResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateLoanProductResp.ProtoReflect.Descriptor instead.
 func (*UpdateLoanProductResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *UpdateLoanProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateLoanProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *UpdateLoanProductResp) GetData() *LoanProductInfo {
@@ -581,10 +501,8 @@ func (x *ListLoanProductsReq) GetKeyword() string {
 
 type ListLoanProductsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`      // 响应码
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"` // 响应消息
-	List          []*LoanProductInfo     `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`       // 产品列表
-	Total         int64                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`    // 总数
+	List          []*LoanProductInfo     `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`    // 产品列表
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"` // 总数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -617,20 +535,6 @@ func (x *ListLoanProductsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLoanProductsResp.ProtoReflect.Descriptor instead.
 func (*ListLoanProductsResp) Descriptor() ([]byte, []int) {
 	return file_loanproduct_rpc_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *ListLoanProductsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLoanProductsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLoanProductsResp) GetList() []*LoanProductInfo {
@@ -982,25 +886,15 @@ const file_loanproduct_rpc_proto_rawDesc = "" +
 	" \x01(\tR\vdescription\x12\x16\n" +
 	"\x06status\x18\v \x01(\x05R\x06status\x12\x1c\n" +
 	"\tcreatedAt\x18\f \x01(\x03R\tcreatedAt\x12\x1c\n" +
-	"\tupdatedAt\x18\r \x01(\x03R\tupdatedAt\"E\n" +
-	"\x15DeleteLoanProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"G\n" +
-	"\x17UpdateProductStatusResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"t\n" +
-	"\x12GetLoanProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x120\n" +
-	"\x04data\x18\x03 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"w\n" +
-	"\x15CreateLoanProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x120\n" +
-	"\x04data\x18\x03 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"w\n" +
-	"\x15UpdateLoanProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x120\n" +
-	"\x04data\x18\x03 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"E\n" +
+	"\tupdatedAt\x18\r \x01(\x03R\tupdatedAt\"\x17\n" +
+	"\x15DeleteLoanProductResp\"\x19\n" +
+	"\x17UpdateProductStatusResp\"F\n" +
+	"\x12GetLoanProductResp\x120\n" +
+	"\x04data\x18\x01 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"I\n" +
+	"\x15CreateLoanProductResp\x120\n" +
+	"\x04data\x18\x01 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"I\n" +
+	"\x15UpdateLoanProductResp\x120\n" +
+	"\x04data\x18\x01 \x01(\v2\x1c.loanproduct.LoanProductInfoR\x04data\"E\n" +
 	"\x11GetLoanProductReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12 \n" +
 	"\vproductCode\x18\x02 \x01(\tR\vproductCode\"\x83\x01\n" +
@@ -1009,12 +903,10 @@ const file_loanproduct_rpc_proto_rawDesc = "" +
 	"\x04size\x18\x02 \x01(\x05R\x04size\x12\x12\n" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x16\n" +
 	"\x06status\x18\x04 \x01(\x05R\x06status\x12\x18\n" +
-	"\akeyword\x18\x05 \x01(\tR\akeyword\"\x8c\x01\n" +
-	"\x14ListLoanProductsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x120\n" +
-	"\x04list\x18\x03 \x03(\v2\x1c.loanproduct.LoanProductInfoR\x04list\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\x03R\x05total\"\xa6\x02\n" +
+	"\akeyword\x18\x05 \x01(\tR\akeyword\"^\n" +
+	"\x14ListLoanProductsResp\x120\n" +
+	"\x04list\x18\x01 \x03(\v2\x1c.loanproduct.LoanProductInfoR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xa6\x02\n" +
 	"\x14CreateLoanProductReq\x12 \n" +
 	"\vproductCode\x18\x01 \x01(\tR\vproductCode\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +

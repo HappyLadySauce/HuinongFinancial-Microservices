@@ -13,8 +13,6 @@ type ApproveLeaseApplicationReq struct {
 }
 
 type ApproveLeaseApplicationResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type CancelLeaseApplicationReq struct {
@@ -23,8 +21,6 @@ type CancelLeaseApplicationReq struct {
 }
 
 type CancelLeaseApplicationResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type CreateLeaseApplicationReq struct {
@@ -45,8 +41,6 @@ type CreateLeaseApplicationReq struct {
 }
 
 type CreateLeaseApplicationResp struct {
-	Code          int32  `json:"code"`
-	Message       string `json:"message"`
 	ApplicationId string `json:"application_id"`
 }
 
@@ -55,8 +49,6 @@ type GetLeaseApplicationReq struct {
 }
 
 type GetLeaseApplicationResp struct {
-	Code            int32                `json:"code"`
-	Message         string               `json:"message"`
 	ApplicationInfo LeaseApplicationInfo `json:"application_info"`
 }
 
@@ -106,10 +98,8 @@ type ListLeaseApplicationsReq struct {
 }
 
 type ListLeaseApplicationsResp struct {
-	Code    int32                  `json:"code"`
-	Message string                 `json:"message"`
-	List    []LeaseApplicationInfo `json:"list"`
-	Total   int64                  `json:"total"`
+	List  []LeaseApplicationInfo `json:"list"`
+	Total int64                  `json:"total"`
 }
 
 type ListLeaseApprovalsReq struct {
@@ -117,9 +107,7 @@ type ListLeaseApprovalsReq struct {
 }
 
 type ListLeaseApprovalsResp struct {
-	Code    int32               `json:"code"`
-	Message string              `json:"message"`
-	List    []LeaseApprovalInfo `json:"list"`
+	List []LeaseApprovalInfo `json:"list"`
 }
 
 type UpdateLeaseApplicationReq struct {
@@ -130,7 +118,5 @@ type UpdateLeaseApplicationReq struct {
 }
 
 type UpdateLeaseApplicationResp struct {
-	Code            int32                `json:"code"`
-	Message         string               `json:"message"`
 	ApplicationInfo LeaseApplicationInfo `json:"application_info"`
 }

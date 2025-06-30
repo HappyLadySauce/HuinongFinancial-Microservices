@@ -61,9 +61,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
                 "list": {
                   "type": "array",
                   "items": {
@@ -125,9 +122,6 @@
                       }
                     }
                   }
-                },
-                "message": {
-                  "type": "string"
                 },
                 "total": {
                   "type": "integer"
@@ -212,12 +206,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
                 }
               }
             }
@@ -249,9 +237,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
                 "list": {
                   "type": "array",
                   "items": {
@@ -301,9 +286,6 @@
                       }
                     }
                   }
-                },
-                "message": {
-                  "type": "string"
                 }
               }
             }
@@ -368,15 +350,7 @@
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -428,9 +402,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
                 "list": {
                   "type": "array",
                   "items": {
@@ -492,9 +463,6 @@
                       }
                     }
                   }
-                },
-                "message": {
-                  "type": "string"
                 },
                 "total": {
                   "type": "integer"
@@ -561,12 +529,6 @@
               "type": "object",
               "properties": {
                 "application_id": {
-                  "type": "string"
-                },
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
                   "type": "string"
                 }
               }
@@ -649,12 +611,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
                 }
               }
             }
@@ -769,12 +725,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
                 }
               }
             }
@@ -823,22 +773,14 @@
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
       }
     }
   },
-  "x-date": "2025-06-30 04:11:29",
+  "x-date": "2025-06-30 10:30:02",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

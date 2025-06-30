@@ -64,7 +64,7 @@ type (
 		Deposit        float64 `json:"deposit"`
 		MaxDuration    int32   `json:"max_duration"` // 修改为int32与RPC一致
 		MinDuration    int32   `json:"min_duration"` // 修改为int32与RPC一致
-		Description    string  `json:"description"`	
+		Description    string  `json:"description"`
 		InventoryCount int32   `json:"inventory_count"` // 修改为int32与RPC一致
 		AvailableCount int32   `json:"available_count"` // 修改为int32与RPC一致
 		Status         int32   `json:"status"` // 修改为int32与RPC一致
@@ -72,11 +72,9 @@ type (
 		UpdatedAt      int64   `json:"updated_at"`
 	}
 	// 标准响应格式
-	BaseResp {
-	}
+	BaseResp  {}
 	// 删除产品响应
-	DeleteLeaseProductResp {
-	}
+	DeleteLeaseProductResp  {}
 )
 
 // ========== 请求结构 ==========
@@ -91,8 +89,8 @@ type (
 		Keyword string `form:"keyword,optional"`
 	}
 	ListLeaseProductsResp {
-		List    []LeaseProductInfo `json:"list"` // 修改数据类型名称
-		Total   int64              `json:"total"`
+		List  []LeaseProductInfo `json:"list"` // 修改数据类型名称
+		Total int64              `json:"total"`
 	}
 	// 创建租赁产品
 	CreateLeaseProductReq {
@@ -110,7 +108,7 @@ type (
 		InventoryCount int32   `json:"inventory_count"`
 	}
 	CreateLeaseProductResp {
-		Data    LeaseProductInfo `json:"data"` // 添加数据字段
+		Data LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新租赁产品
 	UpdateLeaseProductReq {
@@ -128,11 +126,11 @@ type (
 		Status      int32   `json:"status"`
 	}
 	UpdateLeaseProductResp {
-		Data    LeaseProductInfo `json:"data"` // 添加数据字段
+		Data LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 获取产品详情响应
 	GetLeaseProductResp {
-		Data    LeaseProductInfo `json:"data"` // 添加数据字段
+		Data LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 检查库存可用性
 	CheckInventoryReq {
@@ -142,8 +140,8 @@ type (
 		EndDate     string `json:"end_date"`
 	}
 	CheckInventoryResp {
-		Available      bool   `json:"available"`
-		AvailableCount int32  `json:"available_count"`
+		Available      bool  `json:"available"`
+		AvailableCount int32 `json:"available_count"`
 	}
 )
 

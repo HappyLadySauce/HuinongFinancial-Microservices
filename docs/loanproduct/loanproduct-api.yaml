@@ -40,9 +40,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               list:
                 items:
                   properties:
@@ -88,9 +85,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                description: 添加标准响应格式
-                type: string
               total:
                 type: integer
             type: object
@@ -143,9 +137,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -190,47 +181,25 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
       summary: 创建贷款产品
   /api/v1/admin/loanproduct/products/{id}:
     delete:
-      consumes:
-      - application/x-www-form-urlencoded
       operationId: adminDeleteLoanProduct
-      parameters:
-      - in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
       summary: 删除贷款产品
     get:
       operationId: adminGetLoanProductDetail
-      parameters:
-      - in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -238,9 +207,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -285,9 +251,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -297,11 +260,10 @@ paths:
       - application/json
       operationId: adminUpdateLoanProduct
       parameters:
-      - description: 修改为string类型
-        in: path
+      - in: path
         name: id
         required: true
-        type: string
+        type: integer
       - in: body
         name: body
         required: true
@@ -321,8 +283,6 @@ paths:
               type: integer
             name:
               type: string
-            status:
-              type: integer
             type:
               type: string
           required:
@@ -334,7 +294,6 @@ paths:
           - min_duration
           - interest_rate
           - description
-          - status
           type: object
       produces:
       - application/json
@@ -343,9 +302,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -390,9 +346,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -403,11 +356,10 @@ paths:
       - application/json
       operationId: adminUpdateProductStatus
       parameters:
-      - description: 修改为string类型
-        in: path
+      - in: path
         name: id
         required: true
-        type: string
+        type: integer
       - in: body
         name: body
         required: true
@@ -424,13 +376,6 @@ paths:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -470,9 +415,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               list:
                 items:
                   properties:
@@ -518,9 +460,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                description: 添加标准响应格式
-                type: string
               total:
                 type: integer
             type: object
@@ -530,11 +469,6 @@ paths:
   /api/v1/loanproduct/products/{id}:
     get:
       operationId: productGetLoanProduct
-      parameters:
-      - in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -542,9 +476,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -589,9 +520,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -601,7 +529,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-30 04:11:34"
+x-date: "2025-06-30 10:30:07"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

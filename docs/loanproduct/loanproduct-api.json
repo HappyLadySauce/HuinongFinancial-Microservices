@@ -67,10 +67,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "list": {
                   "type": "array",
                   "items": {
@@ -132,10 +128,6 @@
                       }
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 },
                 "total": {
                   "type": "integer"
@@ -213,10 +205,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -276,10 +264,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -297,24 +281,12 @@
         ],
         "summary": "获取贷款产品详情",
         "operationId": "adminGetLoanProductDetail",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -374,10 +346,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -398,8 +366,7 @@
         "operationId": "adminUpdateLoanProduct",
         "parameters": [
           {
-            "type": "string",
-            "description": "修改为string类型",
+            "type": "integer",
             "name": "id",
             "in": "path",
             "required": true
@@ -418,8 +385,7 @@
                 "max_duration",
                 "min_duration",
                 "interest_rate",
-                "description",
-                "status"
+                "description"
               ],
               "properties": {
                 "description": {
@@ -443,9 +409,6 @@
                 "name": {
                   "type": "string"
                 },
-                "status": {
-                  "type": "integer"
-                },
                 "type": {
                   "type": "string"
                 }
@@ -459,10 +422,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -522,10 +481,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -533,9 +488,6 @@
         }
       },
       "delete": {
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
         "produces": [
           "application/json"
         ],
@@ -544,29 +496,11 @@
         ],
         "summary": "删除贷款产品",
         "operationId": "adminDeleteLoanProduct",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -587,8 +521,7 @@
         "operationId": "adminUpdateProductStatus",
         "parameters": [
           {
-            "type": "string",
-            "description": "修改为string类型",
+            "type": "integer",
             "name": "id",
             "in": "path",
             "required": true
@@ -614,17 +547,7 @@
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -682,10 +605,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "list": {
                   "type": "array",
                   "items": {
@@ -748,10 +667,6 @@
                     }
                   }
                 },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
-                },
                 "total": {
                   "type": "integer"
                 }
@@ -771,24 +686,12 @@
         ],
         "summary": "获取贷款产品详情",
         "operationId": "productGetLoanProduct",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "description": "添加标准响应格式",
-                  "type": "integer"
-                },
                 "data": {
                   "description": "添加数据字段",
                   "type": "object",
@@ -848,10 +751,6 @@
                       "type": "integer"
                     }
                   }
-                },
-                "message": {
-                  "description": "添加标准响应格式",
-                  "type": "string"
                 }
               }
             }
@@ -860,7 +759,7 @@
       }
     }
   },
-  "x-date": "2025-06-30 04:11:34",
+  "x-date": "2025-06-30 10:30:07",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

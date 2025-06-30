@@ -44,9 +44,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               list:
                 description: 修改数据类型名称
                 items:
@@ -110,9 +107,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                description: 添加标准响应格式
-                type: string
               total:
                 type: integer
             type: object
@@ -174,9 +168,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -238,45 +229,25 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
       summary: 创建租赁产品
   /api/v1/admin/leaseproduct/products/{productCode}:
     delete:
-      consumes:
-      - application/x-www-form-urlencoded
       operationId: adminDeleteLeaseProduct
-      parameters:
-      - in: path
-        name: productCode
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
       summary: 删除租赁产品
     get:
       operationId: adminGetLeaseProductDetail
-      parameters:
-      - in: path
-        name: productCode
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -284,9 +255,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -348,9 +316,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -411,9 +376,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -475,9 +437,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -521,9 +480,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               list:
                 description: 修改数据类型名称
                 items:
@@ -587,9 +543,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                description: 添加标准响应格式
-                type: string
               total:
                 type: integer
             type: object
@@ -599,11 +552,6 @@ paths:
   /api/v1/leaseproduct/products/{productCode}:
     get:
       operationId: productGetLeaseProduct
-      parameters:
-      - in: path
-        name: productCode
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -611,9 +559,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                description: 添加标准响应格式
-                type: integer
               data:
                 description: 添加数据字段
                 properties:
@@ -675,9 +620,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -718,12 +660,6 @@ paths:
                 type: boolean
               available_count:
                 type: integer
-              code:
-                description: 添加标准响应格式
-                type: integer
-              message:
-                description: 添加标准响应格式
-                type: string
             type: object
       schemes:
       - https
@@ -733,7 +669,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-30 04:11:39"
+x-date: "2025-06-30 10:30:12"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

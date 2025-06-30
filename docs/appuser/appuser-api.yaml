@@ -31,11 +31,8 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
-              message:
-                type: string
               token:
+                description: 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
                 type: string
             type: object
       schemes:
@@ -44,30 +41,14 @@ paths:
   /api/v1/auth/logout:
     post:
       consumes:
-      - application/json
+      - application/x-www-form-urlencoded
       operationId: authJwtLogout
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            token:
-              type: string
-          required:
-          - token
-          type: object
       produces:
       - application/json
       responses:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -100,11 +81,6 @@ paths:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -135,11 +111,8 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
-              message:
-                type: string
               token:
+                description: 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
                 type: string
             type: object
       schemes:
@@ -167,11 +140,6 @@ paths:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -197,10 +165,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
-              message:
-                type: string
               user_info:
                 properties:
                   address:
@@ -305,10 +269,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
-              message:
-                type: string
               user_info:
                 properties:
                   address:
@@ -358,7 +318,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-30 04:11:18"
+x-date: "2025-06-30 10:29:53"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

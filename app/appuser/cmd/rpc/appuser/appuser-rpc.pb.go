@@ -246,9 +246,7 @@ func (x *GetUserInfoReq) GetPhone() string {
 
 type GetUserInfoResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	UserInfo      *UserInfo              `protobuf:"bytes,3,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
+	UserInfo      *UserInfo              `protobuf:"bytes,1,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -281,20 +279,6 @@ func (x *GetUserInfoResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetUserInfoResp.ProtoReflect.Descriptor instead.
 func (*GetUserInfoResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *GetUserInfoResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetUserInfoResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *GetUserInfoResp) GetUserInfo() *UserInfo {
@@ -351,9 +335,7 @@ func (x *UpdateUserInfoReq) GetUserInfo() *UserInfo {
 
 type UpdateUserInfoResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	UserInfo      *UserInfo              `protobuf:"bytes,3,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
+	UserInfo      *UserInfo              `protobuf:"bytes,1,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -386,20 +368,6 @@ func (x *UpdateUserInfoResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateUserInfoResp.ProtoReflect.Descriptor instead.
 func (*UpdateUserInfoResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *UpdateUserInfoResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateUserInfoResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *UpdateUserInfoResp) GetUserInfo() *UserInfo {
@@ -456,8 +424,6 @@ func (x *DeleteUserReq) GetPhone() string {
 
 type DeleteUserResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -490,20 +456,6 @@ func (x *DeleteUserResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use DeleteUserResp.ProtoReflect.Descriptor instead.
 func (*DeleteUserResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *DeleteUserResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *DeleteUserResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 登录
@@ -561,9 +513,7 @@ func (x *LoginReq) GetPassword() string {
 
 type LoginResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Token         string                 `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -596,20 +546,6 @@ func (x *LoginResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LoginResp.ProtoReflect.Descriptor instead.
 func (*LoginResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *LoginResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *LoginResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *LoginResp) GetToken() string {
@@ -674,9 +610,7 @@ func (x *RegisterReq) GetPassword() string {
 
 type RegisterResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Token         string                 `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -711,20 +645,6 @@ func (*RegisterResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *RegisterResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *RegisterResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *RegisterResp) GetToken() string {
 	if x != nil {
 		return x.Token
@@ -732,10 +652,9 @@ func (x *RegisterResp) GetToken() string {
 	return ""
 }
 
-// 注销
+// 注销 (从JWT上下文获取用户信息，无需传递token)
 type LogoutReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -770,17 +689,8 @@ func (*LogoutReq) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *LogoutReq) GetToken() string {
-	if x != nil {
-		return x.Token
-	}
-	return ""
-}
-
 type LogoutResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -813,20 +723,6 @@ func (x *LogoutResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LogoutResp.ProtoReflect.Descriptor instead.
 func (*LogoutResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *LogoutResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *LogoutResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 修改密码
@@ -892,8 +788,6 @@ func (x *ChangePasswordReq) GetNewPassword() string {
 
 type ChangePasswordResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -928,20 +822,6 @@ func (*ChangePasswordResp) Descriptor() ([]byte, []int) {
 	return file_appuser_rpc_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *ChangePasswordResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ChangePasswordResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 var File_appuser_rpc_proto protoreflect.FileDescriptor
 
 const file_appuser_rpc_proto_rawDesc = "" +
@@ -968,49 +848,34 @@ const file_appuser_rpc_proto_rawDesc = "" +
 	"\x0eGetUserByIdReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"&\n" +
 	"\x0eGetUserInfoReq\x12\x14\n" +
-	"\x05phone\x18\x01 \x01(\tR\x05phone\"o\n" +
-	"\x0fGetUserInfoResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12.\n" +
-	"\tuser_info\x18\x03 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"C\n" +
+	"\x05phone\x18\x01 \x01(\tR\x05phone\"A\n" +
+	"\x0fGetUserInfoResp\x12.\n" +
+	"\tuser_info\x18\x01 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"C\n" +
 	"\x11UpdateUserInfoReq\x12.\n" +
-	"\tuser_info\x18\x01 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"r\n" +
-	"\x12UpdateUserInfoResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12.\n" +
-	"\tuser_info\x18\x03 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"%\n" +
+	"\tuser_info\x18\x01 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"D\n" +
+	"\x12UpdateUserInfoResp\x12.\n" +
+	"\tuser_info\x18\x01 \x01(\v2\x11.appuser.UserInfoR\buserInfo\"%\n" +
 	"\rDeleteUserReq\x12\x14\n" +
-	"\x05phone\x18\x01 \x01(\tR\x05phone\">\n" +
-	"\x0eDeleteUserResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"<\n" +
+	"\x05phone\x18\x01 \x01(\tR\x05phone\"\x10\n" +
+	"\x0eDeleteUserResp\"<\n" +
 	"\bLoginReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"O\n" +
-	"\tLoginResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
-	"\x05token\x18\x03 \x01(\tR\x05token\"?\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"!\n" +
+	"\tLoginResp\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"?\n" +
 	"\vRegisterReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"R\n" +
-	"\fRegisterResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12\x14\n" +
-	"\x05token\x18\x03 \x01(\tR\x05token\"!\n" +
-	"\tLogoutReq\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\":\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"$\n" +
+	"\fRegisterResp\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\v\n" +
+	"\tLogoutReq\"\f\n" +
 	"\n" +
-	"LogoutResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"o\n" +
+	"LogoutResp\"o\n" +
 	"\x11ChangePasswordReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12!\n" +
 	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
-	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"B\n" +
-	"\x12ChangePasswordResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x81\x04\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"\x14\n" +
+	"\x12ChangePasswordResp2\x81\x04\n" +
 	"\aAppUser\x12C\n" +
 	"\x0eGetUserByPhone\x12\x17.appuser.GetUserInfoReq\x1a\x18.appuser.GetUserInfoResp\x12@\n" +
 	"\vGetUserById\x12\x17.appuser.GetUserByIdReq\x1a\x18.appuser.GetUserInfoResp\x12I\n" +

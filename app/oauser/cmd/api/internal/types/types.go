@@ -10,8 +10,6 @@ type ChangePasswordReq struct {
 }
 
 type ChangePasswordResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type DeleteUserReq struct {
@@ -19,8 +17,6 @@ type DeleteUserReq struct {
 }
 
 type DeleteUserResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type GetUserInfoReq struct {
@@ -28,8 +24,6 @@ type GetUserInfoReq struct {
 }
 
 type GetUserInfoResp struct {
-	Code     int32    `json:"code"`
-	Message  string   `json:"message"`
 	UserInfo UserInfo `json:"user_info"`
 }
 
@@ -39,18 +33,13 @@ type LoginReq struct {
 }
 
 type LoginResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-	Token   string `json:"token"`
+	Token string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 
 type LogoutReq struct {
-	Token string `json:"token"`
 }
 
 type LogoutResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type RegisterReq struct {
@@ -60,9 +49,7 @@ type RegisterReq struct {
 }
 
 type RegisterResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-	Token   string `json:"token"`
+	Token string `json:"token"` // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 
 type UpdateUserInfoReq struct {
@@ -70,8 +57,6 @@ type UpdateUserInfoReq struct {
 }
 
 type UpdateUserInfoResp struct {
-	Code     int32    `json:"code"`
-	Message  string   `json:"message"`
 	UserInfo UserInfo `json:"user_info"`
 }
 

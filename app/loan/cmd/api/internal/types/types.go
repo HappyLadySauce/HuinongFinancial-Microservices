@@ -13,8 +13,6 @@ type ApproveLoanApplicationReq struct {
 }
 
 type ApproveLoanApplicationResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type CancelLoanApplicationReq struct {
@@ -23,8 +21,6 @@ type CancelLoanApplicationReq struct {
 }
 
 type CancelLoanApplicationResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type CreateLoanApplicationReq struct {
@@ -37,8 +33,6 @@ type CreateLoanApplicationReq struct {
 }
 
 type CreateLoanApplicationResp struct {
-	Code          int32  `json:"code"`
-	Message       string `json:"message"`
 	ApplicationId string `json:"application_id"`
 }
 
@@ -47,8 +41,6 @@ type GetLoanApplicationReq struct {
 }
 
 type GetLoanApplicationResp struct {
-	Code            int32               `json:"code"`
-	Message         string              `json:"message"`
 	ApplicationInfo LoanApplicationInfo `json:"application_info"`
 }
 
@@ -60,10 +52,8 @@ type ListLoanApplicationsReq struct {
 }
 
 type ListLoanApplicationsResp struct {
-	Code    int32                 `json:"code"`
-	Message string                `json:"message"`
-	List    []LoanApplicationInfo `json:"list"`
-	Total   int64                 `json:"total"`
+	List  []LoanApplicationInfo `json:"list"`
+	Total int64                 `json:"total"`
 }
 
 type ListLoanApprovalsReq struct {
@@ -71,9 +61,7 @@ type ListLoanApprovalsReq struct {
 }
 
 type ListLoanApprovalsResp struct {
-	Code    int32              `json:"code"`
-	Message string             `json:"message"`
-	List    []LoanApprovalInfo `json:"list"`
+	List []LoanApprovalInfo `json:"list"`
 }
 
 type LoanApplicationInfo struct {
@@ -113,7 +101,5 @@ type UpdateLoanApplicationReq struct {
 }
 
 type UpdateLoanApplicationResp struct {
-	Code            int32               `json:"code"`
-	Message         string              `json:"message"`
 	ApplicationInfo LoanApplicationInfo `json:"application_info"`
 }

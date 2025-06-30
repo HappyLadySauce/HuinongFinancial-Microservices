@@ -375,9 +375,7 @@ func (x *CreateLoanApplicationReq) GetPurpose() string {
 
 type CreateLoanApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationId string                 `protobuf:"bytes,3,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
+	ApplicationId string                 `protobuf:"bytes,1,opt,name=application_id,json=applicationId,proto3" json:"application_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -410,20 +408,6 @@ func (x *CreateLoanApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateLoanApplicationResp.ProtoReflect.Descriptor instead.
 func (*CreateLoanApplicationResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *CreateLoanApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CreateLoanApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *CreateLoanApplicationResp) GetApplicationId() string {
@@ -480,9 +464,7 @@ func (x *GetLoanApplicationReq) GetApplicationId() string {
 
 type GetLoanApplicationResp struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Code            int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationInfo *LoanApplicationInfo   `protobuf:"bytes,3,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
+	ApplicationInfo *LoanApplicationInfo   `protobuf:"bytes,1,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -515,20 +497,6 @@ func (x *GetLoanApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetLoanApplicationResp.ProtoReflect.Descriptor instead.
 func (*GetLoanApplicationResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *GetLoanApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetLoanApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *GetLoanApplicationResp) GetApplicationInfo() *LoanApplicationInfo {
@@ -609,10 +577,8 @@ func (x *ListLoanApplicationsReq) GetStatus() string {
 
 type ListLoanApplicationsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	List          []*LoanApplicationInfo `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`
-	Total         int64                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	List          []*LoanApplicationInfo `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -645,20 +611,6 @@ func (x *ListLoanApplicationsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLoanApplicationsResp.ProtoReflect.Descriptor instead.
 func (*ListLoanApplicationsResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ListLoanApplicationsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLoanApplicationsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLoanApplicationsResp) GetList() []*LoanApplicationInfo {
@@ -746,9 +698,7 @@ func (x *UpdateLoanApplicationReq) GetPurpose() string {
 
 type UpdateLoanApplicationResp struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Code            int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	ApplicationInfo *LoanApplicationInfo   `protobuf:"bytes,3,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
+	ApplicationInfo *LoanApplicationInfo   `protobuf:"bytes,1,opt,name=application_info,json=applicationInfo,proto3" json:"application_info,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -781,20 +731,6 @@ func (x *UpdateLoanApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateLoanApplicationResp.ProtoReflect.Descriptor instead.
 func (*UpdateLoanApplicationResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *UpdateLoanApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateLoanApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *UpdateLoanApplicationResp) GetApplicationInfo() *LoanApplicationInfo {
@@ -859,8 +795,6 @@ func (x *CancelLoanApplicationReq) GetReason() string {
 
 type CancelLoanApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -893,20 +827,6 @@ func (x *CancelLoanApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CancelLoanApplicationResp.ProtoReflect.Descriptor instead.
 func (*CancelLoanApplicationResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *CancelLoanApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CancelLoanApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 审批贷款申请
@@ -1012,8 +932,6 @@ func (x *ApproveLoanApplicationReq) GetInterestRate() float64 {
 
 type ApproveLoanApplicationResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1046,20 +964,6 @@ func (x *ApproveLoanApplicationResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ApproveLoanApplicationResp.ProtoReflect.Descriptor instead.
 func (*ApproveLoanApplicationResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *ApproveLoanApplicationResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ApproveLoanApplicationResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 // 获取审批记录列表
@@ -1109,9 +1013,7 @@ func (x *ListLoanApprovalsReq) GetApplicationId() string {
 
 type ListLoanApprovalsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	List          []*LoanApprovalInfo    `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`
+	List          []*LoanApprovalInfo    `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1144,20 +1046,6 @@ func (x *ListLoanApprovalsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLoanApprovalsResp.ProtoReflect.Descriptor instead.
 func (*ListLoanApprovalsResp) Descriptor() ([]byte, []int) {
 	return file_loan_rpc_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *ListLoanApprovalsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLoanApprovalsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLoanApprovalsResp) GetList() []*LoanApprovalInfo {
@@ -1212,42 +1100,32 @@ const file_loan_rpc_proto_rawDesc = "" +
 	"\x04type\x18\x04 \x01(\tR\x04type\x12\x16\n" +
 	"\x06amount\x18\x05 \x01(\x01R\x06amount\x12\x1a\n" +
 	"\bduration\x18\x06 \x01(\x05R\bduration\x12\x18\n" +
-	"\apurpose\x18\a \x01(\tR\apurpose\"p\n" +
-	"\x19CreateLoanApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12%\n" +
-	"\x0eapplication_id\x18\x03 \x01(\tR\rapplicationId\">\n" +
+	"\apurpose\x18\a \x01(\tR\apurpose\"B\n" +
+	"\x19CreateLoanApplicationResp\x12%\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\">\n" +
 	"\x15GetLoanApplicationReq\x12%\n" +
-	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"\x8c\x01\n" +
-	"\x16GetLoanApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12D\n" +
-	"\x10application_info\x18\x03 \x01(\v2\x19.loan.LoanApplicationInfoR\x0fapplicationInfo\"r\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"^\n" +
+	"\x16GetLoanApplicationResp\x12D\n" +
+	"\x10application_info\x18\x01 \x01(\v2\x19.loan.LoanApplicationInfoR\x0fapplicationInfo\"r\n" +
 	"\x17ListLoanApplicationsReq\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x12\n" +
 	"\x04size\x18\x02 \x01(\x05R\x04size\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\tR\x06status\"\x8d\x01\n" +
-	"\x18ListLoanApplicationsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12-\n" +
-	"\x04list\x18\x03 \x03(\v2\x19.loan.LoanApplicationInfoR\x04list\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\x03R\x05total\"\x8f\x01\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\"_\n" +
+	"\x18ListLoanApplicationsResp\x12-\n" +
+	"\x04list\x18\x01 \x03(\v2\x19.loan.LoanApplicationInfoR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\x8f\x01\n" +
 	"\x18UpdateLoanApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x01R\x06amount\x12\x1a\n" +
 	"\bduration\x18\x03 \x01(\x05R\bduration\x12\x18\n" +
-	"\apurpose\x18\x04 \x01(\tR\apurpose\"\x8f\x01\n" +
-	"\x19UpdateLoanApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12D\n" +
-	"\x10application_info\x18\x03 \x01(\v2\x19.loan.LoanApplicationInfoR\x0fapplicationInfo\"Y\n" +
+	"\apurpose\x18\x04 \x01(\tR\apurpose\"a\n" +
+	"\x19UpdateLoanApplicationResp\x12D\n" +
+	"\x10application_info\x18\x01 \x01(\v2\x19.loan.LoanApplicationInfoR\x0fapplicationInfo\"Y\n" +
 	"\x18CancelLoanApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x16\n" +
-	"\x06reason\x18\x02 \x01(\tR\x06reason\"I\n" +
-	"\x19CancelLoanApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xb9\x02\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\"\x1b\n" +
+	"\x19CancelLoanApplicationResp\"\xb9\x02\n" +
 	"\x19ApproveLoanApplicationReq\x12%\n" +
 	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\x12\x1d\n" +
 	"\n" +
@@ -1257,16 +1135,12 @@ const file_loan_rpc_proto_rawDesc = "" +
 	"\vsuggestions\x18\x05 \x01(\tR\vsuggestions\x12'\n" +
 	"\x0fapproved_amount\x18\x06 \x01(\x01R\x0eapprovedAmount\x12+\n" +
 	"\x11approved_duration\x18\a \x01(\x05R\x10approvedDuration\x12#\n" +
-	"\rinterest_rate\x18\b \x01(\x01R\finterestRate\"J\n" +
-	"\x1aApproveLoanApplicationResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"=\n" +
+	"\rinterest_rate\x18\b \x01(\x01R\finterestRate\"\x1c\n" +
+	"\x1aApproveLoanApplicationResp\"=\n" +
 	"\x14ListLoanApprovalsReq\x12%\n" +
-	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"q\n" +
-	"\x15ListLoanApprovalsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12*\n" +
-	"\x04list\x18\x03 \x03(\v2\x16.loan.LoanApprovalInfoR\x04list2\xe7\x04\n" +
+	"\x0eapplication_id\x18\x01 \x01(\tR\rapplicationId\"C\n" +
+	"\x15ListLoanApprovalsResp\x12*\n" +
+	"\x04list\x18\x01 \x03(\v2\x16.loan.LoanApprovalInfoR\x04list2\xe7\x04\n" +
 	"\x04Loan\x12X\n" +
 	"\x15CreateLoanApplication\x12\x1e.loan.CreateLoanApplicationReq\x1a\x1f.loan.CreateLoanApplicationResp\x12O\n" +
 	"\x12GetLoanApplication\x12\x1b.loan.GetLoanApplicationReq\x1a\x1c.loan.GetLoanApplicationResp\x12U\n" +

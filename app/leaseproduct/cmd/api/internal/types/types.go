@@ -4,8 +4,6 @@
 package types
 
 type BaseResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 type CheckInventoryReq struct {
@@ -16,10 +14,8 @@ type CheckInventoryReq struct {
 }
 
 type CheckInventoryResp struct {
-	Code           int32  `json:"code"`    // 添加标准响应格式
-	Message        string `json:"message"` // 添加标准响应格式
-	Available      bool   `json:"available"`
-	AvailableCount int32  `json:"available_count"`
+	Available      bool  `json:"available"`
+	AvailableCount int32 `json:"available_count"`
 }
 
 type CreateLeaseProductReq struct {
@@ -38,32 +34,14 @@ type CreateLeaseProductReq struct {
 }
 
 type CreateLeaseProductResp struct {
-	Code    int32            `json:"code"`    // 添加标准响应格式
-	Message string           `json:"message"` // 添加标准响应格式
-	Data    LeaseProductInfo `json:"data"`    // 添加数据字段
-}
-
-type DeleteLeaseProductReq struct {
-	ProductCode string `path:"productCode"`
+	Data LeaseProductInfo `json:"data"` // 添加数据字段
 }
 
 type DeleteLeaseProductResp struct {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
-}
-
-type GetLeaseProductDetailReq struct {
-	ProductCode string `path:"productCode"`
-}
-
-type GetLeaseProductReq struct {
-	ProductCode string `path:"productCode"`
 }
 
 type GetLeaseProductResp struct {
-	Code    int32            `json:"code"`    // 添加标准响应格式
-	Message string           `json:"message"` // 添加标准响应格式
-	Data    LeaseProductInfo `json:"data"`    // 添加数据字段
+	Data LeaseProductInfo `json:"data"` // 添加数据字段
 }
 
 type LeaseProductInfo struct {
@@ -96,10 +74,8 @@ type ListLeaseProductsReq struct {
 }
 
 type ListLeaseProductsResp struct {
-	Code    int32              `json:"code"`    // 添加标准响应格式
-	Message string             `json:"message"` // 添加标准响应格式
-	List    []LeaseProductInfo `json:"list"`    // 修改数据类型名称
-	Total   int64              `json:"total"`
+	List  []LeaseProductInfo `json:"list"` // 修改数据类型名称
+	Total int64              `json:"total"`
 }
 
 type UpdateLeaseProductReq struct {
@@ -118,7 +94,5 @@ type UpdateLeaseProductReq struct {
 }
 
 type UpdateLeaseProductResp struct {
-	Code    int32            `json:"code"`    // 添加标准响应格式
-	Message string           `json:"message"` // 添加标准响应格式
-	Data    LeaseProductInfo `json:"data"`    // 添加数据字段
+	Data LeaseProductInfo `json:"data"` // 添加数据字段
 }

@@ -74,8 +74,8 @@ type (
 		Keyword string `form:"keyword,optional"`
 	}
 	ListLoanProductsResp {
-		List    []LoanProductInfo `json:"list"`
-		Total   int64             `json:"total"`
+		List  []LoanProductInfo `json:"list"`
+		Total int64             `json:"total"`
 	}
 	// 创建贷款产品
 	CreateLoanProductReq {
@@ -90,7 +90,7 @@ type (
 		Description  string  `json:"description"`
 	}
 	CreateLoanProductResp {
-		Data    LoanProductInfo `json:"data"` // 添加数据字段
+		Data LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新贷款产品
 	UpdateLoanProductReq {
@@ -105,22 +105,20 @@ type (
 		Description  string  `json:"description"`
 	}
 	UpdateLoanProductResp {
-		Data    LoanProductInfo `json:"data"` // 添加数据字段
+		Data LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 获取产品详情响应
 	GetLoanProductResp {
-		Data    LoanProductInfo `json:"data"` // 添加数据字段
+		Data LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新产品状态
 	UpdateProductStatusReq {
 		Id     int64 `path:"id"`
 		Status int32 `json:"status"`
 	}
-	UpdateProductStatusResp {
-	}
+	UpdateProductStatusResp  {}
 	// 删除产品响应
-	DeleteLoanProductResp {
-	}
+	DeleteLoanProductResp  {}
 )
 
 // ========== C端用户API (公开接口) ==========

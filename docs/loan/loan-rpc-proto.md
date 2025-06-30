@@ -2,7 +2,7 @@
 
 ## Protocol Buffer 定义文件
 - 文件路径: `app/loan/loan-rpc.proto`
-- 生成时间: 2025-06-30 04:11:29
+- 生成时间: 2025-06-30 10:30:02
 
 ## 说明
 本文档由 `loan-rpc.proto` 文件自动生成。

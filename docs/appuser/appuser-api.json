@@ -56,13 +56,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                },
                 "token": {
+                  "description": "返回纯JWT token，Postman可配置为Bearer Token自动添加前缀",
                   "type": "string"
                 }
               }
@@ -74,7 +69,7 @@
     "/api/v1/auth/logout": {
       "post": {
         "consumes": [
-          "application/json"
+          "application/x-www-form-urlencoded"
         ],
         "produces": [
           "application/json"
@@ -84,37 +79,11 @@
         ],
         "summary": "Logout",
         "operationId": "authJwtLogout",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "required": [
-                "token"
-              ],
-              "properties": {
-                "token": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -163,15 +132,7 @@
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -218,13 +179,8 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                },
                 "token": {
+                  "description": "返回纯JWT token，Postman可配置为Bearer Token自动添加前缀",
                   "type": "string"
                 }
               }
@@ -268,15 +224,7 @@
           "200": {
             "description": "",
             "schema": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                }
-              }
+              "type": "object"
             }
           }
         }
@@ -316,12 +264,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                },
                 "user_info": {
                   "type": "object",
                   "required": [
@@ -470,12 +412,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "code": {
-                  "type": "integer"
-                },
-                "message": {
-                  "type": "string"
-                },
                 "user_info": {
                   "type": "object",
                   "required": [
@@ -538,7 +474,7 @@
       }
     }
   },
-  "x-date": "2025-06-30 04:11:18",
+  "x-date": "2025-06-30 10:29:53",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

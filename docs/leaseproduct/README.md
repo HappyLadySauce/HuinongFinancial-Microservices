@@ -23,4 +23,4 @@
 ./scripts/gen-code.sh leaseproduct docs
 ```
 
-生成时间: 2025-06-30 04:11:39
+生成时间: 2025-06-30 10:30:12

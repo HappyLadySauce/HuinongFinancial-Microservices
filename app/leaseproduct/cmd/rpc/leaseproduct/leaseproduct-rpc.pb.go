@@ -197,8 +197,6 @@ func (x *LeaseProductInfo) GetUpdatedAt() int64 {
 // 添加删除操作响应
 type DeleteLeaseProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -233,26 +231,10 @@ func (*DeleteLeaseProductResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *DeleteLeaseProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *DeleteLeaseProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 // 标准响应格式
 type GetLeaseProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LeaseProductInfo      `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LeaseProductInfo      `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -287,20 +269,6 @@ func (*GetLeaseProductResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetLeaseProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *GetLeaseProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *GetLeaseProductResp) GetData() *LeaseProductInfo {
 	if x != nil {
 		return x.Data
@@ -310,9 +278,7 @@ func (x *GetLeaseProductResp) GetData() *LeaseProductInfo {
 
 type CreateLeaseProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LeaseProductInfo      `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LeaseProductInfo      `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -347,20 +313,6 @@ func (*CreateLeaseProductResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateLeaseProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CreateLeaseProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
-}
-
 func (x *CreateLeaseProductResp) GetData() *LeaseProductInfo {
 	if x != nil {
 		return x.Data
@@ -370,9 +322,7 @@ func (x *CreateLeaseProductResp) GetData() *LeaseProductInfo {
 
 type UpdateLeaseProductResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	Data          *LeaseProductInfo      `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *LeaseProductInfo      `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -405,20 +355,6 @@ func (x *UpdateLeaseProductResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateLeaseProductResp.ProtoReflect.Descriptor instead.
 func (*UpdateLeaseProductResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *UpdateLeaseProductResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *UpdateLeaseProductResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *UpdateLeaseProductResp) GetData() *LeaseProductInfo {
@@ -560,10 +496,8 @@ func (x *ListLeaseProductsReq) GetKeyword() string {
 
 type ListLeaseProductsResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Code          int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`      // 响应码
-	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"` // 响应消息
-	List          []*LeaseProductInfo    `protobuf:"bytes,3,rep,name=list,proto3" json:"list,omitempty"`       // 产品列表
-	Total         int64                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`    // 总数
+	List          []*LeaseProductInfo    `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`    // 产品列表
+	Total         int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"` // 总数
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -596,20 +530,6 @@ func (x *ListLeaseProductsResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListLeaseProductsResp.ProtoReflect.Descriptor instead.
 func (*ListLeaseProductsResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ListLeaseProductsResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *ListLeaseProductsResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *ListLeaseProductsResp) GetList() []*LeaseProductInfo {
@@ -1008,10 +928,8 @@ func (x *CheckInventoryAvailabilityReq) GetEndDate() string {
 
 type CheckInventoryAvailabilityResp struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Code           int32                  `protobuf:"varint,1,opt,name=code,proto3" json:"code,omitempty"`                     // 响应码
-	Message        string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`                // 响应消息
-	Available      bool                   `protobuf:"varint,3,opt,name=available,proto3" json:"available,omitempty"`           // 是否可用
-	AvailableCount int32                  `protobuf:"varint,4,opt,name=availableCount,proto3" json:"availableCount,omitempty"` // 可用数量
+	Available      bool                   `protobuf:"varint,1,opt,name=available,proto3" json:"available,omitempty"`           // 是否可用
+	AvailableCount int32                  `protobuf:"varint,2,opt,name=availableCount,proto3" json:"availableCount,omitempty"` // 可用数量
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1044,20 +962,6 @@ func (x *CheckInventoryAvailabilityResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CheckInventoryAvailabilityResp.ProtoReflect.Descriptor instead.
 func (*CheckInventoryAvailabilityResp) Descriptor() ([]byte, []int) {
 	return file_leaseproduct_rpc_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *CheckInventoryAvailabilityResp) GetCode() int32 {
-	if x != nil {
-		return x.Code
-	}
-	return 0
-}
-
-func (x *CheckInventoryAvailabilityResp) GetMessage() string {
-	if x != nil {
-		return x.Message
-	}
-	return ""
 }
 
 func (x *CheckInventoryAvailabilityResp) GetAvailable() bool {
@@ -1097,22 +1001,14 @@ const file_leaseproduct_rpc_proto_rawDesc = "" +
 	"\x0eavailableCount\x18\x0e \x01(\x05R\x0eavailableCount\x12\x16\n" +
 	"\x06status\x18\x0f \x01(\x05R\x06status\x12\x1c\n" +
 	"\tcreatedAt\x18\x10 \x01(\x03R\tcreatedAt\x12\x1c\n" +
-	"\tupdatedAt\x18\x11 \x01(\x03R\tupdatedAt\"F\n" +
-	"\x16DeleteLeaseProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"w\n" +
-	"\x13GetLeaseProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x122\n" +
-	"\x04data\x18\x03 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"z\n" +
-	"\x16CreateLeaseProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x122\n" +
-	"\x04data\x18\x03 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"z\n" +
-	"\x16UpdateLeaseProductResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x122\n" +
-	"\x04data\x18\x03 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"6\n" +
+	"\tupdatedAt\x18\x11 \x01(\x03R\tupdatedAt\"\x18\n" +
+	"\x16DeleteLeaseProductResp\"I\n" +
+	"\x13GetLeaseProductResp\x122\n" +
+	"\x04data\x18\x01 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"L\n" +
+	"\x16CreateLeaseProductResp\x122\n" +
+	"\x04data\x18\x01 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"L\n" +
+	"\x16UpdateLeaseProductResp\x122\n" +
+	"\x04data\x18\x01 \x01(\v2\x1e.leaseproduct.LeaseProductInfoR\x04data\"6\n" +
 	"\x12GetLeaseProductReq\x12 \n" +
 	"\vproductCode\x18\x01 \x01(\tR\vproductCode\"\x9a\x01\n" +
 	"\x14ListLeaseProductsReq\x12\x12\n" +
@@ -1121,12 +1017,10 @@ const file_leaseproduct_rpc_proto_rawDesc = "" +
 	"\x04type\x18\x03 \x01(\tR\x04type\x12\x14\n" +
 	"\x05brand\x18\x04 \x01(\tR\x05brand\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x18\n" +
-	"\akeyword\x18\x06 \x01(\tR\akeyword\"\x8f\x01\n" +
-	"\x15ListLeaseProductsResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x122\n" +
-	"\x04list\x18\x03 \x03(\v2\x1e.leaseproduct.LeaseProductInfoR\x04list\x12\x14\n" +
-	"\x05total\x18\x04 \x01(\x03R\x05total\"\xf1\x02\n" +
+	"\akeyword\x18\x06 \x01(\tR\akeyword\"a\n" +
+	"\x15ListLeaseProductsResp\x122\n" +
+	"\x04list\x18\x01 \x03(\v2\x1e.leaseproduct.LeaseProductInfoR\x04list\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xf1\x02\n" +
 	"\x15CreateLeaseProductReq\x12 \n" +
 	"\vproductCode\x18\x01 \x01(\tR\vproductCode\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
@@ -1161,12 +1055,10 @@ const file_leaseproduct_rpc_proto_rawDesc = "" +
 	"\vproductCode\x18\x01 \x01(\tR\vproductCode\x12\x1a\n" +
 	"\bquantity\x18\x02 \x01(\x05R\bquantity\x12\x1c\n" +
 	"\tstartDate\x18\x03 \x01(\tR\tstartDate\x12\x18\n" +
-	"\aendDate\x18\x04 \x01(\tR\aendDate\"\x94\x01\n" +
-	"\x1eCheckInventoryAvailabilityResp\x12\x12\n" +
-	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1c\n" +
-	"\tavailable\x18\x03 \x01(\bR\tavailable\x12&\n" +
-	"\x0eavailableCount\x18\x04 \x01(\x05R\x0eavailableCount2\xe7\x04\n" +
+	"\aendDate\x18\x04 \x01(\tR\aendDate\"f\n" +
+	"\x1eCheckInventoryAvailabilityResp\x12\x1c\n" +
+	"\tavailable\x18\x01 \x01(\bR\tavailable\x12&\n" +
+	"\x0eavailableCount\x18\x02 \x01(\x05R\x0eavailableCount2\xe7\x04\n" +
 	"\x13LeaseProductService\x12V\n" +
 	"\x0fGetLeaseProduct\x12 .leaseproduct.GetLeaseProductReq\x1a!.leaseproduct.GetLeaseProductResp\x12\\\n" +
 	"\x11ListLeaseProducts\x12\".leaseproduct.ListLeaseProductsReq\x1a#.leaseproduct.ListLeaseProductsResp\x12_\n" +

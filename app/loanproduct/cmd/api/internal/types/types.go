@@ -16,32 +16,14 @@ type CreateLoanProductReq struct {
 }
 
 type CreateLoanProductResp struct {
-	Code    int32           `json:"code"`    // 添加标准响应格式
-	Message string          `json:"message"` // 添加标准响应格式
-	Data    LoanProductInfo `json:"data"`    // 添加数据字段
-}
-
-type DeleteLoanProductReq struct {
-	Id string `path:"id"`
+	Data LoanProductInfo `json:"data"` // 添加数据字段
 }
 
 type DeleteLoanProductResp struct {
-	Code    int32  `json:"code"`    // 添加标准响应格式
-	Message string `json:"message"` // 添加标准响应格式
-}
-
-type GetLoanProductDetailReq struct {
-	Id string `path:"id"`
-}
-
-type GetLoanProductReq struct {
-	Id string `path:"id"`
 }
 
 type GetLoanProductResp struct {
-	Code    int32           `json:"code"`    // 添加标准响应格式
-	Message string          `json:"message"` // 添加标准响应格式
-	Data    LoanProductInfo `json:"data"`    // 添加数据字段
+	Data LoanProductInfo `json:"data"` // 添加数据字段
 }
 
 type ListLoanProductsReq struct {
@@ -53,10 +35,8 @@ type ListLoanProductsReq struct {
 }
 
 type ListLoanProductsResp struct {
-	Code    int32             `json:"code"`    // 添加标准响应格式
-	Message string            `json:"message"` // 添加标准响应格式
-	List    []LoanProductInfo `json:"list"`
-	Total   int64             `json:"total"`
+	List  []LoanProductInfo `json:"list"`
+	Total int64             `json:"total"`
 }
 
 type LoanProductInfo struct {
@@ -76,7 +56,7 @@ type LoanProductInfo struct {
 }
 
 type UpdateLoanProductReq struct {
-	Id           string  `path:"id"` // 修改为string类型
+	Id           int64   `path:"id"`
 	Name         string  `json:"name"`
 	Type         string  `json:"type"`
 	MaxAmount    float64 `json:"max_amount"`
@@ -85,21 +65,16 @@ type UpdateLoanProductReq struct {
 	MinDuration  int32   `json:"min_duration"`
 	InterestRate float64 `json:"interest_rate"`
 	Description  string  `json:"description"`
-	Status       int32   `json:"status"`
 }
 
 type UpdateLoanProductResp struct {
-	Code    int32           `json:"code"`    // 添加标准响应格式
-	Message string          `json:"message"` // 添加标准响应格式
-	Data    LoanProductInfo `json:"data"`    // 添加数据字段
+	Data LoanProductInfo `json:"data"` // 添加数据字段
 }
 
 type UpdateProductStatusReq struct {
-	Id     string `path:"id"` // 修改为string类型
-	Status int32  `json:"status"`
+	Id     int64 `path:"id"`
+	Status int32 `json:"status"`
 }
 
 type UpdateProductStatusResp struct {
-	Code    int32  `json:"code"`    // 添加标准响应格式
-	Message string `json:"message"` // 添加标准响应格式
 }

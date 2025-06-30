@@ -36,8 +36,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
               list:
                 items:
                   properties:
@@ -83,8 +81,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                type: string
               total:
                 type: integer
             type: object
@@ -144,10 +140,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -167,8 +159,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
               list:
                 items:
                   properties:
@@ -205,8 +195,6 @@ paths:
                   - created_at
                   type: object
                 type: array
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -249,11 +237,6 @@ paths:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -289,8 +272,6 @@ paths:
           description: ""
           schema:
             properties:
-              code:
-                type: integer
               list:
                 items:
                   properties:
@@ -336,8 +317,6 @@ paths:
                   - updated_at
                   type: object
                 type: array
-              message:
-                type: string
               total:
                 type: integer
             type: object
@@ -382,10 +361,6 @@ paths:
           schema:
             properties:
               application_id:
-                type: string
-              code:
-                type: integer
-              message:
                 type: string
             type: object
       schemes:
@@ -444,10 +419,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -527,10 +498,6 @@ paths:
                 - created_at
                 - updated_at
                 type: object
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -561,11 +528,6 @@ paths:
         "200":
           description: ""
           schema:
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
             type: object
       schemes:
       - https
@@ -575,7 +537,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-30 04:11:29"
+x-date: "2025-06-30 10:30:02"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/
