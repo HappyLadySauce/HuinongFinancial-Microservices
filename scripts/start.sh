@@ -123,7 +123,7 @@ start_service() {
     echo "$pid" > "$pid_file"
     
     # 等待服务启动
-    sleep 3
+    sleep 1
     
     # 检查服务是否成功启动
     if kill -0 "$pid" 2>/dev/null; then
