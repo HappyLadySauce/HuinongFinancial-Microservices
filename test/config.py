@@ -47,15 +47,15 @@ LEASEPRODUCT_TEST_DATA = {
     "inventory_count": 5
 }
 
-# 租赁申请测试数据
+# 租赁申请测试数据 - 修复日期问题：使用未来日期
 LEASE_TEST_DATA = {
     "product_id": 1,  # 将根据实际创建的产品ID更新
     "product_code": "LP001",
     "name": "测试租赁申请",
     "type": "挖掘机",
     "machinery": "大型挖掘机",
-    "start_date": "2024-01-01",
-    "end_date": "2024-01-10",
+    "start_date": "2025-07-01",  # 修改为未来日期
+    "end_date": "2025-07-10",    # 修改为未来日期
     "duration": 10,
     "daily_rate": 800.00,
     "total_amount": 8000.00,

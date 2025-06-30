@@ -2,6 +2,7 @@ package lease
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 
@@ -81,8 +82,17 @@ func (l *ListMyLeaseApplicationsLogic) ListMyLeaseApplications(req *types.ListLe
 
 // 从JWT中获取用户ID的辅助方法
 func (l *ListMyLeaseApplicationsLogic) getUserIdFromJWT() (int64, error) {
-	// 方法1: 尝试从context的标准JWT字段获取
+	// 方法1: go-zero标准方式 - 处理json.Number类型
 	if userIdVal := l.ctx.Value("user_id"); userIdVal != nil {
+		// go-zero将JWT中的数字转换为json.Number类型
+		if jsonUid, ok := userIdVal.(json.Number); ok {
+			if int64Uid, err := jsonUid.Int64(); err == nil {
+				return int64Uid, nil
+			} else {
+				logx.WithContext(l.ctx).Errorf("JWT user_id转换失败: %v", err)
+			}
+		}
+		// 备用：尝试其他类型
 		if userId, ok := userIdVal.(float64); ok {
 			return int64(userId), nil
 		}
@@ -96,6 +106,11 @@ func (l *ListMyLeaseApplicationsLogic) getUserIdFromJWT() (int64, error) {
 
 	// 方法2: 尝试从context的其他可能字段获取
 	if userIdVal := l.ctx.Value("userId"); userIdVal != nil {
+		if jsonUid, ok := userIdVal.(json.Number); ok {
+			if int64Uid, err := jsonUid.Int64(); err == nil {
+				return int64Uid, nil
+			}
+		}
 		if userId, ok := userIdVal.(float64); ok {
 			return int64(userId), nil
 		}
@@ -109,6 +124,11 @@ func (l *ListMyLeaseApplicationsLogic) getUserIdFromJWT() (int64, error) {
 
 	// 方法3: 尝试从JWT标准字段获取 (sub字段通常包含用户ID)
 	if subVal := l.ctx.Value("sub"); subVal != nil {
+		if jsonSub, ok := subVal.(json.Number); ok {
+			if int64Sub, err := jsonSub.Int64(); err == nil {
+				return int64Sub, nil
+			}
+		}
 		if subStr, ok := subVal.(string); ok {
 			return strconv.ParseInt(subStr, 10, 64)
 		}
