@@ -2,6 +2,7 @@ package lease
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"api/internal/svc"
@@ -27,10 +28,11 @@ func NewCreateLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 
 func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLeaseApplicationReq) (resp *types.CreateLeaseApplicationResp, err error) {
 	// 获取当前用户ID (从JWT中获取)
-	userIdStr := l.ctx.Value("userId").(string)
-	userId, err := strconv.ParseInt(userIdStr, 10, 64)
+	// 在go-zero中，JWT claims通过httpx.ParseJsonBody解析后存储在特定的context key中
+	// 根据JWT配置，user_id字段应该从JWT的标准claims中获取
+	userId, err := l.getUserIdFromJWT()
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("解析用户ID失败: %v", err)
+		logx.WithContext(l.ctx).Errorf("获取用户ID失败: %v", err)
 		return nil, err
 	}
 
@@ -61,4 +63,42 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLe
 	return &types.CreateLeaseApplicationResp{
 		ApplicationId: rpcResp.ApplicationId,
 	}, nil
+}
+
+// 从JWT中获取用户ID的辅助方法
+func (l *CreateLeaseApplicationLogic) getUserIdFromJWT() (int64, error) {
+	// 方法1: 尝试从context的标准JWT字段获取
+	if userIdVal := l.ctx.Value("user_id"); userIdVal != nil {
+		if userId, ok := userIdVal.(float64); ok {
+			return int64(userId), nil
+		}
+		if userId, ok := userIdVal.(int64); ok {
+			return userId, nil
+		}
+		if userIdStr, ok := userIdVal.(string); ok {
+			return strconv.ParseInt(userIdStr, 10, 64)
+		}
+	}
+
+	// 方法2: 尝试从context的其他可能字段获取
+	if userIdVal := l.ctx.Value("userId"); userIdVal != nil {
+		if userId, ok := userIdVal.(float64); ok {
+			return int64(userId), nil
+		}
+		if userId, ok := userIdVal.(int64); ok {
+			return userId, nil
+		}
+		if userIdStr, ok := userIdVal.(string); ok {
+			return strconv.ParseInt(userIdStr, 10, 64)
+		}
+	}
+
+	// 方法3: 尝试从JWT标准字段获取 (sub字段通常包含用户ID)
+	if subVal := l.ctx.Value("sub"); subVal != nil {
+		if subStr, ok := subVal.(string); ok {
+			return strconv.ParseInt(subStr, 10, 64)
+		}
+	}
+
+	return 0, fmt.Errorf("无法从JWT中获取用户ID")
 }
