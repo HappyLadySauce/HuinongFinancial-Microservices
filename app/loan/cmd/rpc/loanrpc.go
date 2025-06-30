@@ -16,6 +16,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"github.com/zeromicro/go-zero/core/logx"
+
+	// SkyWalking Go Agent 集成
+	_ "github.com/apache/skywalking-go"
 )
 
 var configFile = flag.String("f", "etc/loanrpc.yaml", "the config file")
