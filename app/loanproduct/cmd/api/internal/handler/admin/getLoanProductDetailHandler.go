@@ -5,14 +5,22 @@ import (
 
 	"api/internal/logic/admin"
 	"api/internal/svc"
+	"api/internal/types"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 // 获取贷款产品详情
 func GetLoanProductDetailHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.GetLoanProductDetailReq
+		if err := httpx.Parse(r, &req); err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
 		l := admin.NewGetLoanProductDetailLogic(r.Context(), svcCtx)
-		resp, err := l.GetLoanProductDetail()
+		resp, err := l.GetLoanProductDetail(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

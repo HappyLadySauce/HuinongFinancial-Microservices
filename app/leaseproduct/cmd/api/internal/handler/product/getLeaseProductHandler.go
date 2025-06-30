@@ -5,14 +5,22 @@ import (
 
 	"api/internal/logic/product"
 	"api/internal/svc"
+	"api/internal/types"
+
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 // 获取租赁产品详情
 func GetLeaseProductHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var req types.GetLeaseProductReq
+		if err := httpx.Parse(r, &req); err != nil {
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
+		}
+
 		l := product.NewGetLeaseProductLogic(r.Context(), svcCtx)
-		resp, err := l.GetLeaseProduct()
+		resp, err := l.GetLeaseProduct(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

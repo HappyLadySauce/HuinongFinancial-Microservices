@@ -247,7 +247,14 @@ paths:
       summary: 创建租赁产品
   /api/v1/admin/leaseproduct/products/{productCode}:
     delete:
+      consumes:
+      - application/x-www-form-urlencoded
       operationId: adminDeleteLeaseProduct
+      parameters:
+      - in: path
+        name: productCode
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -265,6 +272,11 @@ paths:
       summary: 删除租赁产品
     get:
       operationId: adminGetLeaseProductDetail
+      parameters:
+      - in: path
+        name: productCode
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -587,6 +599,11 @@ paths:
   /api/v1/leaseproduct/products/{productCode}:
     get:
       operationId: productGetLeaseProduct
+      parameters:
+      - in: path
+        name: productCode
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -716,7 +733,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-29 17:37:04"
+x-date: "2025-06-30 04:11:39"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

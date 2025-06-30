@@ -23,4 +23,4 @@
 ./scripts/gen-code.sh loanproduct docs
 ```
 
-生成时间: 2025-06-29 17:37:12
+生成时间: 2025-06-30 04:11:34

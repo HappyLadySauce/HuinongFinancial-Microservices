@@ -2,7 +2,7 @@
 
 ## Protocol Buffer 定义文件
 - 文件路径: `app/lease/lease-rpc.proto`
-- 生成时间: 2025-06-29 17:36:57
+- 生成时间: 2025-06-30 04:11:44
 
 ## 说明
 本文档由 `lease-rpc.proto` 文件自动生成。

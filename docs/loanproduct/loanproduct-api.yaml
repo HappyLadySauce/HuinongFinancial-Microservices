@@ -199,7 +199,14 @@ paths:
       summary: 创建贷款产品
   /api/v1/admin/loanproduct/products/{id}:
     delete:
+      consumes:
+      - application/x-www-form-urlencoded
       operationId: adminDeleteLoanProduct
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -219,6 +226,11 @@ paths:
       summary: 删除贷款产品
     get:
       operationId: adminGetLoanProductDetail
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -285,10 +297,11 @@ paths:
       - application/json
       operationId: adminUpdateLoanProduct
       parameters:
-      - in: path
+      - description: 修改为string类型
+        in: path
         name: id
         required: true
-        type: integer
+        type: string
       - in: body
         name: body
         required: true
@@ -308,6 +321,8 @@ paths:
               type: integer
             name:
               type: string
+            status:
+              type: integer
             type:
               type: string
           required:
@@ -319,6 +334,7 @@ paths:
           - min_duration
           - interest_rate
           - description
+          - status
           type: object
       produces:
       - application/json
@@ -387,10 +403,11 @@ paths:
       - application/json
       operationId: adminUpdateProductStatus
       parameters:
-      - in: path
+      - description: 修改为string类型
+        in: path
         name: id
         required: true
-        type: integer
+        type: string
       - in: body
         name: body
         required: true
@@ -513,6 +530,11 @@ paths:
   /api/v1/loanproduct/products/{id}:
     get:
       operationId: productGetLoanProduct
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -579,7 +601,7 @@ produces:
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-29 17:37:12"
+x-date: "2025-06-30 04:11:34"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

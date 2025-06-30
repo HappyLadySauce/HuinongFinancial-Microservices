@@ -297,6 +297,14 @@
         ],
         "summary": "获取贷款产品详情",
         "operationId": "adminGetLoanProductDetail",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -390,7 +398,8 @@
         "operationId": "adminUpdateLoanProduct",
         "parameters": [
           {
-            "type": "integer",
+            "type": "string",
+            "description": "修改为string类型",
             "name": "id",
             "in": "path",
             "required": true
@@ -409,7 +418,8 @@
                 "max_duration",
                 "min_duration",
                 "interest_rate",
-                "description"
+                "description",
+                "status"
               ],
               "properties": {
                 "description": {
@@ -432,6 +442,9 @@
                 },
                 "name": {
                   "type": "string"
+                },
+                "status": {
+                  "type": "integer"
                 },
                 "type": {
                   "type": "string"
@@ -520,6 +533,9 @@
         }
       },
       "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
         "produces": [
           "application/json"
         ],
@@ -528,6 +544,14 @@
         ],
         "summary": "删除贷款产品",
         "operationId": "adminDeleteLoanProduct",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -563,7 +587,8 @@
         "operationId": "adminUpdateProductStatus",
         "parameters": [
           {
-            "type": "integer",
+            "type": "string",
+            "description": "修改为string类型",
             "name": "id",
             "in": "path",
             "required": true
@@ -746,6 +771,14 @@
         ],
         "summary": "获取贷款产品详情",
         "operationId": "productGetLoanProduct",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -827,7 +860,7 @@
       }
     }
   },
-  "x-date": "2025-06-29 17:37:12",
+  "x-date": "2025-06-30 04:11:34",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

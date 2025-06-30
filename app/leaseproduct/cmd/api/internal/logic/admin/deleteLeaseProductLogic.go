@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/leaseproduct"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,8 +25,22 @@ func NewDeleteLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 	}
 }
 
-func (l *DeleteLeaseProductLogic) DeleteLeaseProduct() (resp *types.DeleteLeaseProductResp, err error) {
-	// todo: add your logic here and delete this line
+func (l *DeleteLeaseProductLogic) DeleteLeaseProduct(req *types.DeleteLeaseProductReq) (resp *types.DeleteLeaseProductResp, err error) {
+	// 调用RPC服务
+	rpcResp, err := l.svcCtx.LeaseProductRpc.DeleteLeaseProduct(l.ctx, &leaseproduct.DeleteLeaseProductReq{
+		ProductCode: req.ProductCode,
+	})
+	if err != nil {
+		l.Errorf("调用RPC服务失败: %v", err)
+		return &types.DeleteLeaseProductResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
 
-	return
+	// 返回响应
+	return &types.DeleteLeaseProductResp{
+		Code:    rpcResp.Code,
+		Message: rpcResp.Message,
+	}, nil
 }
