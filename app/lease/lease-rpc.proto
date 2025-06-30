@@ -150,9 +150,7 @@ message CreateLeaseApplicationReq {
 }
 
 message CreateLeaseApplicationResp {
-  int32 code = 1;
-  string message = 2;
-  string application_id = 3;
+  string application_id = 1;
 }
 
 // 获取租赁申请
@@ -161,9 +159,7 @@ message GetLeaseApplicationReq {
 }
 
 message GetLeaseApplicationResp {
-  int32 code = 1;
-  string message = 2;
-  LeaseApplicationInfo application_info = 3;
+  LeaseApplicationInfo application_info = 1;
 }
 
 // 获取租赁申请列表
@@ -176,10 +172,8 @@ message ListLeaseApplicationsReq {
 }
 
 message ListLeaseApplicationsResp {
-  int32 code = 1;
-  string message = 2;
-  repeated LeaseApplicationInfo list = 3;
-  int64 total = 4;
+  repeated LeaseApplicationInfo list = 1;
+  int64 total = 2;
 }
 
 // 更新租赁申请
@@ -191,9 +185,7 @@ message UpdateLeaseApplicationReq {
 }
 
 message UpdateLeaseApplicationResp {
-  int32 code = 1;
-  string message = 2;
-  LeaseApplicationInfo application_info = 3;
+  LeaseApplicationInfo application_info = 1;
 }
 
 // 撤销租赁申请
@@ -203,8 +195,6 @@ message CancelLeaseApplicationReq {
 }
 
 message CancelLeaseApplicationResp {
-  int32 code = 1;
-  string message = 2;
 }
 
 // 审批租赁申请
@@ -220,8 +210,6 @@ message ApproveLeaseApplicationReq {
 }
 
 message ApproveLeaseApplicationResp {
-  int32 code = 1;
-  string message = 2;
 }
 
 // 获取审批记录列表
@@ -230,9 +218,7 @@ message ListLeaseApprovalsReq {
 }
 
 message ListLeaseApprovalsResp {
-  int32 code = 1;
-  string message = 2;
-  repeated LeaseApprovalInfo list = 3;
+  repeated LeaseApprovalInfo list = 1;
 }
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../

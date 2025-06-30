@@ -72,8 +72,6 @@ type CreateLoanApplicationReq {
 }
 
 type CreateLoanApplicationResp {
-	Code          int32  `json:"code"`
-	Message       string `json:"message"`
 	ApplicationId string `json:"application_id"`
 }
 
@@ -82,9 +80,7 @@ type GetLoanApplicationReq {
 	ApplicationId string `json:"application_id"`
 }
 
-type GetLoanApplicationResp {
-	Code            int32               `json:"code"`
-	Message         string              `json:"message"`
+type GetLoanApplicationResp {	
 	ApplicationInfo LoanApplicationInfo `json:"application_info"`
 }
 
@@ -97,8 +93,6 @@ type ListLoanApplicationsReq {
 }
 
 type ListLoanApplicationsResp {
-	Code    int32                 `json:"code"`
-	Message string                `json:"message"`
 	List    []LoanApplicationInfo `json:"list"`
 	Total   int64                 `json:"total"`
 }
@@ -112,8 +106,6 @@ type UpdateLoanApplicationReq {
 }
 
 type UpdateLoanApplicationResp {
-	Code            int32               `json:"code"`
-	Message         string              `json:"message"`
 	ApplicationInfo LoanApplicationInfo `json:"application_info"`
 }
 
@@ -124,8 +116,6 @@ type CancelLoanApplicationReq {
 }
 
 type CancelLoanApplicationResp {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 // 审批贷款申请请求响应
@@ -139,8 +129,6 @@ type ApproveLoanApplicationReq {
 }
 
 type ApproveLoanApplicationResp {
-	Code    int32  `json:"code"`
-	Message string `json:"message"`
 }
 
 // 审批记录信息
@@ -163,8 +151,6 @@ type ListLoanApprovalsReq {
 }
 
 type ListLoanApprovalsResp {
-	Code    int32              `json:"code"`
-	Message string             `json:"message"`
 	List    []LoanApprovalInfo `json:"list"`
 }
 

@@ -74,8 +74,6 @@ type (
 		Keyword string `form:"keyword,optional"`
 	}
 	ListLoanProductsResp {
-		Code    int32             `json:"code"` // 添加标准响应格式
-		Message string            `json:"message"` // 添加标准响应格式
 		List    []LoanProductInfo `json:"list"`
 		Total   int64             `json:"total"`
 	}
@@ -92,8 +90,6 @@ type (
 		Description  string  `json:"description"`
 	}
 	CreateLoanProductResp {
-		Code    int32           `json:"code"` // 添加标准响应格式
-		Message string          `json:"message"` // 添加标准响应格式
 		Data    LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新贷款产品
@@ -109,14 +105,10 @@ type (
 		Description  string  `json:"description"`
 	}
 	UpdateLoanProductResp {
-		Code    int32           `json:"code"` // 添加标准响应格式
-		Message string          `json:"message"` // 添加标准响应格式
 		Data    LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 获取产品详情响应
 	GetLoanProductResp {
-		Code    int32           `json:"code"` // 添加标准响应格式
-		Message string          `json:"message"` // 添加标准响应格式
 		Data    LoanProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新产品状态
@@ -125,13 +117,9 @@ type (
 		Status int32 `json:"status"`
 	}
 	UpdateProductStatusResp {
-		Code    int32  `json:"code"` // 添加标准响应格式
-		Message string `json:"message"` // 添加标准响应格式
 	}
 	// 删除产品响应
 	DeleteLoanProductResp {
-		Code    int32  `json:"code"` // 添加标准响应格式
-		Message string `json:"message"` // 添加标准响应格式
 	}
 )
 

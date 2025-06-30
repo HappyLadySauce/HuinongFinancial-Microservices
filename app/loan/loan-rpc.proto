@@ -125,9 +125,7 @@ message CreateLoanApplicationReq {
 }
 
 message CreateLoanApplicationResp {
-    int32 code = 1;
-    string message = 2;
-    string application_id = 3;
+    string application_id = 1;
 }
 
 // 获取贷款申请
@@ -136,9 +134,7 @@ message GetLoanApplicationReq {
 }
 
 message GetLoanApplicationResp {
-    int32 code = 1;
-    string message = 2;
-    LoanApplicationInfo application_info = 3;
+    LoanApplicationInfo application_info = 1;
 }
 
 // 获取贷款申请列表
@@ -150,10 +146,8 @@ message ListLoanApplicationsReq {
 }
 
 message ListLoanApplicationsResp {
-    int32 code = 1;
-    string message = 2;
-    repeated LoanApplicationInfo list = 3;
-    int64 total = 4;
+    repeated LoanApplicationInfo list = 1;
+    int64 total = 2;
 }
 
 // 更新贷款申请
@@ -165,9 +159,7 @@ message UpdateLoanApplicationReq {
 }
 
 message UpdateLoanApplicationResp {
-    int32 code = 1;
-    string message = 2;
-    LoanApplicationInfo application_info = 3;
+    LoanApplicationInfo application_info = 1;
 }
 
 // 撤销贷款申请
@@ -177,8 +169,6 @@ message CancelLoanApplicationReq {
 }
 
 message CancelLoanApplicationResp {
-    int32 code = 1;
-    string message = 2;
 }
 
 // 审批贷款申请
@@ -194,8 +184,6 @@ message ApproveLoanApplicationReq {
 }
 
 message ApproveLoanApplicationResp {
-    int32 code = 1;
-    string message = 2;
 }
 
 // 获取审批记录列表
@@ -204,9 +192,7 @@ message ListLoanApprovalsReq {
 }
 
 message ListLoanApprovalsResp {
-    int32 code = 1;
-    string message = 2;
-    repeated LoanApprovalInfo list = 3;
+    repeated LoanApprovalInfo list = 1;
 }
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../

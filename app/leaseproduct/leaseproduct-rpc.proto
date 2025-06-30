@@ -76,27 +76,19 @@ message LeaseProductInfo {
 
 // 添加删除操作响应
 message DeleteLeaseProductResp {
-  int32 code = 1;
-  string message = 2;
 }
 
 // 标准响应格式
 message GetLeaseProductResp {
-  int32 code = 1;
-  string message = 2;
-  LeaseProductInfo data = 3;
+  LeaseProductInfo data = 1;
 }
 
 message CreateLeaseProductResp {
-  int32 code = 1;
-  string message = 2;
-  LeaseProductInfo data = 3;
+  LeaseProductInfo data = 1;
 }
 
 message UpdateLeaseProductResp {
-  int32 code = 1;
-  string message = 2;
-  LeaseProductInfo data = 3;
+  LeaseProductInfo data = 1;
 }
 
 // === 请求响应结构 ===
@@ -117,10 +109,8 @@ message ListLeaseProductsReq {
 }
 
 message ListLeaseProductsResp {
-  int32 code = 1;                     // 响应码
-  string message = 2;                 // 响应消息
-  repeated LeaseProductInfo list = 3; // 产品列表
-  int64 total = 4;                    // 总数
+  repeated LeaseProductInfo list = 1; // 产品列表
+  int64 total = 2;                    // 总数
 }
 
 // 创建租赁产品请求
@@ -169,10 +159,8 @@ message CheckInventoryAvailabilityReq {
 }
 
 message CheckInventoryAvailabilityResp {
-  int32 code = 1;                   // 响应码
-  string message = 2;               // 响应消息
-  bool available = 3;               // 是否可用
-  int32 availableCount = 4;         // 可用数量
+  bool available = 1;               // 是否可用
+  int32 availableCount = 2;         // 可用数量
 }
 
 // === 服务定义 ===

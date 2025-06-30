@@ -75,9 +75,7 @@ message GetUserInfoReq {
 }
 
 message GetUserInfoResp {
-    int32 code = 1;
-    string message = 2;
-    UserInfo user_info = 3;
+    UserInfo user_info = 1;
 }
 // 获取用户信息
 
@@ -88,9 +86,7 @@ message UpdateUserInfoReq {
 }
 
 message UpdateUserInfoResp {
-    int32 code = 1;
-    string message = 2;
-    UserInfo user_info = 3;
+    UserInfo user_info = 1;
 }
 // 更新用户信息
 
@@ -103,8 +99,6 @@ message DeleteUserReq {
 }
 
 message DeleteUserResp {
-    int32 code = 1;
-    string message = 2;
 }
 // 删除用户
 
@@ -116,9 +110,7 @@ message LoginReq {
 }
 
 message LoginResp {
-    int32 code = 1;
-    string message = 2;
-    string token = 3;
+    string token = 1; // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 // 登录
 
@@ -131,22 +123,17 @@ message RegisterReq {
 }
 
 message RegisterResp {
-    int32 code = 1;
-    string message = 2;
-    string token = 3;
+    string token = 1; // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
 }
 // 注册
 
 
-// 注销
+// 注销 (从JWT上下文获取用户信息，无需传递token)
 message LogoutReq {
-    string token = 1;
+    // 移除 token 字段，改为从 JWT 认证上下文中获取用户信息
 }
 
-message LogoutResp {
-    int32 code = 1;
-    string message = 2;
-}
+message LogoutResp {}
 // 注销
 
 
@@ -158,7 +145,5 @@ message ChangePasswordReq {
 }
 
 message ChangePasswordResp {
-    int32 code = 1;
-    string message = 2;
 }
 // 修改密码

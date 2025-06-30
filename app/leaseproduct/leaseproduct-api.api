@@ -64,7 +64,7 @@ type (
 		Deposit        float64 `json:"deposit"`
 		MaxDuration    int32   `json:"max_duration"` // 修改为int32与RPC一致
 		MinDuration    int32   `json:"min_duration"` // 修改为int32与RPC一致
-		Description    string  `json:"description"`
+		Description    string  `json:"description"`	
 		InventoryCount int32   `json:"inventory_count"` // 修改为int32与RPC一致
 		AvailableCount int32   `json:"available_count"` // 修改为int32与RPC一致
 		Status         int32   `json:"status"` // 修改为int32与RPC一致
@@ -73,13 +73,9 @@ type (
 	}
 	// 标准响应格式
 	BaseResp {
-		Code    int32  `json:"code"`
-		Message string `json:"message"`
 	}
 	// 删除产品响应
 	DeleteLeaseProductResp {
-		Code    int32  `json:"code"`
-		Message string `json:"message"`
 	}
 )
 
@@ -95,8 +91,6 @@ type (
 		Keyword string `form:"keyword,optional"`
 	}
 	ListLeaseProductsResp {
-		Code    int32              `json:"code"` // 添加标准响应格式
-		Message string             `json:"message"` // 添加标准响应格式
 		List    []LeaseProductInfo `json:"list"` // 修改数据类型名称
 		Total   int64              `json:"total"`
 	}
@@ -116,8 +110,6 @@ type (
 		InventoryCount int32   `json:"inventory_count"`
 	}
 	CreateLeaseProductResp {
-		Code    int32            `json:"code"` // 添加标准响应格式
-		Message string           `json:"message"` // 添加标准响应格式
 		Data    LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 更新租赁产品
@@ -136,14 +128,10 @@ type (
 		Status      int32   `json:"status"`
 	}
 	UpdateLeaseProductResp {
-		Code    int32            `json:"code"` // 添加标准响应格式
-		Message string           `json:"message"` // 添加标准响应格式
 		Data    LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 获取产品详情响应
 	GetLeaseProductResp {
-		Code    int32            `json:"code"` // 添加标准响应格式
-		Message string           `json:"message"` // 添加标准响应格式
 		Data    LeaseProductInfo `json:"data"` // 添加数据字段
 	}
 	// 检查库存可用性
@@ -154,8 +142,6 @@ type (
 		EndDate     string `json:"end_date"`
 	}
 	CheckInventoryResp {
-		Code           int32  `json:"code"` // 添加标准响应格式
-		Message        string `json:"message"` // 添加标准响应格式
 		Available      bool   `json:"available"`
 		AvailableCount int32  `json:"available_count"`
 	}

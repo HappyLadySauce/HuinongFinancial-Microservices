@@ -66,33 +66,23 @@ message LoanProductInfo {
 
 // 添加删除操作响应
 message DeleteLoanProductResp {
-    int32 code = 1;
-    string message = 2;
 }
 
 // 添加状态更新响应  
 message UpdateProductStatusResp {
-    int32 code = 1;
-    string message = 2;
 }
 
 // 标准响应格式
 message GetLoanProductResp {
-    int32 code = 1;
-    string message = 2;
-    LoanProductInfo data = 3;
+    LoanProductInfo data = 1;
 }
 
 message CreateLoanProductResp {
-    int32 code = 1;
-    string message = 2;
-    LoanProductInfo data = 3;
+    LoanProductInfo data = 1;
 }
 
 message UpdateLoanProductResp {
-    int32 code = 1;
-    string message = 2;
-    LoanProductInfo data = 3;
+    LoanProductInfo data = 1;
 }
 
 // === 请求与响应 ===
@@ -113,10 +103,8 @@ message ListLoanProductsReq {
 }
 
 message ListLoanProductsResp {
-    int32 code = 1;                      // 响应码
-    string message = 2;                  // 响应消息
-    repeated LoanProductInfo list = 3;   // 产品列表
-    int64 total = 4;                     // 总数
+    repeated LoanProductInfo list = 1;   // 产品列表
+    int64 total = 2;                     // 总数
 }
 
 // 创建贷款产品
