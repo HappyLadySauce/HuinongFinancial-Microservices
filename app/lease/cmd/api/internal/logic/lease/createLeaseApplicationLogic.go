@@ -2,9 +2,11 @@ package lease
 
 import (
 	"context"
+	"strconv"
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/leaseclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +26,47 @@ func NewCreateLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLeaseApplicationReq) (resp *types.CreateLeaseApplicationResp, err error) {
-	// todo: add your logic here and delete this line
+	// 获取当前用户ID (从JWT中获取)
+	userIdStr := l.ctx.Value("userId").(string)
+	userId, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("解析用户ID失败: %v", err)
+		return &types.CreateLeaseApplicationResp{
+			Code:    400,
+			Message: "用户ID无效",
+		}, nil
+	}
 
-	return
+	// 调用 Lease RPC 创建申请
+	rpcResp, err := l.svcCtx.LeaseRpc.CreateLeaseApplication(l.ctx, &leaseclient.CreateLeaseApplicationReq{
+		UserId:          userId,
+		ProductId:       req.ProductId,
+		ProductCode:     req.ProductCode,
+		Name:            req.Name,
+		Type:            req.Type,
+		Machinery:       req.Machinery,
+		StartDate:       req.StartDate,
+		EndDate:         req.EndDate,
+		Duration:        req.Duration,
+		DailyRate:       req.DailyRate,
+		TotalAmount:     req.TotalAmount,
+		Deposit:         req.Deposit,
+		DeliveryAddress: req.DeliveryAddress,
+		ContactPhone:    req.ContactPhone,
+		Purpose:         req.Purpose,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
+		return &types.CreateLeaseApplicationResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
+
+	// 转换 RPC 响应为 API 响应
+	return &types.CreateLeaseApplicationResp{
+		Code:          rpcResp.Code,
+		Message:       rpcResp.Message,
+		ApplicationId: rpcResp.ApplicationId,
+	}, nil
 }

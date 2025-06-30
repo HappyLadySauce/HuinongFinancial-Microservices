@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"rpc/leaseclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -24,7 +25,22 @@ func NewCancelMyLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCo
 }
 
 func (l *CancelMyLeaseApplicationLogic) CancelMyLeaseApplication(req *types.CancelLeaseApplicationReq) (resp *types.CancelLeaseApplicationResp, err error) {
-	// todo: add your logic here and delete this line
+	// 调用 Lease RPC 撤销申请
+	rpcResp, err := l.svcCtx.LeaseRpc.CancelLeaseApplication(l.ctx, &leaseclient.CancelLeaseApplicationReq{
+		ApplicationId: req.ApplicationId,
+		Reason:        req.Reason,
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
+		return &types.CancelLeaseApplicationResp{
+			Code:    500,
+			Message: "服务内部错误",
+		}, nil
+	}
 
-	return
+	// 转换 RPC 响应为 API 响应
+	return &types.CancelLeaseApplicationResp{
+		Code:    rpcResp.Code,
+		Message: rpcResp.Message,
+	}, nil
 }
