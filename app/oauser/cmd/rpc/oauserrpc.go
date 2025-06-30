@@ -16,9 +16,6 @@ import (
 	"github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	// SkyWalking Go Agent 集成
-	_ "github.com/apache/skywalking-go"
 )
 
 var configFile = flag.String("f", "etc/oauserrpc.yaml", "the config file")
@@ -49,6 +46,5 @@ func main() {
 	defer s.Stop()
 
 	fmt.Printf("Starting OAUser RPC server at %s...\n", c.ListenOn)
-	fmt.Printf("SkyWalking Agent: Enabled (Auto-instrumentation)\n")
 	s.Start()
 }

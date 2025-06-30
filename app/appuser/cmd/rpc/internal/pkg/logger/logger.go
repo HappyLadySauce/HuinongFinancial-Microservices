@@ -77,7 +77,7 @@ func InitLogger(cfg Config) {
 func WithContext(ctx context.Context) *logrus.Entry {
 	entry := GlobalLogger.WithContext(ctx)
 
-	// 如果有 SkyWalking trace 信息，添加到日志中
+	// 如果有链路追踪信息，添加到日志中
 	if traceID := getTraceID(ctx); traceID != "" {
 		entry = entry.WithField("traceId", traceID)
 	}
@@ -90,9 +90,9 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 	return GlobalLogger.WithFields(fields)
 }
 
-// getTraceID 从上下文中获取 SkyWalking TraceID
+// getTraceID 从上下文中获取链路追踪 TraceID
 func getTraceID(ctx context.Context) string {
-	// SkyWalking Go Agent 会在 context 中设置 trace 信息
-	// 这里预留接口，后续集成时完善
+	// go-zero 框架会通过 OpenTelemetry 自动处理链路追踪信息
+	// 这里预留接口，如需自定义可以完善
 	return ""
 }

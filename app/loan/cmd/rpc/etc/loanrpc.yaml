@@ -9,6 +9,13 @@ Consul:
   Key: loanrpc.rpc
   Token: "331c00f9-bd87-2383-4394-548a0e66dea9"
 
+# 链路追踪配置
+Telemetry:
+  Name: loanrpc
+  Endpoint: http://172.18.122.4:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
 # MySQL 数据库配置
 # 数据库：loan，用户名：loan，密码：loan
 MySQL:

@@ -15,6 +15,13 @@ Auth:
 LeaseRpc:
   Target: consul://consul.huinong.internal/leaserpc.rpc
 
+# 链路追踪配置
+Telemetry:
+  Name: lease-api
+  Endpoint: http://172.18.122.4:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
 # 日志配置
 Log:
   ServiceName: lease-api
