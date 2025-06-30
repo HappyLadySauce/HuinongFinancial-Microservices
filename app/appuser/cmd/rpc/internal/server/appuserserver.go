@@ -29,6 +29,11 @@ func (s *AppUserServer) GetUserByPhone(ctx context.Context, in *appuser.GetUserI
 	return l.GetUserByPhone(in)
 }
 
+func (s *AppUserServer) GetUserById(ctx context.Context, in *appuser.GetUserByIdReq) (*appuser.GetUserInfoResp, error) {
+	l := logic.NewGetUserByIdLogic(ctx, s.svcCtx)
+	return l.GetUserById(in)
+}
+
 func (s *AppUserServer) UpdateUserInfo(ctx context.Context, in *appuser.UpdateUserInfoReq) (*appuser.UpdateUserInfoResp, error) {
 	l := logic.NewUpdateUserInfoLogic(ctx, s.svcCtx)
 	return l.UpdateUserInfo(in)

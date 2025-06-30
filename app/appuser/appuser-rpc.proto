@@ -63,6 +63,7 @@ message UserInfo {
 service AppUser {
     // 用户信息管理
     rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
+    rpc GetUserById(GetUserByIdReq) returns (GetUserInfoResp);
     rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
     rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
     
@@ -73,6 +74,10 @@ service AppUser {
     rpc ChangePassword(ChangePasswordReq) returns (ChangePasswordResp);
 }
 
+// 通过用户ID获取用户信息 - 新增接口
+message GetUserByIdReq {
+    int64 user_id = 1;
+}
 
 // 获取用户信息
 message GetUserInfoReq {

@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	AppUser_GetUserByPhone_FullMethodName = "/appuser.AppUser/GetUserByPhone"
+	AppUser_GetUserById_FullMethodName    = "/appuser.AppUser/GetUserById"
 	AppUser_UpdateUserInfo_FullMethodName = "/appuser.AppUser/UpdateUserInfo"
 	AppUser_DeleteUser_FullMethodName     = "/appuser.AppUser/DeleteUser"
 	AppUser_Login_FullMethodName          = "/appuser.AppUser/Login"
@@ -36,6 +37,7 @@ const (
 type AppUserClient interface {
 	// 用户信息管理
 	GetUserByPhone(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
+	GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
 	UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
 	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 	// 用户认证管理
@@ -57,6 +59,16 @@ func (c *appUserClient) GetUserByPhone(ctx context.Context, in *GetUserInfoReq, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserInfoResp)
 	err := c.cc.Invoke(ctx, AppUser_GetUserByPhone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *appUserClient) GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...grpc.CallOption) (*GetUserInfoResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserInfoResp)
+	err := c.cc.Invoke(ctx, AppUser_GetUserById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,6 +143,7 @@ func (c *appUserClient) ChangePassword(ctx context.Context, in *ChangePasswordRe
 type AppUserServer interface {
 	// 用户信息管理
 	GetUserByPhone(context.Context, *GetUserInfoReq) (*GetUserInfoResp, error)
+	GetUserById(context.Context, *GetUserByIdReq) (*GetUserInfoResp, error)
 	UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error)
 	DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserResp, error)
 	// 用户认证管理
@@ -150,6 +163,9 @@ type UnimplementedAppUserServer struct{}
 
 func (UnimplementedAppUserServer) GetUserByPhone(context.Context, *GetUserInfoReq) (*GetUserInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByPhone not implemented")
+}
+func (UnimplementedAppUserServer) GetUserById(context.Context, *GetUserByIdReq) (*GetUserInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
 func (UnimplementedAppUserServer) UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserInfo not implemented")
@@ -204,6 +220,24 @@ func _AppUser_GetUserByPhone_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AppUserServer).GetUserByPhone(ctx, req.(*GetUserInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AppUser_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByIdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppUserServer).GetUserById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppUser_GetUserById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppUserServer).GetUserById(ctx, req.(*GetUserByIdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -326,6 +360,10 @@ var AppUser_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByPhone",
 			Handler:    _AppUser_GetUserByPhone_Handler,
+		},
+		{
+			MethodName: "GetUserById",
+			Handler:    _AppUser_GetUserById_Handler,
 		},
 		{
 			MethodName: "UpdateUserInfo",

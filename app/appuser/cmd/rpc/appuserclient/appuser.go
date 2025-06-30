@@ -18,6 +18,7 @@ type (
 	ChangePasswordResp = appuser.ChangePasswordResp
 	DeleteUserReq      = appuser.DeleteUserReq
 	DeleteUserResp     = appuser.DeleteUserResp
+	GetUserByIdReq     = appuser.GetUserByIdReq
 	GetUserInfoReq     = appuser.GetUserInfoReq
 	GetUserInfoResp    = appuser.GetUserInfoResp
 	LoginReq           = appuser.LoginReq
@@ -33,6 +34,7 @@ type (
 	AppUser interface {
 		// 用户信息管理
 		GetUserByPhone(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
+		GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
 		UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
 		DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 		// 用户认证管理
@@ -57,6 +59,11 @@ func NewAppUser(cli zrpc.Client) AppUser {
 func (m *defaultAppUser) GetUserByPhone(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error) {
 	client := appuser.NewAppUserClient(m.cli.Conn())
 	return client.GetUserByPhone(ctx, in, opts...)
+}
+
+func (m *defaultAppUser) GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...grpc.CallOption) (*GetUserInfoResp, error) {
+	client := appuser.NewAppUserClient(m.cli.Conn())
+	return client.GetUserById(ctx, in, opts...)
 }
 
 func (m *defaultAppUser) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error) {

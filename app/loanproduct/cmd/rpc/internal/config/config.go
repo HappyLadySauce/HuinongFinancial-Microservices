@@ -19,4 +19,8 @@ type Config struct {
 
 	// Redis 缓存配置
 	CacheConf cache.CacheConf
+	
+	// 其他RPC服务配置 (为将来扩展预留)
+	LoanRpc    zrpc.RpcClientConf `json:",optional"`
+	AppUserRpc zrpc.RpcClientConf `json:",optional"`
 }

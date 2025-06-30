@@ -8,15 +8,19 @@ import (
 
 type Config struct {
 	zrpc.RpcServerConf
-	
+
 	// Consul 服务注册配置
 	Consul consul.Conf
-	
+
 	// MySQL 数据库配置
 	MySQL struct {
 		DataSource string
 	}
-	
+
 	// Redis 缓存配置
 	CacheConf cache.CacheConf
+
+	// 其他RPC服务配置
+	LeaseProductRpc zrpc.RpcClientConf
+	AppUserRpc      zrpc.RpcClientConf
 }

@@ -21,6 +21,16 @@ CacheConf:
     Type: node
     Pass: "ChinaSkills@"
 
+# RPC客户端配置 - go-zero标准方式
+# 模式：服务发现模式 (推荐：测试 / 生产环境 / K8s 分离部署)
+# 理由：支持 RPC 服务水平扩展、负载均衡和故障转移，是标准的生产级配置
+# 注意：客户端的服务发现配置使用 Target URL 格式，而不是结构化配置
+AppUserRpc:
+  Target: consul://consul.huinong.internal/appuserrpc.rpc
+
+LoanProductRpc:
+  Target: consul://consul.huinong.internal/loanproductrpc.rpc
+
 # 日志配置
 Log:
   ServiceName: loanrpc
