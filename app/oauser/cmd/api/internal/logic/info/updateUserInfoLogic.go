@@ -45,10 +45,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 	})
 	if err != nil {
 		l.Logger.Errorf("RPC UpdateUserInfo failed: %v", err)
-		return &types.UpdateUserInfoResp{
-			Code:    500,
-			Message: "服务器内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换用户信息格式
@@ -68,10 +65,8 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		}
 	}
 
-	// 转换响应格式
+	// 转换响应格式 - 只返回 UserInfo
 	return &types.UpdateUserInfoResp{
-		Code:     updateResp.Code,
-		Message:  updateResp.Message,
 		UserInfo: userInfo,
 	}, nil
 }

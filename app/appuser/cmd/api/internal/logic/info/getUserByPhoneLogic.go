@@ -34,10 +34,7 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 获取用户信息调用失败: %v", err)
-		return &types.GetUserInfoResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 数据转换：RPC UserInfo -> API UserInfo
@@ -59,10 +56,8 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 		}
 	}
 
-	// 转换 RPC 响应为 API 响应
+	// 转换 RPC 响应为 API 响应 - 只返回 UserInfo
 	return &types.GetUserInfoResp{
-		Code:     userResp.Code,
-		Message:  userResp.Message,
 		UserInfo: userInfo,
 	}, nil
 }

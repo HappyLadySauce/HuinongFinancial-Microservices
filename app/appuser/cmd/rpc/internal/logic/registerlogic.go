@@ -35,10 +35,7 @@ func (l *RegisterLogic) Register(in *appuser.RegisterReq) (*appuser.RegisterResp
 	// 参数验证
 	if in.Phone == "" || in.Password == "" {
 		l.Infof("注册参数不完整")
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 验证手机号格式
@@ -46,46 +43,31 @@ func (l *RegisterLogic) Register(in *appuser.RegisterReq) (*appuser.RegisterResp
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
 		l.Infof("手机号格式无效")
-		return &appuser.RegisterResp{
-			Code:    constants.CodePhoneInvalid,
-			Message: constants.GetMessage(constants.CodePhoneInvalid),
-		}, nil
+		return nil, constants.ErrPhoneInvalid
 	}
 
 	// 验证密码长度
 	if len(in.Password) < 6 {
 		l.Infof("密码长度不足")
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInvalidParams,
-			Message: "密码长度不能少于6位",
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 检查用户是否已存在
 	existUser, err := l.svcCtx.AppUserModel.FindOneByPhone(l.ctx, in.Phone)
 	if err != nil && err != model.ErrNotFound {
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 	if existUser != nil {
 		l.Infof("用户已存在")
-		return &appuser.RegisterResp{
-			Code:    constants.CodeUserExists,
-			Message: constants.GetMessage(constants.CodeUserExists),
-		}, nil
+		return nil, constants.ErrUserExists
 	}
 
 	// 加密密码
 	hashedPassword, err := utils.HashPassword(in.Password)
 	if err != nil {
 		l.Errorf("密码加密失败: %v", err)
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 创建用户
@@ -105,20 +87,14 @@ func (l *RegisterLogic) Register(in *appuser.RegisterReq) (*appuser.RegisterResp
 	result, err := l.svcCtx.AppUserModel.Insert(l.ctx, newUser)
 	if err != nil {
 		l.Errorf("创建用户失败: %v", err)
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 获取插入的用户ID
 	userID, err := result.LastInsertId()
 	if err != nil {
 		l.Errorf("获取用户ID失败: %v", err)
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 生成 JWT token
@@ -131,16 +107,11 @@ func (l *RegisterLogic) Register(in *appuser.RegisterReq) (*appuser.RegisterResp
 	)
 	if err != nil {
 		l.Errorf("生成token失败: %v", err)
-		return &appuser.RegisterResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	l.Infof("用户注册成功, user_id: %d", userID)
 	return &appuser.RegisterResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-		Token:   token,
+		Token: token,
 	}, nil
 }

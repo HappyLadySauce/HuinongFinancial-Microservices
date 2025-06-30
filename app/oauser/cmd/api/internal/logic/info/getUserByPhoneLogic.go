@@ -31,10 +31,7 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 	})
 	if err != nil {
 		l.Logger.Errorf("RPC GetUserByPhone failed: %v", err)
-		return &types.GetUserInfoResp{
-			Code:    500,
-			Message: "服务器内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 转换用户信息格式
@@ -54,10 +51,8 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 		}
 	}
 
-	// 转换响应格式
+	// 转换响应格式 - 只返回 UserInfo
 	return &types.GetUserInfoResp{
-		Code:     getUserResp.Code,
-		Message:  getUserResp.Message,
 		UserInfo: userInfo,
 	}, nil
 }

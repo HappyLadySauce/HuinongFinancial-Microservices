@@ -29,22 +29,16 @@ func (l *ChangePasswordLogic) ChangePassword(req *types.ChangePasswordReq) (resp
 	logx.WithContext(l.ctx).Infof("API: 修改密码请求, phone: %s", req.Phone)
 
 	// 调用 RPC 修改密码服务
-	changeResp, err := l.svcCtx.AppUserRpc.ChangePassword(l.ctx, &appuser.ChangePasswordReq{
+	_, err = l.svcCtx.AppUserRpc.ChangePassword(l.ctx, &appuser.ChangePasswordReq{
 		Phone:       req.Phone,
 		OldPassword: req.OldPassword,
 		NewPassword: req.NewPassword,
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 修改密码调用失败: %v", err)
-		return &types.ChangePasswordResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
-	return &types.ChangePasswordResp{
-		Code:    changeResp.Code,
-		Message: changeResp.Message,
-	}, nil
+	// 返回空结构体
+	return &types.ChangePasswordResp{}, nil
 }

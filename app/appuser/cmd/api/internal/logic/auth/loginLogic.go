@@ -35,16 +35,11 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 登录调用失败: %v", err)
-		return &types.LoginResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
+	// 转换 RPC 响应为 API 响应 - 只返回 token
 	return &types.LoginResp{
-		Code:    loginResp.Code,
-		Message: loginResp.Message,
-		Token:   loginResp.Token,
+		Token: loginResp.Token,
 	}, nil
 }

@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"errors"
 
 	"rpc/appuser"
 	"rpc/internal/svc"
@@ -25,29 +26,23 @@ func NewGetUserByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 
 func (l *GetUserByIdLogic) GetUserById(in *appuser.GetUserByIdReq) (*appuser.GetUserInfoResp, error) {
 	// 参数验证
+
 	if in.UserId <= 0 {
-		return &appuser.GetUserInfoResp{
-			Code:    400,
-			Message: "用户ID不能为空",
-		}, nil
+		l.Errorf("用户ID不能为空")
+		return nil, errors.New("用户ID不能为空")
 	}
 
 	// 根据用户ID查询用户信息
 	user, err := l.svcCtx.AppUserModel.FindOne(l.ctx, uint64(in.UserId))
 	if err != nil {
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.GetUserInfoResp{
-			Code:    404,
-			Message: "用户不存在",
-		}, nil
+		return nil, errors.New("用户不存在")
 	}
 
 	// 检查用户状态
 	if user.Status != 1 {
-		return &appuser.GetUserInfoResp{
-			Code:    400,
-			Message: "用户状态异常",
-		}, nil
+		l.Errorf("用户状态异常")
+		return nil, errors.New("用户状态异常")
 	}
 
 	// 转换为响应格式
@@ -67,8 +62,6 @@ func (l *GetUserByIdLogic) GetUserById(in *appuser.GetUserByIdReq) (*appuser.Get
 	}
 
 	return &appuser.GetUserInfoResp{
-		Code:     200,
-		Message:  "查询成功",
 		UserInfo: userInfo,
 	}, nil
 }

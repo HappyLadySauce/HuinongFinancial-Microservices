@@ -34,10 +34,7 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 	// 参数验证
 	if in.Phone == "" || in.Password == "" {
 		l.Infof("登录参数不完整")
-		return &oauser.LoginResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 验证手机号格式
@@ -45,10 +42,7 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
 		l.Infof("手机号格式无效")
-		return &oauser.LoginResp{
-			Code:    constants.CodePhoneInvalid,
-			Message: constants.GetMessage(constants.CodePhoneInvalid),
-		}, nil
+		return nil, constants.ErrPhoneInvalid
 	}
 
 	// 查找用户
@@ -56,58 +50,40 @@ func (l *LoginLogic) Login(in *oauser.LoginReq) (*oauser.LoginResp, error) {
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &oauser.LoginResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &oauser.LoginResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 检查用户状态
 	if user.Status == constants.UserStatusDisabled {
 		l.Infof("用户账号被禁用")
-		return &oauser.LoginResp{
-			Code:    constants.CodeUserDisabled,
-			Message: constants.GetMessage(constants.CodeUserDisabled),
-		}, nil
+		return nil, constants.ErrUserDisabled
 	}
 
 	// 验证密码
 	if !utils.CheckPassword(in.Password, user.PasswordHash) {
 		l.Infof("密码错误")
-		return &oauser.LoginResp{
-			Code:    constants.CodePasswordError,
-			Message: constants.GetMessage(constants.CodePasswordError),
-		}, nil
+		return nil, constants.ErrPasswordError
 	}
 
-	// 生成包含角色信息的 JWT token
+	// 生成 JWT token
 	token, err := utils.GenerateToken(
 		int64(user.Id),
 		user.Phone,
-		"oa",      // 用户类型：后台用户
-		user.Role, // 用户角色：admin/operator
+		"oa",
+		user.Role,
 		l.svcCtx.Config.JwtAuth.AccessSecret,
 		l.svcCtx.Config.JwtAuth.AccessExpire,
 	)
 	if err != nil {
 		l.Errorf("生成token失败: %v", err)
-		return &oauser.LoginResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
-	l.Infof("后台用户登录成功, user_id: %d, role: %s", user.Id, user.Role)
-
+	l.Infof("后台用户登录成功, user_id: %d", user.Id)
 	return &oauser.LoginResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-		Token:   token,
+		Token: token,
 	}, nil
 }

@@ -25,21 +25,13 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 }
 
 func (l *LogoutLogic) Logout(req *types.LogoutReq) (resp *types.LogoutResp, err error) {
-	// 调用 RPC 服务进行注销
-	logoutResp, err := l.svcCtx.OaUserRpc.Logout(l.ctx, &oauserclient.LogoutReq{
-		Token: req.Token,
-	})
+	// 调用 RPC 服务进行注销（不需要传递 token，从 JWT 认证上下文获取）
+	_, err = l.svcCtx.OaUserRpc.Logout(l.ctx, &oauserclient.LogoutReq{})
 	if err != nil {
 		l.Logger.Errorf("RPC Logout failed: %v", err)
-		return &types.LogoutResp{
-			Code:    500,
-			Message: "服务器内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换响应格式
-	return &types.LogoutResp{
-		Code:    logoutResp.Code,
-		Message: logoutResp.Message,
-	}, nil
+	// 返回空结构体
+	return &types.LogoutResp{}, nil
 }

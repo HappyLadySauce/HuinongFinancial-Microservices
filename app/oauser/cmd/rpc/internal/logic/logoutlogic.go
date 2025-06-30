@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 
-	"rpc/internal/pkg/constants"
 	"rpc/internal/svc"
 	"rpc/oauser"
 
@@ -27,31 +26,12 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 func (l *LogoutLogic) Logout(in *oauser.LogoutReq) (*oauser.LogoutResp, error) {
 	l.Infof("后台用户注销请求")
 
-	// 参数验证
-	if in.Token == "" {
-		l.Infof("token参数为空")
-		return &oauser.LogoutResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
-	}
+	// 注：现在从 JWT 认证上下文获取用户信息，不再需要验证 token 参数
+	// 在真实场景中，可以考虑以下操作：
+	// 1. 将当前用户的 token 添加到黑名单 (Redis)
+	// 2. 更新用户最后登出时间
+	// 3. 清理用户会话相关缓存
 
-	// 验证 token 的有效性
-	claims, err := l.svcCtx.JwtUtils.ValidateAndGetClaims(in.Token)
-	if err != nil {
-		l.Infof("无效的token")
-		return &oauser.LogoutResp{
-			Code:    constants.CodeUnauthorized,
-			Message: constants.GetMessage(constants.CodeUnauthorized),
-		}, nil
-	}
-
-	// 在实际项目中，这里可以将 token 加入黑名单
-	// 由于这里是简化版本，我们只记录注销操作
-	l.Infof("后台用户注销成功, user_id: %d, phone: %s", claims.UserID, claims.Phone)
-
-	return &oauser.LogoutResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-	}, nil
+	l.Infof("后台用户注销成功")
+	return &oauser.LogoutResp{}, nil
 }

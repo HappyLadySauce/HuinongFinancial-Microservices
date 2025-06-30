@@ -32,10 +32,7 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 	// 参数验证
 	if in.Phone == "" {
 		l.Infof("手机号不能为空")
-		return &appuser.DeleteUserResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 查找用户是否存在
@@ -43,25 +40,16 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &appuser.DeleteUserResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.DeleteUserResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 检查用户状态，避免重复删除
 	if user.Status == 4 { // 假设状态 4 表示已删除
 		l.Infof("用户已经被删除")
-		return &appuser.DeleteUserResp{
-			Code:    constants.CodeUserAlreadyDeleted,
-			Message: constants.GetMessage(constants.CodeUserAlreadyDeleted),
-		}, nil
+		return nil, constants.ErrUserAlreadyDeleted
 	}
 
 	// 软删除：更新用户状态为删除状态
@@ -69,15 +57,9 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 	err = l.svcCtx.AppUserModel.Update(l.ctx, user)
 	if err != nil {
 		l.Errorf("更新用户状态失败: %v", err)
-		return &appuser.DeleteUserResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	l.Infof("用户删除成功, user_id: %d", user.Id)
-	return &appuser.DeleteUserResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-	}, nil
+	return &appuser.DeleteUserResp{}, nil
 }

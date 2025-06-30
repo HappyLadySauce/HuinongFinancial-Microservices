@@ -29,20 +29,14 @@ func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.Dele
 	logx.WithContext(l.ctx).Infof("API: 删除用户请求, phone: %s", req.Phone)
 
 	// 调用 RPC 删除用户服务
-	deleteResp, err := l.svcCtx.AppUserRpc.DeleteUser(l.ctx, &appuser.DeleteUserReq{
+	_, err = l.svcCtx.AppUserRpc.DeleteUser(l.ctx, &appuser.DeleteUserReq{
 		Phone: req.Phone,
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 删除用户调用失败: %v", err)
-		return &types.DeleteUserResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
-	return &types.DeleteUserResp{
-		Code:    deleteResp.Code,
-		Message: deleteResp.Message,
-	}, nil
+	// 返回空结构体
+	return &types.DeleteUserResp{}, nil
 }

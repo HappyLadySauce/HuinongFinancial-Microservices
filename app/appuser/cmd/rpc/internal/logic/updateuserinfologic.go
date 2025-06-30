@@ -33,10 +33,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *appuser.UpdateUserInfoReq) (*ap
 	// 参数验证
 	if in.UserInfo == nil || in.UserInfo.Id <= 0 {
 		l.Infof("用户信息参数无效")
-		return &appuser.UpdateUserInfoResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 检查用户是否存在
@@ -44,16 +41,10 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *appuser.UpdateUserInfoReq) (*ap
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &appuser.UpdateUserInfoResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.UpdateUserInfoResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 更新用户信息
@@ -69,10 +60,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *appuser.UpdateUserInfoReq) (*ap
 	err = l.svcCtx.AppUserModel.Update(l.ctx, existUser)
 	if err != nil {
 		l.Errorf("更新用户信息失败: %v", err)
-		return &appuser.UpdateUserInfoResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 构建响应用户信息
@@ -93,8 +81,6 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *appuser.UpdateUserInfoReq) (*ap
 
 	l.Infof("更新用户信息成功, user_id: %d", existUser.Id)
 	return &appuser.UpdateUserInfoResp{
-		Code:     constants.CodeSuccess,
-		Message:  constants.GetMessage(constants.CodeSuccess),
 		UserInfo: userInfo,
 	}, nil
 }

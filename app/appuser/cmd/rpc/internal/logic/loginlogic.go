@@ -34,10 +34,7 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	// 参数验证
 	if in.Phone == "" || in.Password == "" {
 		l.Infof("登录参数不完整")
-		return &appuser.LoginResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 验证手机号格式
@@ -45,10 +42,7 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
 		l.Infof("手机号格式无效")
-		return &appuser.LoginResp{
-			Code:    constants.CodePhoneInvalid,
-			Message: constants.GetMessage(constants.CodePhoneInvalid),
-		}, nil
+		return nil, constants.ErrPhoneInvalid
 	}
 
 	// 查找用户
@@ -56,41 +50,26 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &appuser.LoginResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.LoginResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 检查用户状态
 	if user.Status == 2 {
 		l.Infof("用户账号被冻结")
-		return &appuser.LoginResp{
-			Code:    constants.CodeUserFrozen,
-			Message: constants.GetMessage(constants.CodeUserFrozen),
-		}, nil
+		return nil, constants.ErrUserFrozen
 	}
 	if user.Status == 3 {
 		l.Infof("用户账号被禁用")
-		return &appuser.LoginResp{
-			Code:    constants.CodeUserDisabled,
-			Message: constants.GetMessage(constants.CodeUserDisabled),
-		}, nil
+		return nil, constants.ErrUserDisabled
 	}
 
 	// 验证密码
 	if !utils.CheckPassword(in.Password, user.Password) {
 		l.Infof("密码错误")
-		return &appuser.LoginResp{
-			Code:    constants.CodePasswordError,
-			Message: constants.GetMessage(constants.CodePasswordError),
-		}, nil
+		return nil, constants.ErrPasswordError
 	}
 
 	// 生成 JWT token
@@ -103,16 +82,11 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 	)
 	if err != nil {
 		l.Errorf("生成token失败: %v", err)
-		return &appuser.LoginResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	l.Infof("用户登录成功, user_id: %d", user.Id)
 	return &appuser.LoginResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-		Token:   token,
+		Token: token,
 	}, nil
 }

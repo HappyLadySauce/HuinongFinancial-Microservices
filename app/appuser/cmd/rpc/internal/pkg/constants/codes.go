@@ -1,5 +1,7 @@
 package constants
 
+import "errors"
+
 // 响应代码常量
 const (
 	// 成功
@@ -27,6 +29,29 @@ const (
 	// 权限相关错误码
 	CodeRoleInvalid      = 2001 // 角色无效
 	CodePermissionDenied = 2002 // 权限不足
+)
+
+// 错误变量定义 - 用于新的错误处理方式
+var (
+	ErrInvalidParams      = errors.New("参数错误")
+	ErrUnauthorized       = errors.New("未授权")
+	ErrForbidden          = errors.New("禁止访问")
+	ErrNotFound           = errors.New("未找到")
+	ErrInternalError      = errors.New("内部错误")
+	ErrServiceUnavailable = errors.New("服务不可用")
+
+	ErrUserNotFound       = errors.New("用户不存在")
+	ErrUserExists         = errors.New("用户已存在")
+	ErrPasswordError      = errors.New("密码错误")
+	ErrUserDisabled       = errors.New("用户被禁用")
+	ErrUserFrozen         = errors.New("用户被冻结")
+	ErrPhoneInvalid       = errors.New("手机号格式无效")
+	ErrTokenInvalid       = errors.New("Token 无效")
+	ErrTokenExpired       = errors.New("Token 过期")
+	ErrUserAlreadyDeleted = errors.New("用户已被删除")
+
+	ErrRoleInvalid      = errors.New("角色无效")
+	ErrPermissionDenied = errors.New("权限不足")
 )
 
 // 错误消息映射

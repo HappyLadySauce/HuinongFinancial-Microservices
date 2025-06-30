@@ -29,19 +29,15 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	registerResp, err := l.svcCtx.OaUserRpc.Register(l.ctx, &oauserclient.RegisterReq{
 		Phone:    req.Phone,
 		Password: req.Password,
+		Role:     req.Role,
 	})
 	if err != nil {
 		l.Logger.Errorf("RPC Register failed: %v", err)
-		return &types.RegisterResp{
-			Code:    500,
-			Message: "服务器内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换响应格式
+	// 转换响应格式 - 只返回 token
 	return &types.RegisterResp{
-		Code:    registerResp.Code,
-		Message: registerResp.Message,
-		Token:   registerResp.Token,
+		Token: registerResp.Token,
 	}, nil
 }

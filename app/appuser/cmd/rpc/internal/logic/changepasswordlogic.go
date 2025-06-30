@@ -35,10 +35,7 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	// 参数验证
 	if in.Phone == "" || in.OldPassword == "" || in.NewPassword == "" {
 		l.Infof("修改密码参数不完整")
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 验证手机号格式
@@ -46,19 +43,13 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	matched, _ := regexp.MatchString(phoneRegex, in.Phone)
 	if !matched {
 		l.Infof("手机号格式无效")
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodePhoneInvalid,
-			Message: constants.GetMessage(constants.CodePhoneInvalid),
-		}, nil
+		return nil, constants.ErrPhoneInvalid
 	}
 
 	// 验证新密码长度
 	if len(in.NewPassword) < 6 {
 		l.Infof("新密码长度不足")
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeInvalidParams,
-			Message: "新密码长度不能少于6位",
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 查找用户
@@ -66,44 +57,29 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &appuser.ChangePasswordResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 检查用户状态
 	if user.Status != 1 {
 		l.Infof("用户状态异常")
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeUserDisabled,
-			Message: constants.GetMessage(constants.CodeUserDisabled),
-		}, nil
+		return nil, constants.ErrUserDisabled
 	}
 
 	// 验证旧密码
 	if !utils.CheckPassword(in.OldPassword, user.Password) {
 		l.Infof("旧密码错误")
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodePasswordError,
-			Message: "旧密码错误",
-		}, nil
+		return nil, constants.ErrPasswordError
 	}
 
 	// 加密新密码
 	hashedNewPassword, err := utils.HashPassword(in.NewPassword)
 	if err != nil {
 		l.Errorf("新密码加密失败: %v", err)
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 更新密码
@@ -112,15 +88,9 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 	err = l.svcCtx.AppUserModel.Update(l.ctx, user)
 	if err != nil {
 		l.Errorf("更新密码失败: %v", err)
-		return &appuser.ChangePasswordResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	l.Infof("修改密码成功, user_id: %d", user.Id)
-	return &appuser.ChangePasswordResp{
-		Code:    constants.CodeSuccess,
-		Message: constants.GetMessage(constants.CodeSuccess),
-	}, nil
+	return &appuser.ChangePasswordResp{}, nil
 }

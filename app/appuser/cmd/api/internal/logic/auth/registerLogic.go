@@ -35,16 +35,11 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 注册调用失败: %v", err)
-		return &types.RegisterResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
+	// 转换 RPC 响应为 API 响应 - 只返回 token
 	return &types.RegisterResp{
-		Code:    registerResp.Code,
-		Message: registerResp.Message,
-		Token:   registerResp.Token,
+		Token: registerResp.Token,
 	}, nil
 }

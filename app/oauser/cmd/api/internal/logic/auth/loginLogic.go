@@ -32,16 +32,11 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err erro
 	})
 	if err != nil {
 		l.Logger.Errorf("RPC Login failed: %v", err)
-		return &types.LoginResp{
-			Code:    500,
-			Message: "服务器内部错误",
-		}, nil
+		return nil, err
 	}
 
-	// 转换响应格式
+	// 转换响应格式 - 只返回 token
 	return &types.LoginResp{
-		Code:    loginResp.Code,
-		Message: loginResp.Message,
-		Token:   loginResp.Token,
+		Token: loginResp.Token,
 	}, nil
 }

@@ -32,10 +32,7 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *oauser.GetUserInfoReq) (*oauser
 	// 参数验证
 	if in.Phone == "" {
 		l.Infof("手机号参数为空")
-		return &oauser.GetUserInfoResp{
-			Code:    constants.CodeInvalidParams,
-			Message: constants.GetMessage(constants.CodeInvalidParams),
-		}, nil
+		return nil, constants.ErrInvalidParams
 	}
 
 	// 查询用户信息
@@ -43,16 +40,10 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *oauser.GetUserInfoReq) (*oauser
 	if err != nil {
 		if err == model.ErrNotFound {
 			l.Infof("用户不存在")
-			return &oauser.GetUserInfoResp{
-				Code:    constants.CodeUserNotFound,
-				Message: constants.GetMessage(constants.CodeUserNotFound),
-			}, nil
+			return nil, constants.ErrUserNotFound
 		}
 		l.Errorf("查询用户失败: %v", err)
-		return &oauser.GetUserInfoResp{
-			Code:    constants.CodeInternalError,
-			Message: constants.GetMessage(constants.CodeInternalError),
-		}, nil
+		return nil, constants.ErrInternalError
 	}
 
 	// 构造返回的用户信息
@@ -72,8 +63,6 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *oauser.GetUserInfoReq) (*oauser
 	l.Infof("获取后台用户信息成功, user_id: %d", user.Id)
 
 	return &oauser.GetUserInfoResp{
-		Code:     constants.CodeSuccess,
-		Message:  constants.GetMessage(constants.CodeSuccess),
 		UserInfo: userInfo,
 	}, nil
 }

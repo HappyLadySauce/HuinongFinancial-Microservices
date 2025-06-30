@@ -50,10 +50,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 更新用户信息调用失败: %v", err)
-		return &types.UpdateUserInfoResp{
-			Code:    500,
-			Message: "服务内部错误",
-		}, nil
+		return nil, err
 	}
 
 	// 数据转换：RPC UserInfo -> API UserInfo
@@ -75,10 +72,8 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		}
 	}
 
-	// 转换 RPC 响应为 API 响应
+	// 转换 RPC 响应为 API 响应 - 只返回 UserInfo
 	return &types.UpdateUserInfoResp{
-		Code:     updateResp.Code,
-		Message:  updateResp.Message,
 		UserInfo: userInfo,
 	}, nil
 }
