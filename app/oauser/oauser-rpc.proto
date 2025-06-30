@@ -59,6 +59,7 @@ service OaUser {
     // 用户信息管理
     rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
     rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
+    rpc UpdateUserStatus(UpdateUserStatusReq) returns (UpdateUserStatusResp);
     rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
     
     // 用户认证管理
@@ -87,6 +88,16 @@ message UpdateUserInfoReq {
 
 message UpdateUserInfoResp {
     UserInfo user_info = 1;
+}
+
+// 更新用户状态
+message UpdateUserStatusReq {
+    string phone = 1;
+    int32 status = 2;
+}
+
+message UpdateUserStatusResp {
+    int32 status = 1;
 }
 // 更新用户信息
 
@@ -128,9 +139,9 @@ message RegisterResp {
 // 注册
 
 
-// 注销 (从JWT上下文获取用户信息，无需传递token)
+// 注销 (从JWT上下文获取用户信息)
 message LogoutReq {
-    // 移除 token 字段，改为从 JWT 认证上下文中获取用户信息
+    string token = 1; // 从 JWT 认证上下文中获取用户信息
 }
 
 message LogoutResp {}

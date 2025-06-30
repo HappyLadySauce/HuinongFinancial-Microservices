@@ -25,12 +25,10 @@ CREATE TABLE `app_users` (
   `occupation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '职业',
   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系地址',
   `income` decimal(10,2) DEFAULT 0.00 COMMENT '月收入',
-  `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:正常 2:冻结 3:禁用',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_phone` (`phone`),
-  KEY `idx_status` (`status`),
   KEY `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
 
@@ -39,12 +37,12 @@ CREATE TABLE `app_users` (
 -- 密码哈希对应的明文密码均为: 123456
 -- 生成方式: bcrypt.GenerateFromPassword([]byte("123456"), bcrypt.DefaultCost)
 -- ----------------------------
-INSERT INTO `app_users` (`id`, `phone`, `password`, `name`, `nickname`, `age`, `gender`, `occupation`, `address`, `income`, `status`) VALUES
-(1001, '13800138000', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '王小明', 'C端测试用户', 30, 1, '软件工程师', '北京市朝阳区', 15000.00, 1),
-(1002, '13800138001', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '张小农', '农业小张', 32, 1, '农民', '北京市朝阳区农业园区', 8500.00, 1),
-(1003, '13800138002', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '李惠农', '惠农小李', 29, 2, '农村基层干部', '北京市昌平区新农村', 6200.00, 1),
-(1004, '13800138003', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '赵机达', '农机达人', 35, 1, '农机师', '北京市房山区机械村', 12000.00, 1),
-(1005, '13800138004', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '赵养殖', '养殖老赵', 40, 1, '畜牧员', '北京市大兴区养殖基地', 7500.00, 1),
-(1006, '13800138005', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '刘有机', '有机农夫', 31, 1, '农业推广员', '北京市顺义区有机农场', 9000.00, 1);
+INSERT INTO `app_users` (`id`, `phone`, `password`, `name`, `nickname`, `age`, `gender`, `occupation`, `address`, `income`) VALUES
+(1001, '13800138000', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '王小明', 'C端测试用户', 30, 1, '软件工程师', '北京市朝阳区', 15000.00),
+(1002, '13800138001', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '张小农', '农业小张', 32, 1, '农民', '北京市朝阳区农业园区', 8500.00),
+(1003, '13800138002', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '李惠农', '惠农小李', 29, 2, '农村基层干部', '北京市昌平区新农村', 6200.00),
+(1004, '13800138003', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '赵机达', '农机达人', 35, 1, '农机师', '北京市房山区机械村', 12000.00),
+(1005, '13800138004', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '赵养殖', '养殖老赵', 40, 1, '畜牧员', '北京市大兴区养殖基地', 7500.00),
+(1006, '13800138005', '$2a$10$N.zmdr9k7uOCQb96looxdOm8DtNkdtK67ZNWEaMMEPYANxJAPJV6C', '刘有机', '有机农夫', 31, 1, '农业推广员', '北京市顺义区有机农场', 9000.00);
 
 SET FOREIGN_KEY_CHECKS = 1;

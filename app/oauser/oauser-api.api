@@ -68,6 +68,16 @@ type UpdateUserInfoResp {
 	UserInfo UserInfo `json:"user_info"`
 }
 
+// 更新用户状态请求响应
+type UpdateUserStatusReq {
+	Phone string `json:"phone"`
+	Status int `json:"status"`
+}
+
+type UpdateUserStatusResp {
+	Status int `json:"status"`
+}
+
 // 删除用户请求响应
 type DeleteUserReq {
 	Phone string `json:"phone"`
@@ -139,6 +149,10 @@ service oauser {
 	// 更新用户信息
 	@handler UpdateUserInfo
 	put /info (UpdateUserInfoReq) returns (UpdateUserInfoResp)
+
+	// 更新用户状态
+	@handler UpdateUserStatus
+	put /status (UpdateUserStatusReq) returns (UpdateUserStatusResp)
 
 	// 注销用户
 	@handler DeleteUser

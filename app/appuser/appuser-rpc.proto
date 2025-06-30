@@ -34,12 +34,10 @@ option go_package = "./appuser";
 //   `occupation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '职业',
 //   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系地址',
 //   `income` decimal(10,2) DEFAULT 0.00 COMMENT '月收入',
-//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:正常 2:冻结 3:禁用',
 //   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 //   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
 //   PRIMARY KEY (`id`),
 //   UNIQUE KEY `uk_phone` (`phone`),
-//   KEY `idx_status` (`status`),
 //   KEY `idx_created_at` (`created_at`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
 
@@ -54,9 +52,8 @@ message UserInfo {
     string occupation = 7;  // 职业
     string address = 8;  // 地址
     double income = 9;  // 收入 单位:元
-    int32 status = 10;  // 1:正常 2:冻结 3:禁用
-    int64 created_at = 11;  // 创建时间
-    int64 updated_at = 12;  // 更新时间
+    int64 created_at = 10;  // 创建时间
+    int64 updated_at = 11;  // 更新时间
 }
 
 // AppUser服务 - 包含用户信息管理和认证管理
@@ -99,8 +96,6 @@ message UpdateUserInfoResp {
     UserInfo user_info = 1;
 }
 // 更新用户信息
-
-
 
 // 删除用户
 message DeleteUserReq {
