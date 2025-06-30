@@ -74,7 +74,6 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(in *appuser.UpdateUserInfoReq) (*ap
 		Occupation: existUser.Occupation,
 		Address:    existUser.Address,
 		Income:     existUser.Income,
-		Status:     int32(existUser.Status),
 		CreatedAt:  existUser.CreatedAt.Unix(),
 		UpdatedAt:  existUser.UpdatedAt.Unix(),
 	}

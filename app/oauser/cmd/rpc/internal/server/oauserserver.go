@@ -34,6 +34,11 @@ func (s *OaUserServer) UpdateUserInfo(ctx context.Context, in *oauser.UpdateUser
 	return l.UpdateUserInfo(in)
 }
 
+func (s *OaUserServer) UpdateUserStatus(ctx context.Context, in *oauser.UpdateUserStatusReq) (*oauser.UpdateUserStatusResp, error) {
+	l := logic.NewUpdateUserStatusLogic(ctx, s.svcCtx)
+	return l.UpdateUserStatus(in)
+}
+
 func (s *OaUserServer) DeleteUser(ctx context.Context, in *oauser.DeleteUserReq) (*oauser.DeleteUserResp, error) {
 	l := logic.NewDeleteUserLogic(ctx, s.svcCtx)
 	return l.DeleteUser(in)

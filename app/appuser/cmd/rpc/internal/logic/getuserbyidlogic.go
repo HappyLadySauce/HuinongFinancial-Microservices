@@ -39,12 +39,6 @@ func (l *GetUserByIdLogic) GetUserById(in *appuser.GetUserByIdReq) (*appuser.Get
 		return nil, errors.New("用户不存在")
 	}
 
-	// 检查用户状态
-	if user.Status != 1 {
-		l.Errorf("用户状态异常")
-		return nil, errors.New("用户状态异常")
-	}
-
 	// 转换为响应格式
 	userInfo := &appuser.UserInfo{
 		Id:         int64(user.Id),
@@ -56,7 +50,6 @@ func (l *GetUserByIdLogic) GetUserById(in *appuser.GetUserByIdReq) (*appuser.Get
 		Occupation: user.Occupation,
 		Address:    user.Address,
 		Income:     user.Income,
-		Status:     int32(user.Status),
 		CreatedAt:  user.CreatedAt.Unix(),
 		UpdatedAt:  user.UpdatedAt.Unix(),
 	}

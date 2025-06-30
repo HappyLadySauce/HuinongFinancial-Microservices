@@ -69,7 +69,6 @@ type UserInfo struct {
 	Occupation string  `json:"occupation"`
 	Address    string  `json:"address"`
 	Income     float64 `json:"income"`
-	Status     int     `json:"status"`
 	CreatedAt  int64   `json:"created_at"`
 	UpdatedAt  int64   `json:"updated_at"`
 }

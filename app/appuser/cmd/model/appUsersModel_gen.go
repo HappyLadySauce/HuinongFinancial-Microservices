@@ -53,7 +53,6 @@ type (
 		Occupation string    `db:"occupation"` // 职业
 		Address    string    `db:"address"`    // 联系地址
 		Income     float64   `db:"income"`     // 月收入
-		Status     uint64    `db:"status"`     // 状态 1:正常 2:冻结 3:禁用
 		CreatedAt  time.Time `db:"created_at"` // 创建时间
 		UpdatedAt  time.Time `db:"updated_at"` // 更新时间
 	}
@@ -122,8 +121,8 @@ func (m *defaultAppUsersModel) Insert(ctx context.Context, data *AppUsers) (sql.
 	appUsersIdKey := fmt.Sprintf("%s%v", cacheAppUsersIdPrefix, data.Id)
 	appUsersPhoneKey := fmt.Sprintf("%s%v", cacheAppUsersPhonePrefix, data.Phone)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, appUsersRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Phone, data.Password, data.Name, data.Nickname, data.Age, data.Gender, data.Occupation, data.Address, data.Income, data.Status)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, appUsersRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Phone, data.Password, data.Name, data.Nickname, data.Age, data.Gender, data.Occupation, data.Address, data.Income)
 	}, appUsersIdKey, appUsersPhoneKey)
 	return ret, err
 }
@@ -138,7 +137,7 @@ func (m *defaultAppUsersModel) Update(ctx context.Context, newData *AppUsers) er
 	appUsersPhoneKey := fmt.Sprintf("%s%v", cacheAppUsersPhonePrefix, data.Phone)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, appUsersRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, newData.Phone, newData.Password, newData.Name, newData.Nickname, newData.Age, newData.Gender, newData.Occupation, newData.Address, newData.Income, newData.Status, newData.Id)
+		return conn.ExecCtx(ctx, query, newData.Phone, newData.Password, newData.Name, newData.Nickname, newData.Age, newData.Gender, newData.Occupation, newData.Address, newData.Income, newData.Id)
 	}, appUsersIdKey, appUsersPhoneKey)
 	return err
 }

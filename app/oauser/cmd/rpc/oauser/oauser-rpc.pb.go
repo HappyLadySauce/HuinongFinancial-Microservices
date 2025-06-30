@@ -316,6 +316,103 @@ func (x *UpdateUserInfoResp) GetUserInfo() *UserInfo {
 	return nil
 }
 
+// 更新用户状态
+type UpdateUserStatusReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Phone         string                 `protobuf:"bytes,1,opt,name=phone,proto3" json:"phone,omitempty"`
+	Status        int32                  `protobuf:"varint,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserStatusReq) Reset() {
+	*x = UpdateUserStatusReq{}
+	mi := &file_oauser_rpc_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserStatusReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserStatusReq) ProtoMessage() {}
+
+func (x *UpdateUserStatusReq) ProtoReflect() protoreflect.Message {
+	mi := &file_oauser_rpc_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserStatusReq.ProtoReflect.Descriptor instead.
+func (*UpdateUserStatusReq) Descriptor() ([]byte, []int) {
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateUserStatusReq) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
+func (x *UpdateUserStatusReq) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+type UpdateUserStatusResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserStatusResp) Reset() {
+	*x = UpdateUserStatusResp{}
+	mi := &file_oauser_rpc_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserStatusResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserStatusResp) ProtoMessage() {}
+
+func (x *UpdateUserStatusResp) ProtoReflect() protoreflect.Message {
+	mi := &file_oauser_rpc_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserStatusResp.ProtoReflect.Descriptor instead.
+func (*UpdateUserStatusResp) Descriptor() ([]byte, []int) {
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *UpdateUserStatusResp) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
 // 删除用户
 type DeleteUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -327,7 +424,7 @@ type DeleteUserReq struct {
 
 func (x *DeleteUserReq) Reset() {
 	*x = DeleteUserReq{}
-	mi := &file_oauser_rpc_proto_msgTypes[5]
+	mi := &file_oauser_rpc_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -339,7 +436,7 @@ func (x *DeleteUserReq) String() string {
 func (*DeleteUserReq) ProtoMessage() {}
 
 func (x *DeleteUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[5]
+	mi := &file_oauser_rpc_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -352,7 +449,7 @@ func (x *DeleteUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserReq.ProtoReflect.Descriptor instead.
 func (*DeleteUserReq) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{5}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteUserReq) GetPhone() string {
@@ -377,7 +474,7 @@ type DeleteUserResp struct {
 
 func (x *DeleteUserResp) Reset() {
 	*x = DeleteUserResp{}
-	mi := &file_oauser_rpc_proto_msgTypes[6]
+	mi := &file_oauser_rpc_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -389,7 +486,7 @@ func (x *DeleteUserResp) String() string {
 func (*DeleteUserResp) ProtoMessage() {}
 
 func (x *DeleteUserResp) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[6]
+	mi := &file_oauser_rpc_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -402,7 +499,7 @@ func (x *DeleteUserResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserResp.ProtoReflect.Descriptor instead.
 func (*DeleteUserResp) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{6}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{8}
 }
 
 // 登录
@@ -416,7 +513,7 @@ type LoginReq struct {
 
 func (x *LoginReq) Reset() {
 	*x = LoginReq{}
-	mi := &file_oauser_rpc_proto_msgTypes[7]
+	mi := &file_oauser_rpc_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -428,7 +525,7 @@ func (x *LoginReq) String() string {
 func (*LoginReq) ProtoMessage() {}
 
 func (x *LoginReq) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[7]
+	mi := &file_oauser_rpc_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -441,7 +538,7 @@ func (x *LoginReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginReq.ProtoReflect.Descriptor instead.
 func (*LoginReq) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{7}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LoginReq) GetPhone() string {
@@ -467,7 +564,7 @@ type LoginResp struct {
 
 func (x *LoginResp) Reset() {
 	*x = LoginResp{}
-	mi := &file_oauser_rpc_proto_msgTypes[8]
+	mi := &file_oauser_rpc_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -479,7 +576,7 @@ func (x *LoginResp) String() string {
 func (*LoginResp) ProtoMessage() {}
 
 func (x *LoginResp) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[8]
+	mi := &file_oauser_rpc_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,7 +589,7 @@ func (x *LoginResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResp.ProtoReflect.Descriptor instead.
 func (*LoginResp) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{8}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *LoginResp) GetToken() string {
@@ -514,7 +611,7 @@ type RegisterReq struct {
 
 func (x *RegisterReq) Reset() {
 	*x = RegisterReq{}
-	mi := &file_oauser_rpc_proto_msgTypes[9]
+	mi := &file_oauser_rpc_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -526,7 +623,7 @@ func (x *RegisterReq) String() string {
 func (*RegisterReq) ProtoMessage() {}
 
 func (x *RegisterReq) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[9]
+	mi := &file_oauser_rpc_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -539,7 +636,7 @@ func (x *RegisterReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterReq.ProtoReflect.Descriptor instead.
 func (*RegisterReq) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{9}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RegisterReq) GetPhone() string {
@@ -572,7 +669,7 @@ type RegisterResp struct {
 
 func (x *RegisterResp) Reset() {
 	*x = RegisterResp{}
-	mi := &file_oauser_rpc_proto_msgTypes[10]
+	mi := &file_oauser_rpc_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -584,7 +681,7 @@ func (x *RegisterResp) String() string {
 func (*RegisterResp) ProtoMessage() {}
 
 func (x *RegisterResp) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[10]
+	mi := &file_oauser_rpc_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -597,7 +694,7 @@ func (x *RegisterResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterResp.ProtoReflect.Descriptor instead.
 func (*RegisterResp) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{10}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RegisterResp) GetToken() string {
@@ -607,16 +704,17 @@ func (x *RegisterResp) GetToken() string {
 	return ""
 }
 
-// 注销 (从JWT上下文获取用户信息，无需传递token)
+// 注销 (从JWT上下文获取用户信息)
 type LogoutReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"` // 从 JWT 认证上下文中获取用户信息
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LogoutReq) Reset() {
 	*x = LogoutReq{}
-	mi := &file_oauser_rpc_proto_msgTypes[11]
+	mi := &file_oauser_rpc_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -628,7 +726,7 @@ func (x *LogoutReq) String() string {
 func (*LogoutReq) ProtoMessage() {}
 
 func (x *LogoutReq) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[11]
+	mi := &file_oauser_rpc_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -641,7 +739,14 @@ func (x *LogoutReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogoutReq.ProtoReflect.Descriptor instead.
 func (*LogoutReq) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{11}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LogoutReq) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
 }
 
 type LogoutResp struct {
@@ -652,7 +757,7 @@ type LogoutResp struct {
 
 func (x *LogoutResp) Reset() {
 	*x = LogoutResp{}
-	mi := &file_oauser_rpc_proto_msgTypes[12]
+	mi := &file_oauser_rpc_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -664,7 +769,7 @@ func (x *LogoutResp) String() string {
 func (*LogoutResp) ProtoMessage() {}
 
 func (x *LogoutResp) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[12]
+	mi := &file_oauser_rpc_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -677,7 +782,7 @@ func (x *LogoutResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogoutResp.ProtoReflect.Descriptor instead.
 func (*LogoutResp) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{12}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{14}
 }
 
 // 修改密码
@@ -692,7 +797,7 @@ type ChangePasswordReq struct {
 
 func (x *ChangePasswordReq) Reset() {
 	*x = ChangePasswordReq{}
-	mi := &file_oauser_rpc_proto_msgTypes[13]
+	mi := &file_oauser_rpc_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -704,7 +809,7 @@ func (x *ChangePasswordReq) String() string {
 func (*ChangePasswordReq) ProtoMessage() {}
 
 func (x *ChangePasswordReq) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[13]
+	mi := &file_oauser_rpc_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -717,7 +822,7 @@ func (x *ChangePasswordReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordReq.ProtoReflect.Descriptor instead.
 func (*ChangePasswordReq) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{13}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ChangePasswordReq) GetPhone() string {
@@ -749,7 +854,7 @@ type ChangePasswordResp struct {
 
 func (x *ChangePasswordResp) Reset() {
 	*x = ChangePasswordResp{}
-	mi := &file_oauser_rpc_proto_msgTypes[14]
+	mi := &file_oauser_rpc_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -761,7 +866,7 @@ func (x *ChangePasswordResp) String() string {
 func (*ChangePasswordResp) ProtoMessage() {}
 
 func (x *ChangePasswordResp) ProtoReflect() protoreflect.Message {
-	mi := &file_oauser_rpc_proto_msgTypes[14]
+	mi := &file_oauser_rpc_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -774,7 +879,7 @@ func (x *ChangePasswordResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangePasswordResp.ProtoReflect.Descriptor instead.
 func (*ChangePasswordResp) Descriptor() ([]byte, []int) {
-	return file_oauser_rpc_proto_rawDescGZIP(), []int{14}
+	return file_oauser_rpc_proto_rawDescGZIP(), []int{16}
 }
 
 var File_oauser_rpc_proto protoreflect.FileDescriptor
@@ -803,7 +908,12 @@ const file_oauser_rpc_proto_rawDesc = "" +
 	"\x11UpdateUserInfoReq\x12-\n" +
 	"\tuser_info\x18\x01 \x01(\v2\x10.oauser.UserInfoR\buserInfo\"C\n" +
 	"\x12UpdateUserInfoResp\x12-\n" +
-	"\tuser_info\x18\x01 \x01(\v2\x10.oauser.UserInfoR\buserInfo\"H\n" +
+	"\tuser_info\x18\x01 \x01(\v2\x10.oauser.UserInfoR\buserInfo\"C\n" +
+	"\x13UpdateUserStatusReq\x12\x14\n" +
+	"\x05phone\x18\x01 \x01(\tR\x05phone\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\x05R\x06status\".\n" +
+	"\x14UpdateUserStatusResp\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\"H\n" +
 	"\rDeleteUserReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12!\n" +
 	"\fcaller_token\x18\x02 \x01(\tR\vcallerToken\"\x10\n" +
@@ -818,18 +928,20 @@ const file_oauser_rpc_proto_rawDesc = "" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
 	"\x04role\x18\x03 \x01(\tR\x04role\"$\n" +
 	"\fRegisterResp\x12\x14\n" +
-	"\x05token\x18\x01 \x01(\tR\x05token\"\v\n" +
-	"\tLogoutReq\"\f\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"!\n" +
+	"\tLogoutReq\x12\x14\n" +
+	"\x05token\x18\x01 \x01(\tR\x05token\"\f\n" +
 	"\n" +
 	"LogoutResp\"o\n" +
 	"\x11ChangePasswordReq\x12\x14\n" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\x12!\n" +
 	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
 	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"\x14\n" +
-	"\x12ChangePasswordResp2\xb0\x03\n" +
+	"\x12ChangePasswordResp2\xff\x03\n" +
 	"\x06OaUser\x12A\n" +
 	"\x0eGetUserByPhone\x12\x16.oauser.GetUserInfoReq\x1a\x17.oauser.GetUserInfoResp\x12G\n" +
-	"\x0eUpdateUserInfo\x12\x19.oauser.UpdateUserInfoReq\x1a\x1a.oauser.UpdateUserInfoResp\x12;\n" +
+	"\x0eUpdateUserInfo\x12\x19.oauser.UpdateUserInfoReq\x1a\x1a.oauser.UpdateUserInfoResp\x12M\n" +
+	"\x10UpdateUserStatus\x12\x1b.oauser.UpdateUserStatusReq\x1a\x1c.oauser.UpdateUserStatusResp\x12;\n" +
 	"\n" +
 	"DeleteUser\x12\x15.oauser.DeleteUserReq\x1a\x16.oauser.DeleteUserResp\x12,\n" +
 	"\x05Login\x12\x10.oauser.LoginReq\x1a\x11.oauser.LoginResp\x125\n" +
@@ -850,23 +962,25 @@ func file_oauser_rpc_proto_rawDescGZIP() []byte {
 	return file_oauser_rpc_proto_rawDescData
 }
 
-var file_oauser_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_oauser_rpc_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_oauser_rpc_proto_goTypes = []any{
-	(*UserInfo)(nil),           // 0: oauser.UserInfo
-	(*GetUserInfoReq)(nil),     // 1: oauser.GetUserInfoReq
-	(*GetUserInfoResp)(nil),    // 2: oauser.GetUserInfoResp
-	(*UpdateUserInfoReq)(nil),  // 3: oauser.UpdateUserInfoReq
-	(*UpdateUserInfoResp)(nil), // 4: oauser.UpdateUserInfoResp
-	(*DeleteUserReq)(nil),      // 5: oauser.DeleteUserReq
-	(*DeleteUserResp)(nil),     // 6: oauser.DeleteUserResp
-	(*LoginReq)(nil),           // 7: oauser.LoginReq
-	(*LoginResp)(nil),          // 8: oauser.LoginResp
-	(*RegisterReq)(nil),        // 9: oauser.RegisterReq
-	(*RegisterResp)(nil),       // 10: oauser.RegisterResp
-	(*LogoutReq)(nil),          // 11: oauser.LogoutReq
-	(*LogoutResp)(nil),         // 12: oauser.LogoutResp
-	(*ChangePasswordReq)(nil),  // 13: oauser.ChangePasswordReq
-	(*ChangePasswordResp)(nil), // 14: oauser.ChangePasswordResp
+	(*UserInfo)(nil),             // 0: oauser.UserInfo
+	(*GetUserInfoReq)(nil),       // 1: oauser.GetUserInfoReq
+	(*GetUserInfoResp)(nil),      // 2: oauser.GetUserInfoResp
+	(*UpdateUserInfoReq)(nil),    // 3: oauser.UpdateUserInfoReq
+	(*UpdateUserInfoResp)(nil),   // 4: oauser.UpdateUserInfoResp
+	(*UpdateUserStatusReq)(nil),  // 5: oauser.UpdateUserStatusReq
+	(*UpdateUserStatusResp)(nil), // 6: oauser.UpdateUserStatusResp
+	(*DeleteUserReq)(nil),        // 7: oauser.DeleteUserReq
+	(*DeleteUserResp)(nil),       // 8: oauser.DeleteUserResp
+	(*LoginReq)(nil),             // 9: oauser.LoginReq
+	(*LoginResp)(nil),            // 10: oauser.LoginResp
+	(*RegisterReq)(nil),          // 11: oauser.RegisterReq
+	(*RegisterResp)(nil),         // 12: oauser.RegisterResp
+	(*LogoutReq)(nil),            // 13: oauser.LogoutReq
+	(*LogoutResp)(nil),           // 14: oauser.LogoutResp
+	(*ChangePasswordReq)(nil),    // 15: oauser.ChangePasswordReq
+	(*ChangePasswordResp)(nil),   // 16: oauser.ChangePasswordResp
 }
 var file_oauser_rpc_proto_depIdxs = []int32{
 	0,  // 0: oauser.GetUserInfoResp.user_info:type_name -> oauser.UserInfo
@@ -874,20 +988,22 @@ var file_oauser_rpc_proto_depIdxs = []int32{
 	0,  // 2: oauser.UpdateUserInfoResp.user_info:type_name -> oauser.UserInfo
 	1,  // 3: oauser.OaUser.GetUserByPhone:input_type -> oauser.GetUserInfoReq
 	3,  // 4: oauser.OaUser.UpdateUserInfo:input_type -> oauser.UpdateUserInfoReq
-	5,  // 5: oauser.OaUser.DeleteUser:input_type -> oauser.DeleteUserReq
-	7,  // 6: oauser.OaUser.Login:input_type -> oauser.LoginReq
-	9,  // 7: oauser.OaUser.Register:input_type -> oauser.RegisterReq
-	11, // 8: oauser.OaUser.Logout:input_type -> oauser.LogoutReq
-	13, // 9: oauser.OaUser.ChangePassword:input_type -> oauser.ChangePasswordReq
-	2,  // 10: oauser.OaUser.GetUserByPhone:output_type -> oauser.GetUserInfoResp
-	4,  // 11: oauser.OaUser.UpdateUserInfo:output_type -> oauser.UpdateUserInfoResp
-	6,  // 12: oauser.OaUser.DeleteUser:output_type -> oauser.DeleteUserResp
-	8,  // 13: oauser.OaUser.Login:output_type -> oauser.LoginResp
-	10, // 14: oauser.OaUser.Register:output_type -> oauser.RegisterResp
-	12, // 15: oauser.OaUser.Logout:output_type -> oauser.LogoutResp
-	14, // 16: oauser.OaUser.ChangePassword:output_type -> oauser.ChangePasswordResp
-	10, // [10:17] is the sub-list for method output_type
-	3,  // [3:10] is the sub-list for method input_type
+	5,  // 5: oauser.OaUser.UpdateUserStatus:input_type -> oauser.UpdateUserStatusReq
+	7,  // 6: oauser.OaUser.DeleteUser:input_type -> oauser.DeleteUserReq
+	9,  // 7: oauser.OaUser.Login:input_type -> oauser.LoginReq
+	11, // 8: oauser.OaUser.Register:input_type -> oauser.RegisterReq
+	13, // 9: oauser.OaUser.Logout:input_type -> oauser.LogoutReq
+	15, // 10: oauser.OaUser.ChangePassword:input_type -> oauser.ChangePasswordReq
+	2,  // 11: oauser.OaUser.GetUserByPhone:output_type -> oauser.GetUserInfoResp
+	4,  // 12: oauser.OaUser.UpdateUserInfo:output_type -> oauser.UpdateUserInfoResp
+	6,  // 13: oauser.OaUser.UpdateUserStatus:output_type -> oauser.UpdateUserStatusResp
+	8,  // 14: oauser.OaUser.DeleteUser:output_type -> oauser.DeleteUserResp
+	10, // 15: oauser.OaUser.Login:output_type -> oauser.LoginResp
+	12, // 16: oauser.OaUser.Register:output_type -> oauser.RegisterResp
+	14, // 17: oauser.OaUser.Logout:output_type -> oauser.LogoutResp
+	16, // 18: oauser.OaUser.ChangePassword:output_type -> oauser.ChangePasswordResp
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -904,7 +1020,7 @@ func file_oauser_rpc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_oauser_rpc_proto_rawDesc), len(file_oauser_rpc_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

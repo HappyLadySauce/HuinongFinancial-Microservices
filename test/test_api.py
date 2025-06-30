@@ -157,6 +157,20 @@ class APITester:
         result = self.make_request("PUT", "/api/v1/user/info", data)
         return result
     
+    def test_update_user_status(self, phone: str, status: int):
+        """测试更新用户状态 (仅B端服务支持)"""
+        print(f"\n{'='*50}")
+        print(f"🔄 测试更新用户状态 - {phone} -> {status}")
+        print(f"{'='*50}")
+        
+        data = {
+            "phone": phone,
+            "status": status
+        }
+        
+        result = self.make_request("PUT", "/api/v1/user/status", data)
+        return result
+    
     def test_change_password(self, phone: str, old_password: str, new_password: str):
         """测试修改密码"""
         print(f"\n{'='*50}")
@@ -196,6 +210,7 @@ def test_appuser_service():
     """测试C端用户服务"""
     print(f"\n{'#'*60}")
     print(f"🌟 开始测试 C端用户服务 (appuser)")
+    print(f"🔍 注意：C端服务不支持status字段和状态管理")
     print(f"{'#'*60}")
     
     tester = APITester(APPUSER_BASE_URL, "AppUser")
@@ -214,6 +229,7 @@ def test_appuser_service():
         # 3. 测试更新用户信息（如果获取成功）
         if "user_info" in user_info_result:
             updated_user_info = user_info_result["user_info"].copy()
+            # C端用户信息字段：id, phone, name, nickname, age, gender, occupation, address, income, created_at, updated_at
             updated_user_info.update({
                 "name": "测试用户更新",
                 "nickname": "测试昵称",
@@ -223,6 +239,12 @@ def test_appuser_service():
                 "address": "北京市朝阳区",
                 "income": 15000.00
             })
+            # 确保不包含status字段
+            if "status" in updated_user_info:
+                del updated_user_info["status"]
+            if "role" in updated_user_info:
+                del updated_user_info["role"]
+            
             tester.test_update_user_info(updated_user_info)
             time.sleep(REQUEST_DELAY)
         
@@ -252,6 +274,7 @@ def test_oauser_service():
     """测试B端用户服务"""
     print(f"\n{'#'*60}")
     print(f"🌟 开始测试 B端用户服务 (oauser)")
+    print(f"🔍 注意：B端服务支持status字段和状态管理")
     print(f"{'#'*60}")
     
     tester = APITester(OAUSER_BASE_URL, "OAUser")
@@ -274,6 +297,7 @@ def test_oauser_service():
             # 3. 测试更新用户信息（如果获取成功）
             if "user_info" in user_info_result:
                 updated_user_info = user_info_result["user_info"].copy()
+                # B端用户信息字段：id, phone, name, nickname, age, gender, role, status, created_at, updated_at
                 updated_user_info.update({
                     "name": f"管理员-{user['phone'][-4:]}",
                     "nickname": f"管理员昵称-{user['role']}",
@@ -281,19 +305,33 @@ def test_oauser_service():
                     "gender": 1,
                     "role": user["role"]
                 })
+                # 确保status字段存在（B端服务需要）
+                if "status" not in updated_user_info:
+                    updated_user_info["status"] = 1  # 默认正常状态
+                
                 tester.test_update_user_info(updated_user_info)
                 time.sleep(REQUEST_DELAY)
             
-            # 4. 测试修改密码
+            # 4. 测试更新用户状态 (B端服务特有功能)
+            print(f"\n🔄 测试状态管理功能")
+            # 测试禁用用户
+            tester.test_update_user_status(user["phone"], 2)  # 2=禁用
+            time.sleep(REQUEST_DELAY)
+            
+            # 测试启用用户
+            tester.test_update_user_status(user["phone"], 1)  # 1=正常
+            time.sleep(REQUEST_DELAY)
+            
+            # 5. 测试修改密码
             new_password = f"new_{user['password']}"
             tester.test_change_password(user["phone"], user["password"], new_password)
             time.sleep(REQUEST_DELAY)
             
-            # 5. 测试登出
+            # 6. 测试登出
             tester.test_logout()
             time.sleep(REQUEST_DELAY)
             
-            # 6. 使用新密码登录并删除用户
+            # 7. 使用新密码登录并删除用户
             if tester.test_login(user["phone"], new_password):
                 time.sleep(REQUEST_DELAY)
                 tester.test_delete_user(user["phone"])
@@ -314,6 +352,9 @@ def main():
     print("注意：请确保相关服务正在运行")
     print(f"- appuser服务: {APPUSER_BASE_URL}")
     print(f"- oauser服务: {OAUSER_BASE_URL}")
+    print("\n🔍 服务差异说明：")
+    print("- C端服务(appuser): 无status字段，支持occupation/address/income字段")
+    print("- B端服务(oauser): 有status字段和状态管理，支持role字段")
     
     try:
         # 测试C端用户服务

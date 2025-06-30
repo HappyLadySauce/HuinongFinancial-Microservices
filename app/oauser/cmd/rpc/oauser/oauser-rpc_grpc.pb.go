@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OaUser_GetUserByPhone_FullMethodName = "/oauser.OaUser/GetUserByPhone"
-	OaUser_UpdateUserInfo_FullMethodName = "/oauser.OaUser/UpdateUserInfo"
-	OaUser_DeleteUser_FullMethodName     = "/oauser.OaUser/DeleteUser"
-	OaUser_Login_FullMethodName          = "/oauser.OaUser/Login"
-	OaUser_Register_FullMethodName       = "/oauser.OaUser/Register"
-	OaUser_Logout_FullMethodName         = "/oauser.OaUser/Logout"
-	OaUser_ChangePassword_FullMethodName = "/oauser.OaUser/ChangePassword"
+	OaUser_GetUserByPhone_FullMethodName   = "/oauser.OaUser/GetUserByPhone"
+	OaUser_UpdateUserInfo_FullMethodName   = "/oauser.OaUser/UpdateUserInfo"
+	OaUser_UpdateUserStatus_FullMethodName = "/oauser.OaUser/UpdateUserStatus"
+	OaUser_DeleteUser_FullMethodName       = "/oauser.OaUser/DeleteUser"
+	OaUser_Login_FullMethodName            = "/oauser.OaUser/Login"
+	OaUser_Register_FullMethodName         = "/oauser.OaUser/Register"
+	OaUser_Logout_FullMethodName           = "/oauser.OaUser/Logout"
+	OaUser_ChangePassword_FullMethodName   = "/oauser.OaUser/ChangePassword"
 )
 
 // OaUserClient is the client API for OaUser service.
@@ -37,6 +38,7 @@ type OaUserClient interface {
 	// 用户信息管理
 	GetUserByPhone(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
 	UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
+	UpdateUserStatus(ctx context.Context, in *UpdateUserStatusReq, opts ...grpc.CallOption) (*UpdateUserStatusResp, error)
 	DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 	// 用户认证管理
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -67,6 +69,16 @@ func (c *oaUserClient) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateUserInfoResp)
 	err := c.cc.Invoke(ctx, OaUser_UpdateUserInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oaUserClient) UpdateUserStatus(ctx context.Context, in *UpdateUserStatusReq, opts ...grpc.CallOption) (*UpdateUserStatusResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserStatusResp)
+	err := c.cc.Invoke(ctx, OaUser_UpdateUserStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,6 +144,7 @@ type OaUserServer interface {
 	// 用户信息管理
 	GetUserByPhone(context.Context, *GetUserInfoReq) (*GetUserInfoResp, error)
 	UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error)
+	UpdateUserStatus(context.Context, *UpdateUserStatusReq) (*UpdateUserStatusResp, error)
 	DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserResp, error)
 	// 用户认证管理
 	Login(context.Context, *LoginReq) (*LoginResp, error)
@@ -153,6 +166,9 @@ func (UnimplementedOaUserServer) GetUserByPhone(context.Context, *GetUserInfoReq
 }
 func (UnimplementedOaUserServer) UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserInfo not implemented")
+}
+func (UnimplementedOaUserServer) UpdateUserStatus(context.Context, *UpdateUserStatusReq) (*UpdateUserStatusResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserStatus not implemented")
 }
 func (UnimplementedOaUserServer) DeleteUser(context.Context, *DeleteUserReq) (*DeleteUserResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
@@ -222,6 +238,24 @@ func _OaUser_UpdateUserInfo_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OaUserServer).UpdateUserInfo(ctx, req.(*UpdateUserInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OaUser_UpdateUserStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserStatusReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OaUserServer).UpdateUserStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OaUser_UpdateUserStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OaUserServer).UpdateUserStatus(ctx, req.(*UpdateUserStatusReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -330,6 +364,10 @@ var OaUser_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUserInfo",
 			Handler:    _OaUser_UpdateUserInfo_Handler,
+		},
+		{
+			MethodName: "UpdateUserStatus",
+			Handler:    _OaUser_UpdateUserStatus_Handler,
 		},
 		{
 			MethodName: "DeleteUser",

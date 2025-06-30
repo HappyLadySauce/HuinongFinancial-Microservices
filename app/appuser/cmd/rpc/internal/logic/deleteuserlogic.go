@@ -25,7 +25,7 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 	}
 }
 
-// 软删除用户（更新状态为删除状态）
+// 删除用户（真正删除数据库记录）
 func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.DeleteUserResp, error) {
 	l.Infof("删除用户请求, phone: %s", in.Phone)
 
@@ -46,17 +46,10 @@ func (l *DeleteUserLogic) DeleteUser(in *appuser.DeleteUserReq) (*appuser.Delete
 		return nil, constants.ErrInternalError
 	}
 
-	// 检查用户状态，避免重复删除
-	if user.Status == 4 { // 假设状态 4 表示已删除
-		l.Infof("用户已经被删除")
-		return nil, constants.ErrUserAlreadyDeleted
-	}
-
-	// 软删除：更新用户状态为删除状态
-	user.Status = 4 // 状态 4 表示已删除
-	err = l.svcCtx.AppUserModel.Update(l.ctx, user)
+	// 真正删除用户记录
+	err = l.svcCtx.AppUserModel.Delete(l.ctx, user.Id)
 	if err != nil {
-		l.Errorf("更新用户状态失败: %v", err)
+		l.Errorf("删除用户失败: %v", err)
 		return nil, constants.ErrInternalError
 	}
 

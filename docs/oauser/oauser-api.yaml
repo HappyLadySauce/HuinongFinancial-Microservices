@@ -298,12 +298,44 @@ paths:
       schemes:
       - https
       summary: UpdateUserInfo
+  /api/v1/user/status:
+    put:
+      consumes:
+      - application/json
+      operationId: infoUpdateUserStatus
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          properties:
+            phone:
+              type: string
+            status:
+              type: integer
+          required:
+          - phone
+          - status
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              status:
+                type: integer
+            type: object
+      schemes:
+      - https
+      summary: UpdateUserStatus
 produces:
 - application/json
 schemes:
 - https
 swagger: "2.0"
-x-date: "2025-06-30 10:29:57"
+x-date: "2025-06-30 12:11:33"
 x-description: This is a goctl generated swagger file.
 x-github: https://github.com/zeromicro/go-zero
 x-go-zero-doc: https://go-zero.dev/

@@ -63,12 +63,6 @@ func (l *ChangePasswordLogic) ChangePassword(in *appuser.ChangePasswordReq) (*ap
 		return nil, constants.ErrInternalError
 	}
 
-	// 检查用户状态
-	if user.Status != 1 {
-		l.Infof("用户状态异常")
-		return nil, constants.ErrUserDisabled
-	}
-
 	// 验证旧密码
 	if !utils.CheckPassword(in.OldPassword, user.Password) {
 		l.Infof("旧密码错误")

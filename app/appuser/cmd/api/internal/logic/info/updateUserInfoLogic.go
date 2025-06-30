@@ -39,7 +39,6 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		Occupation: req.UserInfo.Occupation,
 		Address:    req.UserInfo.Address,
 		Income:     req.UserInfo.Income,
-		Status:     int32(req.UserInfo.Status),
 		CreatedAt:  req.UserInfo.CreatedAt,
 		UpdatedAt:  req.UserInfo.UpdatedAt,
 	}
@@ -66,7 +65,6 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 			Occupation: updateResp.UserInfo.Occupation,
 			Address:    updateResp.UserInfo.Address,
 			Income:     updateResp.UserInfo.Income,
-			Status:     int(updateResp.UserInfo.Status),
 			CreatedAt:  updateResp.UserInfo.CreatedAt,
 			UpdatedAt:  updateResp.UserInfo.UpdatedAt,
 		}

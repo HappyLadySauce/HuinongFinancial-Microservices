@@ -70,8 +70,8 @@ type UpdateUserInfoResp {
 
 // 更新用户状态请求响应
 type UpdateUserStatusReq {
-	Phone string `json:"phone"`
-	Status int `json:"status"`
+	Phone  string `json:"phone"`
+	Status int    `json:"status"`
 }
 
 type UpdateUserStatusResp {

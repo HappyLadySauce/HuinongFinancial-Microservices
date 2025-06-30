@@ -60,6 +60,15 @@ type UpdateUserInfoResp struct {
 	UserInfo UserInfo `json:"user_info"`
 }
 
+type UpdateUserStatusReq struct {
+	Phone  string `json:"phone"`
+	Status int    `json:"status"`
+}
+
+type UpdateUserStatusResp struct {
+	Status int `json:"status"`
+}
+
 type UserInfo struct {
 	Id        int64  `json:"id"`
 	Phone     string `json:"phone"`

@@ -33,9 +33,8 @@ type UserInfo struct {
 	Occupation    string                 `protobuf:"bytes,7,opt,name=occupation,proto3" json:"occupation,omitempty"`                  // 职业
 	Address       string                 `protobuf:"bytes,8,opt,name=address,proto3" json:"address,omitempty"`                        // 地址
 	Income        float64                `protobuf:"fixed64,9,opt,name=income,proto3" json:"income,omitempty"`                        // 收入 单位:元
-	Status        int32                  `protobuf:"varint,10,opt,name=status,proto3" json:"status,omitempty"`                        // 1:正常 2:冻结 3:禁用
-	CreatedAt     int64                  `protobuf:"varint,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"` // 创建时间
-	UpdatedAt     int64                  `protobuf:"varint,12,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"` // 更新时间
+	CreatedAt     int64                  `protobuf:"varint,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"` // 创建时间
+	UpdatedAt     int64                  `protobuf:"varint,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"` // 更新时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -129,13 +128,6 @@ func (x *UserInfo) GetAddress() string {
 func (x *UserInfo) GetIncome() float64 {
 	if x != nil {
 		return x.Income
-	}
-	return 0
-}
-
-func (x *UserInfo) GetStatus() int32 {
-	if x != nil {
-		return x.Status
 	}
 	return 0
 }
@@ -826,7 +818,7 @@ var File_appuser_rpc_proto protoreflect.FileDescriptor
 
 const file_appuser_rpc_proto_rawDesc = "" +
 	"\n" +
-	"\x11appuser-rpc.proto\x12\aappuser\"\xb2\x02\n" +
+	"\x11appuser-rpc.proto\x12\aappuser\"\x9a\x02\n" +
 	"\bUserInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05phone\x18\x02 \x01(\tR\x05phone\x12\x12\n" +
@@ -838,13 +830,12 @@ const file_appuser_rpc_proto_rawDesc = "" +
 	"occupation\x18\a \x01(\tR\n" +
 	"occupation\x12\x18\n" +
 	"\aaddress\x18\b \x01(\tR\aaddress\x12\x16\n" +
-	"\x06income\x18\t \x01(\x01R\x06income\x12\x16\n" +
-	"\x06status\x18\n" +
-	" \x01(\x05R\x06status\x12\x1d\n" +
+	"\x06income\x18\t \x01(\x01R\x06income\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\v \x01(\x03R\tcreatedAt\x12\x1d\n" +
+	"created_at\x18\n" +
+	" \x01(\x03R\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\f \x01(\x03R\tupdatedAt\")\n" +
+	"updated_at\x18\v \x01(\x03R\tupdatedAt\")\n" +
 	"\x0eGetUserByIdReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"&\n" +
 	"\x0eGetUserInfoReq\x12\x14\n" +

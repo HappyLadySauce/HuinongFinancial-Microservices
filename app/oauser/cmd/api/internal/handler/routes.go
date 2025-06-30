@@ -65,6 +65,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/info",
 				Handler: info.UpdateUserInfoHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPut,
+				Path:    "/status",
+				Handler: info.UpdateUserStatusHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/user"),

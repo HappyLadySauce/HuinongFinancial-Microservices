@@ -2,7 +2,7 @@
 
 ## Protocol Buffer 定义文件
 - 文件路径: `app/appuser/appuser-rpc.proto`
-- 生成时间: 2025-06-30 10:29:53
+- 生成时间: 2025-06-30 12:11:29
 
 ## 说明
 本文档由 `appuser-rpc.proto` 文件自动生成。

@@ -56,16 +56,6 @@ func (l *LoginLogic) Login(in *appuser.LoginReq) (*appuser.LoginResp, error) {
 		return nil, constants.ErrInternalError
 	}
 
-	// 检查用户状态
-	if user.Status == 2 {
-		l.Infof("用户账号被冻结")
-		return nil, constants.ErrUserFrozen
-	}
-	if user.Status == 3 {
-		l.Infof("用户账号被禁用")
-		return nil, constants.ErrUserDisabled
-	}
-
 	// 验证密码
 	if !utils.CheckPassword(in.Password, user.Password) {
 		l.Infof("密码错误")

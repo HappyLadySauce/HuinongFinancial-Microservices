@@ -79,7 +79,6 @@ func (l *RegisterLogic) Register(in *appuser.RegisterReq) (*appuser.RegisterResp
 		Nickname:  "",
 		Age:       0,
 		Gender:    0,
-		Status:    1, // 默认正常状态
 		CreatedAt: now,
 		UpdatedAt: now,
 	}

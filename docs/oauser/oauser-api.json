@@ -452,9 +452,59 @@
           }
         }
       }
+    },
+    "/api/v1/user/status": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "UpdateUserStatus",
+        "operationId": "infoUpdateUserStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "phone",
+                "status"
+              ],
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "x-date": "2025-06-30 10:29:57",
+  "x-date": "2025-06-30 12:11:33",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

@@ -2,7 +2,7 @@
 
 ## Protocol Buffer 定义文件
 - 文件路径: `app/oauser/oauser-rpc.proto`
-- 生成时间: 2025-06-30 10:29:57
+- 生成时间: 2025-06-30 12:11:33
 
 ## 说明
 本文档由 `oauser-rpc.proto` 文件自动生成。

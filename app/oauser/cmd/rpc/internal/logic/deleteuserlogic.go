@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"time"
 
 	"model"
 	"rpc/internal/pkg/constants"
@@ -50,13 +49,10 @@ func (l *DeleteUserLogic) DeleteUser(in *oauser.DeleteUserReq) (*oauser.DeleteUs
 		return nil, constants.ErrInternalError
 	}
 
-	// 禁用用户（软删除）
-	user.Status = constants.UserStatusDisabled
-	user.UpdatedAt = time.Now()
-
-	err = l.svcCtx.OaUserModel.Update(l.ctx, user)
+	// 真正删除用户记录
+	err = l.svcCtx.OaUserModel.Delete(l.ctx, user.Id)
 	if err != nil {
-		l.Errorf("禁用用户失败: %v", err)
+		l.Errorf("删除用户失败: %v", err)
 		return nil, constants.ErrInternalError
 	}
 

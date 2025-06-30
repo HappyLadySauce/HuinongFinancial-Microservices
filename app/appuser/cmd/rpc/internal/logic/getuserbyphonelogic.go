@@ -57,7 +57,6 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(in *appuser.GetUserInfoReq) (*appus
 		Occupation: user.Occupation,
 		Address:    user.Address,
 		Income:     user.Income,
-		Status:     int32(user.Status),
 		CreatedAt:  user.CreatedAt.Unix(),
 		UpdatedAt:  user.UpdatedAt.Unix(),
 	}

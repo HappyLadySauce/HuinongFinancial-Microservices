@@ -50,7 +50,6 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 			Occupation: userResp.UserInfo.Occupation,
 			Address:    userResp.UserInfo.Address,
 			Income:     userResp.UserInfo.Income,
-			Status:     int(userResp.UserInfo.Status),
 			CreatedAt:  userResp.UserInfo.CreatedAt,
 			UpdatedAt:  userResp.UserInfo.UpdatedAt,
 		}

@@ -14,26 +14,29 @@ import (
 )
 
 type (
-	ChangePasswordReq  = oauser.ChangePasswordReq
-	ChangePasswordResp = oauser.ChangePasswordResp
-	DeleteUserReq      = oauser.DeleteUserReq
-	DeleteUserResp     = oauser.DeleteUserResp
-	GetUserInfoReq     = oauser.GetUserInfoReq
-	GetUserInfoResp    = oauser.GetUserInfoResp
-	LoginReq           = oauser.LoginReq
-	LoginResp          = oauser.LoginResp
-	LogoutReq          = oauser.LogoutReq
-	LogoutResp         = oauser.LogoutResp
-	RegisterReq        = oauser.RegisterReq
-	RegisterResp       = oauser.RegisterResp
-	UpdateUserInfoReq  = oauser.UpdateUserInfoReq
-	UpdateUserInfoResp = oauser.UpdateUserInfoResp
-	UserInfo           = oauser.UserInfo
+	ChangePasswordReq    = oauser.ChangePasswordReq
+	ChangePasswordResp   = oauser.ChangePasswordResp
+	DeleteUserReq        = oauser.DeleteUserReq
+	DeleteUserResp       = oauser.DeleteUserResp
+	GetUserInfoReq       = oauser.GetUserInfoReq
+	GetUserInfoResp      = oauser.GetUserInfoResp
+	LoginReq             = oauser.LoginReq
+	LoginResp            = oauser.LoginResp
+	LogoutReq            = oauser.LogoutReq
+	LogoutResp           = oauser.LogoutResp
+	RegisterReq          = oauser.RegisterReq
+	RegisterResp         = oauser.RegisterResp
+	UpdateUserInfoReq    = oauser.UpdateUserInfoReq
+	UpdateUserInfoResp   = oauser.UpdateUserInfoResp
+	UpdateUserStatusReq  = oauser.UpdateUserStatusReq
+	UpdateUserStatusResp = oauser.UpdateUserStatusResp
+	UserInfo             = oauser.UserInfo
 
 	OaUser interface {
 		// 用户信息管理
 		GetUserByPhone(ctx context.Context, in *GetUserInfoReq, opts ...grpc.CallOption) (*GetUserInfoResp, error)
 		UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
+		UpdateUserStatus(ctx context.Context, in *UpdateUserStatusReq, opts ...grpc.CallOption) (*UpdateUserStatusResp, error)
 		DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error)
 		// 用户认证管理
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -62,6 +65,11 @@ func (m *defaultOaUser) GetUserByPhone(ctx context.Context, in *GetUserInfoReq, 
 func (m *defaultOaUser) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error) {
 	client := oauser.NewOaUserClient(m.cli.Conn())
 	return client.UpdateUserInfo(ctx, in, opts...)
+}
+
+func (m *defaultOaUser) UpdateUserStatus(ctx context.Context, in *UpdateUserStatusReq, opts ...grpc.CallOption) (*UpdateUserStatusResp, error) {
+	client := oauser.NewOaUserClient(m.cli.Conn())
+	return client.UpdateUserStatus(ctx, in, opts...)
 }
 
 func (m *defaultOaUser) DeleteUser(ctx context.Context, in *DeleteUserReq, opts ...grpc.CallOption) (*DeleteUserResp, error) {
