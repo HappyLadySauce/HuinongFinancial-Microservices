@@ -1,2 +1,3 @@
 {"@timestamp":"2025-06-29T18:16:28.386Z","caller":"stat/usage.go:61","content":"CPU: 8m, MEMORY: Alloc=3.3Mi, TotalAlloc=8.3Mi, Sys=18.3Mi, NumGC=4","level":"stat"}
 {"@timestamp":"2025-06-29T18:16:28.418Z","caller":"load/sheddingstat.go:61","content":"(api) shedding_stat [1m], cpu: 8, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-30T04:58:45.183Z","caller":"stat/metrics.go:210","content":"(lease-api) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}

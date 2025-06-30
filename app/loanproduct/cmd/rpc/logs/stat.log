@@ -40,3 +40,6 @@
 {"@timestamp":"2025-06-30T03:02:27.461Z","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 291, total: 0, pass: 0, drop: 0","level":"stat"}
 {"@timestamp":"2025-06-30T03:03:27.439Z","caller":"stat/usage.go:61","content":"CPU: 290m, MEMORY: Alloc=4.6Mi, TotalAlloc=67.1Mi, Sys=19.1Mi, NumGC=27","level":"stat"}
 {"@timestamp":"2025-06-30T03:03:27.462Z","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 290, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-30T04:58:17.554Z","caller":"stat/usage.go:61","content":"CPU: 1m, MEMORY: Alloc=3.9Mi, TotalAlloc=10.6Mi, Sys=18.3Mi, NumGC=5","level":"stat"}
+{"@timestamp":"2025-06-30T04:58:17.597Z","caller":"load/sheddingstat.go:61","content":"(rpc) shedding_stat [1m], cpu: 1, total: 0, pass: 0, drop: 0","level":"stat"}
+{"@timestamp":"2025-06-30T04:59:06.284Z","caller":"stat/metrics.go:210","content":"(loanproductrpc.rpc) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}

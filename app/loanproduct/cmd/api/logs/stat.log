@@ -1,0 +1,1 @@
+{"@timestamp":"2025-06-30T04:58:48.195Z","caller":"stat/metrics.go:210","content":"(loanproduct-api) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms","level":"stat"}
