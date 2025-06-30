@@ -69,3 +69,52 @@
 {"@timestamp":"2025-06-30T06:54:23.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2025-06-30T06:54:42.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
 {"@timestamp":"2025-06-30T06:55:01.744Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:55:20.741Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:55:39.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:55:58.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:56:17.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:56:36.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:56:55.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:57:14.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:57:33.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:57:52.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:58:11.743Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:58:30.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:58:49.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:59:08.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:59:27.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T06:59:46.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:00:05.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:00:24.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:00:43.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:01:02.741Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:01:21.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:01:40.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:01:59.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:02:18.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:02:37.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:02:56.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:03:15.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:03:34.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:03:53.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:04:12.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:04:31.742Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:04:50.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:05:09.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:05:28.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:05:47.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:06:06.744Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:06:25.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:06:44.739Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:07:03.740Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:07:16.215Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T07:07:17.223Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:92","content":"deregistered service from consul server.","level":"info"}
+{"@timestamp":"2025-06-30T07:11:44.842Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:12:03.841Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:12:22.842Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:12:41.843Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:13:00.842Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:13:19.841Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:13:38.841Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:80","content":"update ttl","level":"info"}
+{"@timestamp":"2025-06-30T07:13:44.704Z","caller":"proc/shutdown.go:84","content":"Got signal 15, shutting down...","level":"info"}
+{"@timestamp":"2025-06-30T07:13:45.712Z","caller":"consul@v0.0.0-20231030135404-af9ae855016f/register.go:92","content":"deregistered service from consul server.","level":"info"}
