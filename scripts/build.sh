@@ -264,15 +264,9 @@ build_service() {
             echo -e "${BLUE}文件路径: $output_path${NC}"
         fi
         
-        # 恢复main文件
-        restore_main_file "$main_file"
-        
         return 0
     else
         echo -e "${RED}✗ $service $code_type 构建失败${NC}"
-        
-        # 恢复main文件
-        restore_main_file "$main_file"
         
         return 1
     fi
