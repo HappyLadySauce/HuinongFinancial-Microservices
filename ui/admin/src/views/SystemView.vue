@@ -327,11 +327,7 @@ import {
   Document,
   RefreshRight
 } from '@element-plus/icons-vue'
-import { 
-  getSystemConfigurations, 
-  updateSystemConfiguration, 
-  toggleAIApproval 
-} from '@/api/admin'
+import { adminApi } from '@/services/api'
 import type { SystemConfig } from '@/types'
 import dayjs from 'dayjs'
 
@@ -384,7 +380,7 @@ const configRules: FormRules = {
 const fetchConfigurations = async () => {
   try {
     loading.value = true
-    const data = await getSystemConfigurations()
+    const data = await adminApi.system.getSystemConfigurations()
     configurations.value = data.map((config: SystemConfig) => ({
       ...config,
       editing: false
@@ -403,7 +399,7 @@ const refreshData = () => {
 const handleAIApprovalToggle = async (enabled: boolean) => {
   try {
     toggleLoading.value = true
-    await toggleAIApproval(enabled)
+    await adminApi.system.toggleAIApproval(enabled)
     ElMessage.success(`AI审批功能已${enabled ? '开启' : '关闭'}`)
   } catch (error) {
     ElMessage.error('切换AI审批状态失败')
@@ -416,7 +412,7 @@ const handleAIApprovalToggle = async (enabled: boolean) => {
 
 const updateRiskThreshold = async (value: number) => {
   try {
-    await updateSystemConfiguration('ai_risk_threshold', value.toString())
+    await adminApi.system.updateSystemConfiguration('ai_risk_threshold', value.toString())
     ElMessage.success('风险阈值更新成功')
   } catch (error) {
     ElMessage.error('更新失败')
@@ -425,7 +421,7 @@ const updateRiskThreshold = async (value: number) => {
 
 const updateAutoApprovalLimit = async (value: number) => {
   try {
-    await updateSystemConfiguration('auto_approval_limit', value.toString())
+    await adminApi.system.updateSystemConfiguration('auto_approval_limit', value.toString())
     ElMessage.success('自动批准金额上限更新成功')
   } catch (error) {
     ElMessage.error('更新失败')
@@ -438,7 +434,7 @@ const editConfig = (config: SystemConfig & { editing?: boolean }) => {
 
 const saveConfig = async (config: SystemConfig & { editing?: boolean }) => {
   try {
-    await updateSystemConfiguration(config.config_key, config.config_value)
+    await adminApi.system.updateSystemConfiguration(config.config_key, config.config_value)
     config.editing = false
     ElMessage.success('配置更新成功')
     fetchConfigurations()
@@ -467,7 +463,7 @@ const submitConfigForm = async () => {
     submitting.value = true
     
     // 这里应该调用创建配置的API，暂时使用更新配置的API
-    await updateSystemConfiguration(configForm.config_key, configForm.config_value)
+    await adminApi.system.updateSystemConfiguration(configForm.config_key, configForm.config_value)
     
     ElMessage.success('配置创建成功')
     configDialogVisible.value = false

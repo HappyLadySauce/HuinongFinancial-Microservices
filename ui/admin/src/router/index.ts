@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import AuthService from '@/services/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -225,43 +226,44 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore()
-  
   // 设置页面标题
   if (to.meta.title) {
     document.title = `${to.meta.title} - 惠农金融OA系统`
   }
   
-  // 确保用户状态已初始化
-  if (!userStore.isLoggedIn) {
-    console.log('⏳ 尝试从本地存储恢复用户状态...')
-    try {
-      userStore.initialize()
-    } catch (error) {
-      // 初始化失败不影响路由导航，只是标记为未登录状态
-      console.log('❌ 用户状态恢复失败，用户未登录')
-    }
-  }
+  // 初始化认证服务
+  AuthService.init()
   
   // 检查是否需要认证
   if (to.meta.requiresAuth) {
-    if (!userStore.isLoggedIn) {
+    if (!AuthService.isLoggedIn()) {
       console.log('🔒 需要登录，重定向到登录页')
-      next('/login')
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
       return
     }
     
-    // 基础权限检查 - 所有登录用户都有基本权限
-    // 如果需要更复杂的权限控制，可以在用户信息中添加角色字段
-    if (to.meta.permission === 'admin') {
-      // 这里可以添加管理员权限检查逻辑
-      // 暂时允许所有登录用户访问
-      console.log('ℹ️ 管理员权限检查 - 暂时允许所有登录用户')
+    // 权限检查
+    const requiredPermission = to.meta.permission as string
+    if (requiredPermission) {
+      if (requiredPermission === 'admin' && !AuthService.isAdmin()) {
+        console.log('🚫 权限不足，需要管理员权限')
+        next('/dashboard') // 重定向到主页或403页面
+        return
+      }
+      
+      if (requiredPermission === 'approval:view' && !AuthService.isAuditor()) {
+        console.log('🚫 权限不足，需要审核权限')
+        next('/dashboard')
+        return
+      }
     }
   }
   
   // 如果已登录且访问登录页，重定向到首页
-  if (to.name === 'login' && userStore.isLoggedIn) {
+  if (to.name === 'login' && AuthService.isLoggedIn()) {
     console.log('✅ 已登录，重定向到首页')
     next('/dashboard')
     return

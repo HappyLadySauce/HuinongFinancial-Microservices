@@ -225,9 +225,9 @@
                     <div v-if="record.comment" class="timeline-comment">
                       {{ record.comment }}
                     </div>
-                    <div v-if="record.attachments?.length" class="timeline-attachments">
+                    <div v-if="(record as any).attachments?.length" class="timeline-attachments">
                       <el-tag 
-                        v-for="attachment in record.attachments" 
+                        v-for="attachment in (record as any).attachments" 
                         :key="attachment.id"
                         size="small"
                         type="info"

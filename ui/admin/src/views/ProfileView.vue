@@ -198,7 +198,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, type FormRules } from 'element-plus'
 import dayjs from 'dayjs'
 import {
   User,
@@ -249,13 +249,13 @@ const breadcrumbs = computed(() => [
 ])
 
 // 表单验证规则
-const editRules = {
+const editRules: FormRules = {
   realName: [
     { required: true, message: '请输入姓名', trigger: 'blur' }
   ],
   email: [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' }
+    { type: 'email' as const, message: '请输入有效的邮箱地址', trigger: 'blur' }
   ],
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -274,8 +274,8 @@ const passwordRules = {
   confirmPassword: [
     { required: true, message: '请确认新密码', trigger: 'blur' },
     {
-      validator: (rule: any, value: string, callback: Function) => {
-        if (value !== passwordDialog.data.newPassword) {
+      validator: (rule: any, value: string, callback: (error?: Error) => void) => {
+        if (value !== (passwordDialog.data as any).newPassword) {
           callback(new Error('两次输入的密码不一致'))
         } else {
           callback()

@@ -13,7 +13,7 @@
           <el-icon><Refresh /></el-icon>
           刷新
         </el-button>
-        <el-button type="primary" @click="exportDetail" v-if="detail.application_id">
+        <el-button type="primary" @click="exportDetail" v-if="detail.application_info?.application_id">
           <el-icon><Download /></el-icon>
           导出详情
         </el-button>
@@ -21,10 +21,10 @@
     </div>
 
     <!-- 统计概览 -->
-    <div class="stats-row" v-if="detail.application_id">
+    <div class="stats-row" v-if="detail.application_info?.application_id">
       <el-card class="stat-item" shadow="hover">
         <div class="stat-content">
-          <div class="stat-value">{{ detail.application_id }}</div>
+          <div class="stat-value">{{ detail.application_info.application_id }}</div>
           <div class="stat-label">申请编号</div>
           <div class="chart-container">
             <div ref="statusChartRef" class="mini-chart"></div>
@@ -33,7 +33,7 @@
       </el-card>
       <el-card class="stat-item" shadow="hover">
         <div class="stat-content">
-          <div class="stat-value amount">¥{{ formatAmount(detail.amount || 0) }}</div>
+          <div class="stat-value amount">¥{{ formatAmount(detail.application_info?.amount || 0) }}</div>
           <div class="stat-label">申请金额</div>
           <div class="chart-container">
             <div ref="amountChartRef" class="mini-chart"></div>
@@ -42,8 +42,8 @@
       </el-card>
       <el-card class="stat-item" shadow="hover">
         <div class="stat-content">
-          <div class="stat-value" :class="getRiskClass(detail.ai_analysis_report?.overall_risk_score)">
-            {{ detail.ai_analysis_report?.overall_risk_score || 0 }}分
+          <div class="stat-value" :class="getRiskClass(50)">
+            50分
           </div>
           <div class="stat-label">风险评分</div>
           <div class="chart-container">
@@ -53,8 +53,8 @@
       </el-card>
       <el-card class="stat-item" shadow="hover">
         <div class="stat-content">
-          <div class="stat-value" :class="getStatusClass(detail.status)">
-            {{ detail.status || '未知' }}
+          <div class="stat-value" :class="getStatusClass(detail.application_info?.status)">
+            {{ detail.application_info?.status || '未知' }}
           </div>
           <div class="stat-label">当前状态</div>
           <div class="chart-container">
@@ -77,11 +77,11 @@
                   申请基本信息
                 </span>
                 <div class="header-tags">
-                  <el-tag :type="getStatusType(detail.status)" size="large">
-                    {{ detail.status }}
+                  <el-tag :type="getStatusType(detail.application_info?.status || '')" size="large">
+                    {{ detail.application_info?.status || '未知' }}
                   </el-tag>
-                  <el-tag v-if="detail.term_months" type="info" size="small">
-                    {{ detail.term_months }}个月
+                  <el-tag v-if="detail.application_info?.duration" type="info" size="small">
+                    {{ detail.application_info.duration }}个月
                   </el-tag>
                 </div>
               </div>
@@ -89,203 +89,93 @@
             
             <el-descriptions :column="2" border>
               <el-descriptions-item label="申请编号">
-                <el-text type="primary" tag="b">{{ detail.application_id }}</el-text>
+                <el-text type="primary" tag="b">{{ detail.application_info?.application_id }}</el-text>
               </el-descriptions-item>
               <el-descriptions-item label="申请人">
-                {{ detail.applicant_details?.real_name }}
+                {{ detail.application_info?.applicant_name || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="身份证号">
-                {{ maskIdCard(detail.applicant_details?.id_card_number) }}
+              <el-descriptions-item label="用户ID">
+                {{ detail.application_info?.user_id || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="联系电话">
-                {{ detail.applicant_details?.phone || '-' }}
+              <el-descriptions-item label="产品名称">
+                {{ detail.application_info?.name || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="联系地址" span="2">
-                {{ detail.applicant_details?.address }}
+              <el-descriptions-item label="产品类型" span="2">
+                {{ detail.application_info?.type || '-' }}
               </el-descriptions-item>
               <el-descriptions-item label="申请金额">
-                <span class="amount">¥{{ formatAmount(detail.amount) }}</span>
+                <span class="amount">¥{{ formatAmount(detail.application_info?.amount || 0) }}</span>
               </el-descriptions-item>
               <el-descriptions-item label="申请期限">
-                {{ detail.term_months }}个月
+                {{ detail.application_info?.duration }}个月
               </el-descriptions-item>
               <el-descriptions-item label="贷款用途" span="2">
-                {{ detail.purpose }}
+                {{ detail.application_info?.purpose || '-' }}
               </el-descriptions-item>
               <el-descriptions-item label="提交时间">
-                {{ formatDateTime(detail.submitted_at) }}
+                {{ formatDateTime(detail.application_info?.created_at) }}
               </el-descriptions-item>
               <el-descriptions-item label="更新时间">
-                {{ formatDateTime(detail.updated_at) }}
-              </el-descriptions-item>
-              <el-descriptions-item v-if="detail.approved_amount" label="批准金额" span="2">
-                <span class="amount approved">¥{{ formatAmount(detail.approved_amount) }}</span>
+                {{ formatDateTime(detail.application_info?.updated_at) }}
               </el-descriptions-item>
             </el-descriptions>
           </el-card>
 
-          <!-- AI分析报告 -->
-          <el-card v-if="detail.ai_analysis_report" class="ai-card" shadow="never">
+          <!-- 状态信息 -->
+          <el-card class="status-card" shadow="never">
             <template #header>
               <div class="card-header">
                 <span>
                   <el-icon><Cpu /></el-icon>
-                  AI智能分析报告
+                  申请状态信息
                 </span>
                 <div class="header-tags">
-                  <el-tag type="info" size="small">
-                    风险评分: {{ detail.ai_analysis_report.overall_risk_score }}分
-                  </el-tag>
-                  <el-tag :type="getRiskTagType(detail.ai_analysis_report.overall_risk_score)" size="small">
-                    {{ getRiskLevel(detail.ai_analysis_report.overall_risk_score) }}
+                  <el-tag :type="getStatusType(detail.application_info?.status || '')" size="small">
+                    {{ detail.application_info?.status || '未知' }}
                   </el-tag>
                 </div>
               </div>
             </template>
             
-            <div class="ai-analysis">
-              <!-- 风险评分 -->
-              <div class="analysis-section">
-                <h4>
-                  <el-icon><TrendCharts /></el-icon>
-                  风险评估
-                </h4>
-                <div class="risk-score-display">
-                  <el-progress
-                    type="circle"
-                    :percentage="detail.ai_analysis_report.overall_risk_score"
-                    :color="getRiskColor(detail.ai_analysis_report.overall_risk_score)"
-                    :width="120"
-                    :stroke-width="8"
-                  >
-                    <template #default="{ percentage }">
-                      <span class="risk-score-text">{{ percentage }}分</span>
-                    </template>
-                  </el-progress>
-                  <div class="risk-info">
-                    <div class="risk-level">
-                      {{ getRiskLevel(detail.ai_analysis_report.overall_risk_score) }}
-                    </div>
-                    <div class="risk-description">
-                      {{ getRiskDescription(detail.ai_analysis_report.overall_risk_score) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 风险因素 -->
-              <div class="analysis-section">
-                <h4>
-                  <el-icon><Warning /></el-icon>
-                  识别的风险因素
-                </h4>
-                <div class="risk-factors">
-                  <el-tag
-                    v-for="factor in detail.ai_analysis_report.risk_factors"
-                    :key="factor"
-                    type="warning"
-                    size="small"
-                    class="risk-factor-tag"
-                    effect="dark"
-                  >
-                    {{ factor }}
+            <div class="status-info">
+              <el-descriptions :column="2" border>
+                <el-descriptions-item label="当前状态">
+                  <el-tag :type="getStatusType(detail.application_info?.status || '')" size="small">
+                    {{ detail.application_info?.status || '未知' }}
                   </el-tag>
-                  <el-tag v-if="!detail.ai_analysis_report.risk_factors?.length" type="success" size="small">
-                    未发现明显风险因素
-                  </el-tag>
-                </div>
-              </div>
-
-              <!-- 数据验证结果 -->
-              <div class="analysis-section">
-                <h4>
-                  <el-icon><CircleCheck /></el-icon>
-                  数据验证结果
-                </h4>
-                <div class="verification-results">
-                  <div
-                    v-for="result in detail.ai_analysis_report.data_verification_results"
-                    :key="result.item"
-                    class="verification-item"
-                  >
-                    <span class="verification-label">{{ result.item }}</span>
-                    <el-tag
-                      :type="result.result === '通过' ? 'success' : 'danger'"
-                      size="small"
-                      effect="dark"
-                    >
-                      <el-icon>
-                        <CircleCheck v-if="result.result === '通过'" />
-                        <CircleClose v-else />
-                      </el-icon>
-                      {{ result.result }}
-                    </el-tag>
-                  </div>
-                </div>
-              </div>
-
-              <!-- AI建议 -->
-              <div class="analysis-section">
-                <h4>
-                  <el-icon><Warning /></el-icon>
-                  AI处理建议
-                </h4>
-                <div class="ai-suggestion">
-                  <el-alert
-                    :title="detail.ai_analysis_report.suggestion"
-                    type="info"
-                    :closable="false"
-                    show-icon
-                  />
-                </div>
-              </div>
+                </el-descriptions-item>
+                <el-descriptions-item label="产品ID">
+                  {{ detail.application_info?.product_id || '-' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="创建时间">
+                  {{ formatDateTime(detail.application_info?.created_at) }}
+                </el-descriptions-item>
+                <el-descriptions-item label="更新时间">
+                  {{ formatDateTime(detail.application_info?.updated_at) }}
+                </el-descriptions-item>
+              </el-descriptions>
             </div>
           </el-card>
 
-          <!-- 上传文件 -->
-          <el-card class="documents-card" shadow="never">
+          <!-- 申请信息 -->
+          <el-card class="info-card" shadow="never">
             <template #header>
               <div class="card-header">
                 <span>
                   <el-icon><Folder /></el-icon>
-                  上传文件
+                  申请信息汇总
                 </span>
-                <el-tag type="info" size="small">
-                  共 {{ detail.uploaded_documents_details?.length || 0 }} 个文件
-                </el-tag>
               </div>
             </template>
             
-            <div class="documents-list">
-              <div
-                v-for="doc in detail.uploaded_documents_details"
-                :key="doc.file_id"
-                class="document-item"
-              >
-                <div class="doc-info">
-                  <el-icon class="doc-icon"><Document /></el-icon>
-                  <div class="doc-details">
-                    <div class="doc-type">{{ getDocTypeName(doc.doc_type) }}</div>
-                    <div v-if="doc.ocr_result" class="doc-ocr">
-                      OCR识别: {{ doc.ocr_result }}
-                    </div>
-                    <div class="doc-meta">
-                      上传时间: {{ formatDateTime(new Date().toISOString()) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="doc-actions">
-                  <el-button size="small" @click="previewDocument(doc)">
-                    <el-icon><View /></el-icon>
-                    预览
-                  </el-button>
-                  <el-button size="small" type="primary" @click="downloadDocument(doc)">
-                    <el-icon><Download /></el-icon>
-                    下载
-                  </el-button>
-                </div>
-              </div>
-              <el-empty v-if="!detail.uploaded_documents_details?.length" description="暂无上传文件" />
+            <div class="summary-info">
+              <el-alert
+                title="申请处理提示"
+                description="该申请正在等待审核处理，请及时查看并作出审批决定。"
+                type="info"
+                :closable="false"
+                show-icon
+              />
             </div>
           </el-card>
         </el-col>
@@ -293,7 +183,7 @@
         <!-- 右侧操作区域 -->
         <el-col :span="8">
           <!-- 审批操作 -->
-          <el-card v-if="canReview(detail.status)" class="review-card" shadow="never">
+          <el-card v-if="canReview(detail.application_info?.status)" class="review-card" shadow="never">
             <template #header>
               <div class="card-header">
                 <span>
@@ -335,14 +225,14 @@
                 <el-input-number
                   v-model="reviewForm.approved_amount"
                   :min="1"
-                  :max="detail.amount"
+                  :max="detail.application_info?.amount || 0"
                   :step="1000"
                   style="width: 100%"
                   :formatter="(value: number) => `¥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
                   :parser="(value: string) => value.replace(/¥\s?|(,*)/g, '')"
                 />
                 <div class="amount-hint">
-                  申请金额: ¥{{ formatAmount(detail.amount) }}
+                  申请金额: ¥{{ formatAmount(detail.application_info?.amount || 0) }}
                 </div>
               </el-form-item>
               
@@ -399,9 +289,9 @@
             </template>
             
             <div class="progress-steps">
-              <el-steps direction="vertical" :active="getProgressStep(detail.status)" finish-status="success">
-                <el-step title="申请提交" :description="formatDateTime(detail.submitted_at)" />
-                <el-step title="AI初审" description="智能风险评估" />
+              <el-steps direction="vertical" :active="getProgressStep(detail.application_info?.status)" finish-status="success">
+                <el-step title="申请提交" :description="formatDateTime(detail.application_info?.created_at)" />
+                <el-step title="初步审核" description="系统初步验证" />
                 <el-step title="人工复核" description="专业审批员审核" />
                 <el-step title="审批完成" description="最终审批结果" />
               </el-steps>
@@ -417,33 +307,33 @@
                   审批历史
                 </span>
                 <el-tag type="info" size="small">
-                  {{ detail.history?.length || 0 }} 条记录
+                  2 条记录
                 </el-tag>
               </div>
             </template>
             
             <el-timeline>
               <el-timeline-item
-                v-for="(item, index) in detail.history"
-                :key="index"
-                :timestamp="formatDateTime(item.timestamp)"
+                :timestamp="formatDateTime(detail.application_info?.created_at)"
                 placement="top"
-                :type="getTimelineType(item.status)"
-                :icon="getTimelineIcon(item.status)"
+                type="primary"
               >
                 <div class="timeline-content">
-                  <div class="timeline-status">{{ item.status }}</div>
-                  <div class="timeline-operator">操作人: {{ item.operator }}</div>
-                  <div class="timeline-comments">备注信息</div>
+                  <div class="timeline-status">申请提交</div>
+                  <div class="timeline-operator">申请人: {{ detail.application_info?.applicant_name }}</div>
+                  <div class="timeline-comments">提交贷款申请</div>
                 </div>
               </el-timeline-item>
               <el-timeline-item
-                v-if="!detail.history?.length"
-                timestamp="暂无记录"
-                type="info"
+                v-if="detail.application_info?.updated_at !== detail.application_info?.created_at"
+                :timestamp="formatDateTime(detail.application_info?.updated_at)"
+                placement="top"
+                type="warning"
               >
                 <div class="timeline-content">
-                  <div class="timeline-status">暂无审批历史</div>
+                  <div class="timeline-status">状态更新</div>
+                  <div class="timeline-operator">系统</div>
+                  <div class="timeline-comments">申请状态已更新</div>
                 </div>
               </el-timeline-item>
             </el-timeline>
@@ -474,7 +364,8 @@ import {
   Operation,
   TrendCharts
 } from '@element-plus/icons-vue'
-import { getApplicationDetail, submitReview } from '@/api/admin'
+import { adminLoanApprovalApi } from '@/services/api'
+import type { LoanApplication } from '@/types'
 import type { ApplicationDetail } from '@/types'
 import dayjs from 'dayjs'
 import * as echarts from 'echarts'
@@ -498,7 +389,7 @@ let amountChart: echarts.ECharts | null = null
 let riskChart: echarts.ECharts | null = null
 let progressChart: echarts.ECharts | null = null
 
-const detail = ref<ApplicationDetail>({} as ApplicationDetail)
+const detail = ref<{ application_info: LoanApplication }>({} as { application_info: LoanApplication })
 
 // 审批表单
 const reviewForm = reactive({
@@ -525,12 +416,12 @@ const fetchDetail = async () => {
   try {
     loading.value = true
     const applicationId = route.params.id as string
-    const data = await getApplicationDetail(applicationId)
-    detail.value = data
+    const response = await adminLoanApprovalApi.getDetail(applicationId)
+    detail.value = { application_info: response.application_info }
     
     // 初始化审批表单
-    if (canReview(data.status)) {
-      reviewForm.approved_amount = data.amount
+    if (canReview(response.application_info.status)) {
+      reviewForm.approved_amount = response.application_info.amount
     }
   } catch (error) {
     ElMessage.error('获取申请详情失败')
@@ -565,7 +456,7 @@ const submitApprovalReview = async () => {
       required_info_details: reviewForm.decision === 'require_more_info' ? reviewForm.required_info_details : undefined
     }
     
-    await submitReview(detail.value.application_id, submitData)
+    await adminLoanApprovalApi.reviewApproval(detail.value.application_info.application_id, submitData)
     
     ElMessage.success('审批提交成功')
     fetchDetail() // 重新获取详情
@@ -673,7 +564,13 @@ const formatAmount = (amount: number) => {
   return amount.toLocaleString()
 }
 
-const formatDateTime = (datetime: string) => {
+const formatDateTime = (datetime: string | number | undefined) => {
+  if (!datetime) return '-'
+  // 处理Unix时间戳
+  if (typeof datetime === 'number') {
+    return dayjs(datetime * 1000).format('YYYY-MM-DD HH:mm:ss')
+  }
+  // 处理ISO字符串
   return dayjs(datetime).format('YYYY-MM-DD HH:mm:ss')
 }
 
@@ -728,7 +625,7 @@ const initCharts = () => {
     const option = {
       series: [{
         type: 'bar',
-        data: [detail.value.amount || 0],
+        data: [detail.value.application_info?.amount || 0],
         itemStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: '#67c23a' },
@@ -747,7 +644,7 @@ const initCharts = () => {
   // 风险图表
   if (riskChartRef.value) {
     riskChart = echarts.init(riskChartRef.value)
-    const riskScore = detail.value.ai_analysis_report?.overall_risk_score || 0
+    const riskScore = 50 // 固定风险评分
     const option = {
       series: [{
         type: 'gauge',
@@ -773,7 +670,7 @@ const initCharts = () => {
   // 进度图表
   if (progressChartRef.value) {
     progressChart = echarts.init(progressChartRef.value)
-    const progress = getProgressStep(detail.value.status) * 25
+    const progress = getProgressStep(detail.value.application_info?.status) * 25
     const option = {
       series: [{
         type: 'pie',

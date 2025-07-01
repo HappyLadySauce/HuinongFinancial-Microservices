@@ -23,45 +23,37 @@
     <el-row :gutter="24" class="stats-overview">
       <el-col :span="6">
         <StatCard
-          title="总申请量"
+          label="总申请量"
           :value="overviewData.totalApplications"
-          format="number"
           type="primary"
-          :change="overviewData.applicationChange"
-          icon="Document"
+          :change="`${overviewData.applicationChange > 0 ? '+' : ''}${overviewData.applicationChange}%`"
           @click="handleStatClick('applications')"
         />
       </el-col>
       <el-col :span="6">
         <StatCard
-          title="审批通过率"
-          :value="overviewData.approvalRate"
-          format="percent"
+          label="审批通过率"
+          :value="`${(overviewData.approvalRate * 100).toFixed(1)}%`"
           type="success"
-          :change="overviewData.approvalChange"
-          icon="SuccessFilled"
+          :change="`${overviewData.approvalChange > 0 ? '+' : ''}${overviewData.approvalChange}%`"
           @click="handleStatClick('approval')"
         />
       </el-col>
       <el-col :span="6">
         <StatCard
-          title="平均审批时长"
-          :value="overviewData.avgProcessTime"
-          suffix="小时"
+          label="平均审批时长"
+          :value="`${overviewData.avgProcessTime}小时`"
           type="warning"
-          :change="overviewData.timeChange"
-          icon="Timer"
+          :change="`${overviewData.timeChange > 0 ? '+' : ''}${overviewData.timeChange}%`"
           @click="handleStatClick('time')"
         />
       </el-col>
       <el-col :span="6">
         <StatCard
-          title="累计放款金额"
-          :value="overviewData.totalAmount"
-          format="currency"
+          label="累计放款金额"
+          :value="`¥${(overviewData.totalAmount / 10000).toFixed(0)}万`"
           type="danger"
-          :change="overviewData.amountChange"
-          icon="Money"
+          :change="`${overviewData.amountChange > 0 ? '+' : ''}${overviewData.amountChange}%`"
           @click="handleStatClick('amount')"
         />
       </el-col>

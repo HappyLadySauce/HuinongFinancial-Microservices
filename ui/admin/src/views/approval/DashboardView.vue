@@ -237,9 +237,9 @@ const loadPendingApprovals = async () => {
         title: item.name || '租赁申请',
         createdAt: item.created_at,
         amount: 0, // 租赁没有金额字段
-        displayAmount: `${item.start_at || ''} 至 ${item.end_at || ''}`,
-        startAt: item.start_at,
-        endAt: item.end_at
+        displayAmount: `${item.start_date || ''} 至 ${item.end_date || ''}`,
+        startAt: item.start_date,
+        endAt: item.end_date
       }))
     ]
     
@@ -271,7 +271,7 @@ const loadRecentActivities = async () => {
         ...item, 
         type: 'loan',
         title: `贷款申请 - ${item.name}`,
-        user: item.auditor || '系统',
+        user: item.applicant_name || '系统',
         action: 'approve',
         createdAt: item.updated_at || item.created_at,
         amount: item.amount || 0
@@ -280,7 +280,7 @@ const loadRecentActivities = async () => {
         ...item, 
         type: 'loan',
         title: `贷款申请 - ${item.name}`,
-        user: item.auditor || '系统',
+        user: item.applicant_name || '系统',
         action: 'reject',
         createdAt: item.updated_at || item.created_at,
         amount: item.amount || 0
@@ -289,23 +289,23 @@ const loadRecentActivities = async () => {
         ...item, 
         type: 'lease',
         title: `租赁申请 - ${item.name}`,
-        user: item.auditor || '系统',
+        user: item.applicant_name || '系统',
         action: 'approve',
         createdAt: item.updated_at || item.created_at,
         amount: 0, // 租赁没有金额字段
-        startAt: item.start_at,
-        endAt: item.end_at
+        startAt: item.start_date,
+        endAt: item.end_date
       })),
       ...leaseRejected.list.map(item => ({ 
         ...item, 
         type: 'lease',
         title: `租赁申请 - ${item.name}`,
-        user: item.auditor || '系统',
+        user: item.applicant_name || '系统',
         action: 'reject',
         createdAt: item.updated_at || item.created_at,
         amount: 0, // 租赁没有金额字段
-        startAt: item.start_at,
-        endAt: item.end_at
+        startAt: item.start_date,
+        endAt: item.end_date
       }))
     ]
     

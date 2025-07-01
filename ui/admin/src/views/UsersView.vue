@@ -211,7 +211,7 @@ import {
   Search,
   RefreshLeft
 } from '@element-plus/icons-vue'
-import { getOAUsers, createOAUser, updateOAUserStatus } from '@/api/admin'
+import { adminUserApi } from '@/services/api'
 import type { AdminUser, PaginationResponse } from '@/types'
 import dayjs from 'dayjs'
 
@@ -274,11 +274,11 @@ const fetchUsers = async () => {
     const params = {
       role: filterForm.role,
       page: pagination.page,
-      limit: pagination.limit
+      size: pagination.limit
     }
     
-    const data = await getOAUsers(params)
-    users.value = data.data || []
+    const data = await adminUserApi.getUsers(params)
+    users.value = data.list || []
     pagination.total = data.total || 0
   } catch (error) {
     ElMessage.error('获取用户列表失败')
@@ -350,7 +350,7 @@ const submitUserForm = async () => {
     submitting.value = true
     
     if (!isEditMode.value) {
-      await createOAUser({
+      await adminUserApi.createUser({
         username: userForm.username,
         password: userForm.password,
         display_name: userForm.display_name,
@@ -382,7 +382,7 @@ const updateUserStatus = async (user: AdminUser, status: number) => {
       type: 'warning'
     })
     
-    await updateOAUserStatus(user.admin_user_id, status)
+    await adminUserApi.updateUserStatus(user.admin_user_id, status)
     ElMessage.success(`用户${action}成功`)
     fetchUsers()
   } catch (error: any) {

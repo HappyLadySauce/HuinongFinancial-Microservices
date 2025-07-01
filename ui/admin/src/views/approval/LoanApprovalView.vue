@@ -246,7 +246,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { adminApi, type LoanApproval } from '@/services/api'
+import { adminApi } from '@/services/api'
+import type { LoanApplication } from '@/types'
 
 const router = useRouter()
 
@@ -258,7 +259,7 @@ const searchKeyword = ref('')
 
 // 列表数据
 const loading = ref(false)
-const approvalList = ref<LoanApproval[]>([])
+const approvalList = ref<LoanApplication[]>([])
 const selectedIds = ref<number[]>([])
 
 // 统计数据
@@ -457,7 +458,7 @@ const handleSizeChange = (size: number) => {
 }
 
 // 查看详情
-const handleViewDetail = (row: LoanApproval) => {
+const handleViewDetail = (row: LoanApplication) => {
   router.push(`/approval/loan/${row.id}`)
 }
 
@@ -489,9 +490,11 @@ const handleConfirmApproval = async () => {
   
   try {
     const reviewData = {
-      status: approvalDialog.type === 'approve' ? 'approved' as const : 'rejected' as const,
+      action: approvalDialog.type === 'approve' ? 'approved' as const : 'rejected' as const,
       suggestions: approvalDialog.form.comment,
-      auditor: '当前管理员' // 这里应该从登录用户信息获取
+      approved_amount: approvalDialog.form.approved_amount || approvalDialog.currentRow?.amount || 0,
+      approved_duration: approvalDialog.currentRow?.duration || 0,
+      interest_rate: 0.08 // 默认利率，应该从表单获取
     }
     
     await adminApi.reviewLoanApproval(approvalDialog.currentRow.id, reviewData)

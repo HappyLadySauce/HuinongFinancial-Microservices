@@ -5,7 +5,7 @@
       <el-card class="welcome-card">
         <div class="welcome-content">
           <div class="welcome-info">
-            <h2 class="welcome-title">{{ greeting }}，{{ currentUser?.username || '管理员' }}！</h2>
+            <h2 class="welcome-title">{{ greeting }}，{{ currentUser?.name || '管理员' }}！</h2>
             <p class="welcome-desc">今天是 {{ currentDate }}，{{ weekDay }}</p>
             <div class="quick-stats">
               <div class="stat-item">
@@ -190,12 +190,30 @@ import * as echarts from 'echarts'
 const router = useRouter()
 const userStore = useUserStore()
 
+// 类型定义
+interface TodoItem {
+  id: number
+  title: string
+  description: string
+  type: string
+  createdAt: Date
+  link: string | null
+}
+
+interface ActivityItem {
+  id: number
+  user: string
+  action: string
+  target: string
+  createdAt: Date
+}
+
 // 响应式数据
 const chartPeriod = ref('month')
 const trendChart = ref<HTMLElement>()
 const pieChart = ref<HTMLElement>()
-const todoList = ref([])
-const recentActivities = ref([])
+const todoList = ref<TodoItem[]>([])
+const recentActivities = ref<ActivityItem[]>([])
 const todayStats = ref({
   approvals: 0,
   pending: 0
@@ -281,7 +299,7 @@ const formatTime = (time: string | Date) => {
 }
 
 const getTagType = (type: string) => {
-  const typeMap = {
+  const typeMap: Record<string, string> = {
     '贷款审批': 'primary',
     '租赁审批': 'success',
     '系统通知': 'info'

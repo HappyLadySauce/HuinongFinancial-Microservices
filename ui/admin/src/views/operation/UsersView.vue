@@ -365,10 +365,32 @@ const filterRole = ref('')
 const filterStatus = ref('')
 const searchKeyword = ref('')
 
+// 定义用户类型
+interface User {
+  id: number
+  username: string
+  real_name: string
+  phone: string
+  email: string | null
+  role: string
+  status: string
+  created_at: Date
+  last_login_at: Date | null
+  login_count: number
+}
+
+// 定义活动记录类型
+interface Activity {
+  action: string
+  description: string
+  ip_address: string
+  created_at: Date
+}
+
 // 列表数据
 const loading = ref(false)
-const userList = ref([])
-const selectedUsers = ref([])
+const userList = ref<User[]>([])
+const selectedUsers = ref<User[]>([])
 
 // 统计数据
 const stats = reactive({
@@ -406,8 +428,8 @@ const userDialog = reactive({
 // 详情对话框
 const detailDialog = reactive({
   visible: false,
-  user: null as any,
-  activities: []
+  user: null as User | null,
+  activities: [] as Activity[]
 })
 
 // 表单验证规则
@@ -656,14 +678,16 @@ const handleToggleStatus = (row: any, status: string) => {
 }
 
 // 删除用户
-const handleDelete = (row: any) => {
+const handleDelete = (row: User) => {
   ElMessageBox.confirm(`确定要删除用户 ${row.username} 吗？`, '确认删除', {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
-    type: 'danger'
+    type: 'warning'
   }).then(() => {
     ElMessage.success('用户已删除')
     loadData()
+  }).catch(() => {
+    // 用户取消删除
   })
 }
 

@@ -103,7 +103,8 @@ const defaultStatusMap = {
 
 const statusConfig = computed(() => {
   const statusMap = props.statusMap || defaultStatusMap
-  return statusMap[props.status] || { 
+  const config = statusMap[props.status as keyof typeof statusMap]
+  return config || { 
     type: 'info', 
     text: props.status, 
     icon: QuestionFilled 

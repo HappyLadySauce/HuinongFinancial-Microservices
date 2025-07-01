@@ -302,7 +302,7 @@ import {
   Search,
   RefreshLeft
 } from '@element-plus/icons-vue'
-import { getPendingApplications, submitReview } from '@/api/admin'
+import { adminLoanApprovalApi } from '@/services/api'
 import type { LoanApplication } from '@/types'
 import dayjs from 'dayjs'
 import * as echarts from 'echarts'
@@ -382,11 +382,11 @@ const fetchApplications = async () => {
     const params = {
       ...filterForm,
       page: pagination.page,
-      limit: pagination.limit
+      size: pagination.limit
     }
     
-    const data = await getPendingApplications(params)
-    applications.value = data.data || []
+    const data = await adminLoanApprovalApi.getApprovals(params)
+    applications.value = data.list || []
     pagination.total = data.total || 0
   } catch (error) {
     ElMessage.error('获取申请列表失败')
@@ -469,7 +469,7 @@ const submitQuickApproval = async () => {
       required_info_details: quickApprovalForm.decision === 'require_more_info' ? quickApprovalForm.required_info_details : undefined
     }
     
-    await submitReview(selectedApplication.value.application_id, submitData)
+    await adminLoanApprovalApi.reviewApproval(selectedApplication.value.application_id, submitData)
     
     ElMessage.success('审批提交成功')
     quickApprovalVisible.value = false

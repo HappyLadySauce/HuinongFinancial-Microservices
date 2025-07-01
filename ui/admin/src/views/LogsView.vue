@@ -236,7 +236,7 @@ import {
   Search,
   RefreshLeft
 } from '@element-plus/icons-vue'
-import { getOperationLogs } from '@/api/admin'
+import { adminApi } from '@/services/api'
 import type { OperationLog, PaginationResponse } from '@/types'
 import dayjs from 'dayjs'
 
@@ -289,8 +289,8 @@ const fetchLogs = async () => {
       limit: pagination.limit
     }
     
-    const data: PaginationResponse<OperationLog> = await getOperationLogs(params)
-    logs.value = data.data || []
+    const data: PaginationResponse<OperationLog> = await adminApi.log.getOperationLogs(params)
+    logs.value = data.list || []
     pagination.total = data.total || 0
   } catch (error) {
     ElMessage.error('获取操作日志失败')

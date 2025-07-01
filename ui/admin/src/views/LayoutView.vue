@@ -87,7 +87,7 @@
                 <el-icon><UserFilled /></el-icon>
               </el-avatar>
               <div class="user-text" v-if="!isCollapse">
-                <div class="user-name">{{ currentUser?.username || '管理员' }}</div>
+                <div class="user-name">{{ currentUser?.name || '管理员' }}</div>
                 <div class="user-role">{{ getRoleName(currentUser?.role) }}</div>
               </div>
               <el-icon class="user-arrow"><ArrowDown /></el-icon>
@@ -229,6 +229,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import AuthService from '@/services/auth'
 import { 
   House, Search, Bell, UserFilled, ArrowDown, User, Setting, SwitchButton,
   DocumentChecked, Expand, Fold, DataBoard, CreditCard, Van, Cpu,
@@ -246,11 +247,20 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
+// 通知项类型定义
+interface NotificationItem {
+  id: number
+  title: string
+  content: string
+  createdAt: Date
+  link: string
+}
+
 // 响应式数据
 const isCollapse = ref(false)
 const searchText = ref('')
 const pendingApprovals = ref(0)
-const notifications = ref([])
+const notifications = ref<NotificationItem[]>([])
 
 // 计算属性
 const activeMenu = computed(() => route.path)
@@ -262,15 +272,15 @@ const toggleCollapse = () => {
 }
 
 const hasPermission = (permission: string) => {
-  // 暂时允许所有登录用户访问
-  return userStore.isLoggedIn
+  return AuthService.hasPermission(permission)
 }
 
-const getRoleName = (role: string) => {
-  const roleMap = {
+const getRoleName = (role: string | undefined) => {
+  if (!role) return '普通用户'
+  const roleMap: Record<string, string> = {
     'admin': '系统管理员',
-    'manager': '审批经理',
-    'user': '普通用户'
+    'operator': '操作员',
+    'auditor': '审核员'
   }
   return roleMap[role] || '普通用户'
 }
@@ -305,11 +315,12 @@ const handleLogout = async () => {
       }
     )
     
-    userStore.logout()
+    await AuthService.logout()
     ElMessage.success('退出登录成功')
     router.push('/login')
-  } catch (error) {
-    console.log('用户取消退出')
+  } catch (error: any) {
+    console.error('退出登录失败:', error)
+    ElMessage.error(error.message || '退出登录失败')
   }
 }
 

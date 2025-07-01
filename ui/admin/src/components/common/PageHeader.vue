@@ -192,10 +192,10 @@ const router = useRouter()
 const activeTab = ref(props.defaultTab || (props.tabs.length > 0 ? props.tabs[0].name : ''))
 
 const handleBack = () => {
+  // 先触发back事件，然后默认执行路由返回
   emit('back')
-  if (!emit('back')) {
-    router.back()
-  }
+  // 如果父组件没有阻止默认行为，执行路由返回
+  router.back()
 }
 
 const handleTabChange = (tabName: string) => {

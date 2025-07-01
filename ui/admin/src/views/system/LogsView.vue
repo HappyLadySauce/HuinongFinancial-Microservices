@@ -49,25 +49,19 @@
       <template #stats>
         <div class="log-stats">
           <StatCard
-            title="今日日志"
+            label="今日日志"
             :value="stats.todayLogs"
-            format="number"
             type="primary"
-            size="small"
           />
           <StatCard
-            title="异常日志"
+            label="异常日志"
             :value="stats.errorLogs"
-            format="number"
             type="danger"
-            size="small"
           />
           <StatCard
-            title="活跃用户"
+            label="活跃用户"
             :value="stats.activeUsers"
-            format="number"
             type="success"
-            size="small"
           />
         </div>
       </template>
@@ -242,6 +236,21 @@ import {
 // 导入通用组件
 import { PageHeader, TableActions, StatCard, StatusTag } from '@/components/common'
 
+interface LogItem {
+  id: string
+  type: string
+  username: string
+  userAvatar: string
+  operation: string
+  target: string | null
+  result: string
+  ip: string
+  userAgent: string
+  createdAt: string
+  details?: string
+  error?: string
+}
+
 const loading = ref(false)
 
 const filters = reactive({
@@ -263,13 +272,16 @@ const stats = ref({
   activeUsers: 89
 })
 
-const detailDialog = reactive({
+const detailDialog = reactive<{
+  visible: boolean
+  data: LogItem | null
+}>({
   visible: false,
   data: null
 })
 
 // 日志数据
-const logs = ref([
+const logs = ref<LogItem[]>([
   {
     id: 'LOG001',
     type: 'login',
@@ -346,8 +358,13 @@ const breadcrumbs = computed(() => [
 ])
 
 // 方法
-const handleSearch = (keyword: string) => {
-  filters.keyword = keyword
+const handleSearch = (searchData: Record<string, any> | string) => {
+  // 如果传入的是字符串，表示是关键词搜索
+  if (typeof searchData === 'string') {
+    filters.keyword = searchData
+  } else {
+    Object.assign(filters, searchData)
+  }
   pagination.page = 1
   loadLogs()
 }
@@ -363,7 +380,7 @@ const handleSortChange = ({ prop, order }: any) => {
   loadLogs()
 }
 
-const handleViewDetail = (log: any) => {
+const handleViewDetail = (log: LogItem) => {
   detailDialog.data = log
   detailDialog.visible = true
 }

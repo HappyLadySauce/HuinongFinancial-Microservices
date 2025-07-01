@@ -330,10 +330,28 @@ const filterCategory = ref('')
 const filterStatus = ref('')
 const searchKeyword = ref('')
 
+// 定义产品类型
+interface Product {
+  id: number
+  name: string
+  category: string
+  description: string
+  min_rate: number
+  max_rate: number
+  min_amount: number
+  max_amount: number
+  min_term: number
+  max_term: number
+  status: string
+  applications_count: number
+  approval_rate: number
+  created_at: Date
+}
+
 // 列表数据
 const loading = ref(false)
-const productList = ref([])
-const selectedProducts = ref([])
+const productList = ref<Product[]>([])
+const selectedProducts = ref<Product[]>([])
 
 // 统计数据
 const stats = reactive({
@@ -582,14 +600,16 @@ const handleToggleStatus = (row: any, status: string) => {
 }
 
 // 删除产品
-const handleDelete = (row: any) => {
+const handleDelete = (row: Product) => {
   ElMessageBox.confirm(`确定要删除产品 ${row.name} 吗？`, '确认删除', {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
-    type: 'danger'
+    type: 'warning'
   }).then(() => {
     ElMessage.success('产品已删除')
     loadData()
+  }).catch(() => {
+    // 用户取消删除
   })
 }
 

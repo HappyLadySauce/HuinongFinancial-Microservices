@@ -243,7 +243,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, Refresh } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { adminApi, type LeaseApproval } from '@/services/api'
+import { adminApi } from '@/services/api'
+import type { LeaseApplication } from '@/types'
 
 const router = useRouter()
 
@@ -255,7 +256,7 @@ const searchKeyword = ref('')
 
 // 列表数据
 const loading = ref(false)
-const approvalList = ref<LeaseApproval[]>([])
+const approvalList = ref<LeaseApplication[]>([])
 const selectedIds = ref<number[]>([])
 
 // 统计数据
@@ -453,7 +454,7 @@ const handleSizeChange = (size: number) => {
 }
 
 // 查看详情
-const handleViewDetail = (row: LeaseApproval) => {
+const handleViewDetail = (row: LeaseApplication) => {
   router.push(`/approval/lease/${row.id}`)
 }
 
@@ -485,9 +486,11 @@ const handleConfirmApproval = async () => {
   
   try {
     const reviewData = {
-      status: approvalDialog.type === 'approve' ? 'approved' as const : 'rejected' as const,
+      action: approvalDialog.type === 'approve' ? 'approved' as const : 'rejected' as const,
       suggestions: approvalDialog.form.comment,
-      auditor: '当前管理员' // 这里应该从登录用户信息获取
+      approved_duration: approvalDialog.currentRow?.duration || 0,
+      approved_amount: approvalDialog.currentRow?.total_amount || 0,
+      approved_deposit: approvalDialog.currentRow?.deposit || 0
     }
     
     await adminApi.reviewLeaseApproval(approvalDialog.currentRow.id, reviewData)

@@ -1,347 +1,502 @@
 import { useUserStore } from '@/stores/user'
-import type { UserInfo, LoginResponse } from '@/stores/user'
 import router from '@/router'
+import type {
+  ApiResponse,
+  PaginatedResponse,
+  AdminUser,
+  LoginRequest,
+  LoginResponse,
+  AppUser,
+  AppUserInfo,
+  LeaseApplication,
+  LeaseApplicationDetail,
+  LeaseApproval,
+  LeaseApprovalRequest,
+  LoanApplication,
+  LoanApplicationDetail,
+  LoanApproval,
+  LoanApprovalRequest,
+  LeaseProduct,
+  LeaseProductRequest,
+  LeaseProductUpdateRequest,
+  LeaseProductDetail,
+  LoanProduct,
+  LoanProductRequest,
+  LoanProductUpdateRequest,
+  LoanProductDetail,
+  InventoryCheckRequest,
+  InventoryCheckResponse,
+  ApplicationListParams,
+  ProductListParams,
+  UserListParams,
+  OperationLog,
+  SystemConfig
+} from '@/types'
 
 // API基础配置
-const API_BASE_URL = '/api/v1'
+const API_BASE_URL = 'http://127.0.0.1:8080/api/v1'
 
-// 统一响应格式
-interface ApiResponse<T = any> {
-  code: number
-  message: string
-  data: T
-}
-
-// 分页响应格式
-export interface PaginatedResponse<T> {
-  list: T[]
-  total: number
-  page: number
-  page_size: number
+// 统一响应格式处理
+interface RequestOptions extends RequestInit {
+  skipAuth?: boolean
 }
 
 // 通用请求函数
-const apiRequest = async (url: string, options: RequestInit = {}) => {
-  const defaultOptions: RequestInit = {
-    credentials: 'include',
+const apiRequest = async <T = any>(url: string, options: RequestOptions = {}): Promise<T> => {
+  const userStore = useUserStore()
+  
+  const defaultHeaders: Record<string, string> = {
+    'Content-Type': 'application/json'
+  }
+
+  // 添加JWT认证头（除非明确跳过）
+  if (!options.skipAuth && userStore.token && userStore.isTokenValid()) {
+    defaultHeaders.Authorization = `Bearer ${userStore.token}`
+  }
+
+  const finalOptions: RequestInit = {
+    ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...defaultHeaders,
       ...options.headers
     }
   }
-
-  const finalOptions = { ...defaultOptions, ...options }
   
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, finalOptions)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
     const result = await response.json()
     
-    if (result.code === 200) {
-      return result.data
-    } else {
-      // 根据错误码进行不同处理
-      switch (result.code) {
-        case 401:
-          // 未登录或会话过期，清除本地状态并跳转到登录页
-          const userStore = useUserStore()
-          userStore.logout()
-          // 使用路由跳转而不是直接操作location
-          if (router.currentRoute.value.path !== '/login') {
-            router.push({
-              path: '/login',
-              query: { redirect: router.currentRoute.value.fullPath }
-            })
-          }
-          throw new Error(result.message || '登录已过期，请重新登录')
-        case 403:
-          throw new Error('权限不足，无法访问该资源')
-        case 404:
-          throw new Error('请求的资源不存在')
-        case 500:
-          throw new Error('服务器内部错误，请稍后重试')
-        default:
-          throw new Error(result.message || '请求失败')
+    // 处理JWT登录响应 - 直接返回token
+    if (result.token) {
+      return result
+    }
+    
+    // 处理标准响应格式
+    if (result.code !== undefined) {
+      if (result.code === 200) {
+        return result.data || result
+      } else {
+        throw new Error(result.message || '请求失败')
       }
     }
+    
+    // 直接返回数据（用于新的API格式）
+    return result
+    
   } catch (error: any) {
-    if (error.message) {
-      throw error
-    } else {
-      throw new Error('网络请求失败，请检查网络连接')
+    // 处理401未授权错误
+    if (error.message.includes('401') || error.message.includes('unauthorized')) {
+      const userStore = useUserStore()
+      userStore.logout()
+      if (router.currentRoute.value.path !== '/login') {
+        router.push({
+          path: '/login',
+          query: { redirect: router.currentRoute.value.fullPath }
+        })
+      }
+      throw new Error('登录已过期，请重新登录')
     }
+    
+    throw error.message ? error : new Error('网络请求失败，请检查网络连接')
   }
 }
 
-// 贷款申请相关接口
-export interface LoanApproval {
-  id: number
-  user_id: number
-  name: string
-  type: string
-  amount: number
-  duration: number
-  description: string
-  status: 'pending' | 'approved' | 'rejected'
-  suggestions: string
-  auditor: string
-  created_at: string
-  updated_at: string
-}
-
-export interface LoanApprovalRequest {
-  name: string
-  type: string
-  amount: number
-  duration: number
-  description: string
-}
-
-// 租赁申请相关接口
-export interface LeaseApproval {
-  id: number
-  user_id: number
-  name: string
-  type: string
-  start_at: string
-  end_at: string
-  description: string
-  status: 'pending' | 'approved' | 'rejected'
-  suggestions: string
-  auditor: string
-  created_at: string
-  updated_at: string
-}
-
-export interface LeaseApprovalRequest {
-  name: string
-  type: string
-  start_at: string
-  end_at: string
-  description: string
-}
-
-// 产品类型接口
-export interface ProductTypes {
-  types: string[]
-}
-
-// 审批历史接口
-export interface ReviewRequest {
-  status: 'approved' | 'rejected'
-  suggestions: string
-  auditor: string
-}
-
-// 文件上传结果接口
-export interface FileUploadResult {
-  file_id: string
-  file_url: string
-  file_name: string
-  file_size: number
-}
-
-// 用户认证API
-export const authApi = {
-  login: async (phone: string, password: string) => {
-    return await apiRequest('/login', {
+// ================================
+// B端用户认证API (oauser服务)
+// ================================
+export const adminAuthApi = {
+  // 管理员注册
+  register: async (data: LoginRequest): Promise<LoginResponse> => {
+    return await apiRequest('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ phone, password })
+      body: JSON.stringify(data),
+      skipAuth: true
+    })
+  },
+
+  // 管理员登录
+  login: async (phone: string, password: string): Promise<LoginResponse> => {
+    return await apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ phone, password }),
+      skipAuth: true
     })
   },
   
-  logout: async () => {
-    return await apiRequest('/logout', {
+  // 管理员登出
+  logout: async (): Promise<void> => {
+    return await apiRequest('/auth/logout', {
       method: 'POST'
     })
+  },
+
+  // 修改密码
+  changePassword: async (phone: string, old_password: string, new_password: string): Promise<void> => {
+    return await apiRequest('/auth/password', {
+      method: 'POST',
+      body: JSON.stringify({ phone, old_password, new_password })
+    })
   }
 }
 
-// 贷款申请API
-export const loanApprovalApi = {
-  // 创建贷款申请
-  create: async (data: LoanApprovalRequest): Promise<LoanApproval> => {
-    return await apiRequest('/loan/approvals', {
+// ================================
+// B端用户信息API (oauser服务)
+// ================================
+export const adminUserApi = {
+  // 获取用户列表
+  getUsers: async (params: UserListParams = {}): Promise<PaginatedResponse<AdminUser>> => {
+    const queryParams = new URLSearchParams()
+    if (params.page) queryParams.append('page', params.page.toString())
+    if (params.size) queryParams.append('size', params.size.toString())
+    if (params.role) queryParams.append('role', params.role)
+    if (params.status !== undefined) queryParams.append('status', params.status.toString())
+    if (params.keyword) queryParams.append('keyword', params.keyword)
+    
+    const url = `/admin/users${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    return await apiRequest(url)
+  },
+
+  // 创建用户
+  createUser: async (data: {
+    username: string;
+    password: string;
+    display_name: string;
+    role: string;
+    email: string;
+  }): Promise<{ user_info: AdminUser }> => {
+    return await apiRequest('/admin/users', {
       method: 'POST',
       body: JSON.stringify(data)
     })
   },
 
-  // 获取用户贷款申请列表
-  getMyApprovals: async (params: { page?: number; page_size?: number } = {}): Promise<PaginatedResponse<LoanApproval>> => {
-    const queryParams = new URLSearchParams()
-    if (params.page) queryParams.append('page', params.page.toString())
-    if (params.page_size) queryParams.append('page_size', params.page_size.toString())
-    
-    const url = `/loan/approvals${queryParams.toString() ? '?' + queryParams.toString() : ''}`
-    return await apiRequest(url)
+  // 获取管理员信息
+  getUserInfo: async (phone: string): Promise<{ user_info: AdminUser }> => {
+    return await apiRequest('/user/info', {
+      method: 'GET',
+      body: JSON.stringify({ phone })
+    })
   },
 
-  // 获取单个贷款申请详情
-  getDetail: async (id: number): Promise<LoanApproval> => {
-    return await apiRequest(`/loan/approvals/${id}`)
-  },
-
-  // 更新贷款申请
-  update: async (id: number, data: Partial<LoanApprovalRequest>): Promise<LoanApproval> => {
-    return await apiRequest(`/loan/approvals/${id}`, {
+  // 更新管理员信息
+  updateUserInfo: async (user_info: Partial<AdminUser>): Promise<{ user_info: AdminUser }> => {
+    return await apiRequest('/user/info', {
       method: 'PUT',
-      body: JSON.stringify(data)
+      body: JSON.stringify({ user_info })
     })
   },
 
-  // 删除贷款申请
-  delete: async (id: number) => {
-    return await apiRequest(`/loan/approvals/${id}`, {
-      method: 'DELETE'
+  // 更新用户状态
+  updateUserStatus: async (user_id: string, status: number): Promise<{ status: number }> => {
+    return await apiRequest('/admin/users/status', {
+      method: 'PUT',
+      body: JSON.stringify({ user_id, status })
     })
   },
 
-  // 获取贷款产品类型
-  getTypes: async (): Promise<ProductTypes> => {
-    return await apiRequest('/loan/types')
-  }
-}
-
-// 租赁申请API
-export const leaseApprovalApi = {
-  // 创建租赁申请
-  create: async (data: LeaseApprovalRequest): Promise<LeaseApproval> => {
-    return await apiRequest('/lease/approvals', {
+  // 删除用户
+  deleteUser: async (phone: string): Promise<void> => {
+    return await apiRequest('/user/delete', {
       method: 'POST',
-      body: JSON.stringify(data)
+      body: JSON.stringify({ phone })
     })
-  },
-
-  // 获取用户租赁申请列表
-  getMyApprovals: async (params: { page?: number; page_size?: number } = {}): Promise<PaginatedResponse<LeaseApproval>> => {
-    const queryParams = new URLSearchParams()
-    if (params.page) queryParams.append('page', params.page.toString())
-    if (params.page_size) queryParams.append('page_size', params.page_size.toString())
-    
-    const url = `/lease/approvals${queryParams.toString() ? '?' + queryParams.toString() : ''}`
-    return await apiRequest(url)
-  },
-
-  // 获取单个租赁申请详情
-  getDetail: async (id: number): Promise<LeaseApproval> => {
-    return await apiRequest(`/lease/approvals/${id}`)
-  },
-
-  // 更新租赁申请
-  update: async (id: number, data: Partial<LeaseApprovalRequest>): Promise<LeaseApproval> => {
-    return await apiRequest(`/lease/approvals/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    })
-  },
-
-  // 删除租赁申请
-  delete: async (id: number) => {
-    return await apiRequest(`/lease/approvals/${id}`, {
-      method: 'DELETE'
-    })
-  },
-
-  // 获取租赁产品类型
-  getTypes: async (): Promise<ProductTypes> => {
-    return await apiRequest('/lease/types')
   }
 }
 
-// 管理员审批API（需要管理员权限）
-export const adminApi = {
-  // 获取所有贷款申请
-  getAllLoanApprovals: async (params: { 
-    page?: number; 
-    page_size?: number; 
-    status?: string 
-  } = {}): Promise<PaginatedResponse<LoanApproval>> => {
+// ================================
+// C端用户管理API (appuser服务)
+// ================================
+export const appUserApi = {
+  // 获取C端用户信息
+  getUserInfo: async (phone: string): Promise<AppUserInfo> => {
+    return await apiRequest('/user/info', {
+      method: 'GET',
+      body: JSON.stringify({ phone })
+    })
+  },
+
+  // 更新C端用户信息
+  updateUserInfo: async (user_info: Partial<AppUser>): Promise<AppUserInfo> => {
+    return await apiRequest('/user/info', {
+      method: 'PUT',
+      body: JSON.stringify({ user_info })
+    })
+  },
+
+  // 删除C端用户
+  deleteUser: async (phone: string): Promise<void> => {
+    return await apiRequest('/user/delete', {
+      method: 'POST',
+      body: JSON.stringify({ phone })
+    })
+  }
+}
+
+// ================================
+// 租赁申请管理API (lease服务)
+// ================================
+export const adminLeaseApi = {
+  // 获取所有租赁申请列表
+  getAllApplications: async (params: ApplicationListParams = {}): Promise<PaginatedResponse<LeaseApplication>> => {
     const queryParams = new URLSearchParams()
     if (params.page) queryParams.append('page', params.page.toString())
-    if (params.page_size) queryParams.append('page_size', params.page_size.toString())
+    if (params.size) queryParams.append('size', params.size.toString())
+    if (params.user_id) queryParams.append('user_id', params.user_id.toString())
+    if (params.product_code) queryParams.append('product_code', params.product_code)
     if (params.status) queryParams.append('status', params.status)
     
-    const url = `/admin/loan/approvals${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    const url = `/admin/lease/applications${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    return await apiRequest(url)
+  },
+
+  // 获取租赁申请详情
+  getApplicationDetail: async (id: string): Promise<LeaseApplicationDetail> => {
+    return await apiRequest(`/admin/lease/applications/${id}`)
+  },
+
+  // 获取租赁审批记录
+  getApprovals: async (application_id: string): Promise<{ list: LeaseApproval[] }> => {
+    return await apiRequest(`/admin/lease/applications/${application_id}/approvals?application_id=${application_id}`)
+  },
+
+  // 审批租赁申请
+  approveApplication: async (id: string, data: LeaseApprovalRequest): Promise<void> => {
+    return await apiRequest(`/admin/lease/applications/${id}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 审核申请 (别名方法，兼容性)
+  reviewApproval: async (application_id: string, data: any): Promise<void> => {
+    return await apiRequest(`/admin/lease/applications/${application_id}/review`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 获取详情 (别名方法，兼容性)
+  getDetail: async (id: string): Promise<{ application_info: LeaseApplication }> => {
+    const result = await apiRequest(`/admin/lease/applications/${id}`)
+    return { application_info: result }
+  }
+}
+
+// ================================
+// 贷款申请管理API (loan服务)
+// ================================
+export const adminLoanApi = {
+  // 获取所有贷款申请列表
+  getAllApplications: async (params: ApplicationListParams = {}): Promise<PaginatedResponse<LoanApplication>> => {
+    const queryParams = new URLSearchParams()
+    if (params.page) queryParams.append('page', params.page.toString())
+    if (params.size) queryParams.append('size', params.size.toString())
+    if (params.user_id) queryParams.append('user_id', params.user_id.toString())
+    if (params.status) queryParams.append('status', params.status)
+    
+    const url = `/admin/loan/applications${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    return await apiRequest(url)
+  },
+
+  // 获取贷款申请详情
+  getApplicationDetail: async (id: string): Promise<LoanApplicationDetail> => {
+    return await apiRequest(`/admin/loan/applications/${id}`)
+  },
+
+  // 获取贷款审批记录
+  getApprovals: async (params: ApplicationListParams = {}): Promise<PaginatedResponse<LoanApplication>> => {
+    const queryParams = new URLSearchParams()
+    if (params.page) queryParams.append('page', params.page.toString())
+    if (params.size) queryParams.append('size', params.size.toString())
+    if (params.status) queryParams.append('status', params.status)
+    
+    const url = `/admin/loan/applications${queryParams.toString() ? '?' + queryParams.toString() : ''}`
     return await apiRequest(url)
   },
 
   // 审批贷款申请
-  reviewLoanApproval: async (id: number, data: ReviewRequest) => {
-    return await apiRequest(`/admin/loan/approvals/${id}/review`, {
+  approveApplication: async (id: string, data: LoanApprovalRequest): Promise<void> => {
+    return await apiRequest(`/admin/loan/applications/${id}/approve`, {
       method: 'POST',
       body: JSON.stringify(data)
     })
   },
 
-  // 获取所有租赁申请
-  getAllLeaseApprovals: async (params: { 
-    page?: number; 
-    page_size?: number; 
-    status?: string 
-  } = {}): Promise<PaginatedResponse<LeaseApproval>> => {
-    const queryParams = new URLSearchParams()
-    if (params.page) queryParams.append('page', params.page.toString())
-    if (params.page_size) queryParams.append('page_size', params.page_size.toString())
-    if (params.status) queryParams.append('status', params.status)
-    
-    const url = `/admin/lease/approvals${queryParams.toString() ? '?' + queryParams.toString() : ''}`
-    return await apiRequest(url)
+  // 审核申请 (别名方法，兼容性)
+  reviewApproval: async (application_id: string, data: any): Promise<void> => {
+    return await apiRequest(`/admin/loan/applications/${application_id}/review`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
   },
 
-  // 审批租赁申请
-  reviewLeaseApproval: async (id: number, data: ReviewRequest) => {
-    return await apiRequest(`/admin/lease/approvals/${id}/review`, {
+  // 获取详情 (别名方法，兼容性)
+  getDetail: async (id: string): Promise<{ application_info: LoanApplication }> => {
+    const result = await apiRequest(`/admin/loan/applications/${id}`)
+    return { application_info: result }
+  }
+}
+
+// ================================
+// 租赁产品管理API (leaseproduct服务)
+// ================================
+export const adminLeaseProductApi = {
+  // 获取所有租赁产品列表
+  getAllProducts: async (params: ProductListParams = {}): Promise<PaginatedResponse<LeaseProduct>> => {
+    const queryParams = new URLSearchParams()
+    queryParams.append('page', (params.page || 1).toString())
+    queryParams.append('size', (params.size || 10).toString())
+    if (params.type) queryParams.append('type', params.type)
+    if (params.brand) queryParams.append('brand', params.brand)
+    if (params.status !== undefined) queryParams.append('status', params.status.toString())
+    if (params.keyword) queryParams.append('keyword', params.keyword)
+    
+    return await apiRequest(`/admin/leaseproduct/products?${queryParams.toString()}`)
+  },
+
+  // 创建租赁产品
+  createProduct: async (data: LeaseProductRequest): Promise<LeaseProductDetail> => {
+    return await apiRequest('/admin/leaseproduct/products', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 获取租赁产品详情
+  getProductDetail: async (productCode: string): Promise<LeaseProductDetail> => {
+    return await apiRequest(`/admin/leaseproduct/products/${productCode}`)
+  },
+
+  // 更新租赁产品
+  updateProduct: async (productCode: string, data: LeaseProductUpdateRequest): Promise<LeaseProductDetail> => {
+    return await apiRequest(`/admin/leaseproduct/products/${productCode}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 删除租赁产品
+  deleteProduct: async (productCode: string): Promise<void> => {
+    return await apiRequest(`/admin/leaseproduct/products/${productCode}`, {
+      method: 'DELETE'
+    })
+  }
+}
+
+// C端租赁产品查看API
+export const leaseProductApi = {
+  // 获取租赁产品列表（C端视图）
+  getProducts: async (params: ProductListParams = {}): Promise<PaginatedResponse<LeaseProduct>> => {
+    const queryParams = new URLSearchParams()
+    queryParams.append('page', (params.page || 1).toString())
+    queryParams.append('size', (params.size || 10).toString())
+    if (params.type) queryParams.append('type', params.type)
+    if (params.brand) queryParams.append('brand', params.brand)
+    if (params.status !== undefined) queryParams.append('status', params.status.toString())
+    if (params.keyword) queryParams.append('keyword', params.keyword)
+    
+    return await apiRequest(`/leaseproduct/products?${queryParams.toString()}`)
+  },
+
+  // 获取租赁产品详情（C端视图）
+  getProductDetail: async (productCode: string): Promise<LeaseProductDetail> => {
+    return await apiRequest(`/leaseproduct/products/${productCode}`)
+  },
+
+  // 检查库存可用性
+  checkInventoryAvailability: async (data: InventoryCheckRequest): Promise<InventoryCheckResponse> => {
+    return await apiRequest('/leaseproduct/products/check-inventory', {
       method: 'POST',
       body: JSON.stringify(data)
     })
   }
 }
 
+// ================================
+// 贷款产品管理API (loanproduct服务)
+// ================================
+export const adminLoanProductApi = {
+  // 获取所有贷款产品列表
+  getAllProducts: async (params: ProductListParams = {}): Promise<PaginatedResponse<LoanProduct>> => {
+    const queryParams = new URLSearchParams()
+    queryParams.append('page', (params.page || 1).toString())
+    queryParams.append('size', (params.size || 10).toString())
+    if (params.type) queryParams.append('type', params.type)
+    if (params.status !== undefined) queryParams.append('status', params.status.toString())
+    if (params.keyword) queryParams.append('keyword', params.keyword)
+    
+    return await apiRequest(`/admin/loanproduct/products?${queryParams.toString()}`)
+  },
+
+  // 创建贷款产品
+  createProduct: async (data: LoanProductRequest): Promise<LoanProductDetail> => {
+    return await apiRequest('/admin/loanproduct/products', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 获取贷款产品详情
+  getProductDetail: async (id: number): Promise<LoanProductDetail> => {
+    return await apiRequest(`/admin/loanproduct/products/${id}`)
+  },
+
+  // 更新贷款产品
+  updateProduct: async (id: number, data: LoanProductUpdateRequest): Promise<LoanProductDetail> => {
+    return await apiRequest(`/admin/loanproduct/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  },
+
+  // 更新产品状态
+  updateProductStatus: async (id: number, status: number): Promise<void> => {
+    return await apiRequest(`/admin/loanproduct/products/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status })
+    })
+  },
+
+  // 删除贷款产品
+  deleteProduct: async (id: number): Promise<void> => {
+    return await apiRequest(`/admin/loanproduct/products/${id}`, {
+      method: 'DELETE'
+    })
+  }
+}
+
+// C端贷款产品查看API
+export const loanProductApi = {
+  // 获取贷款产品列表（C端视图）
+  getProducts: async (params: ProductListParams = {}): Promise<PaginatedResponse<LoanProduct>> => {
+    const queryParams = new URLSearchParams()
+    queryParams.append('page', (params.page || 1).toString())
+    queryParams.append('size', (params.size || 10).toString())
+    if (params.type) queryParams.append('type', params.type)
+    if (params.status !== undefined) queryParams.append('status', params.status.toString())
+    if (params.keyword) queryParams.append('keyword', params.keyword)
+    
+    return await apiRequest(`/loanproduct/products?${queryParams.toString()}`)
+  },
+
+  // 获取贷款产品详情（C端视图）
+  getProductDetail: async (id: number): Promise<LoanProductDetail> => {
+    return await apiRequest(`/loanproduct/products/${id}`)
+  }
+}
+
+// ================================
 // 创建API客户端实例
+// ================================
 const apiClient = {
   // 通用请求方法
-  async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const userStore = useUserStore()
-    const url = `${API_BASE_URL}${endpoint}`
-    
-    // 设置默认headers
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...((options.headers as Record<string, string>) || {})
-    }
-
-    // 如果有session且需要认证，添加Authorization header
-    if (userStore.sessionId && userStore.isTokenValid()) {
-      headers.Authorization = `Bearer ${userStore.sessionId}`
-    }
-
-    const config: RequestInit = {
-      ...options,
-      headers
-    }
-
-    try {
-      const response = await fetch(url, config)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result = await response.json()
-      
-      // 检查API响应码 (后端成功状态码是200)
-      if (result.code !== 200) {
-        throw new Error(result.message || '请求失败')
-      }
-
-      return result.data || result
-    } catch (error) {
-      console.error('API请求失败:', error)
-      throw error
-    }
+  async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+    return await apiRequest(endpoint, options)
   },
 
   // GET请求
@@ -369,244 +524,134 @@ const apiClient = {
   // DELETE请求
   delete<T>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' })
-  },
+  }
+}
 
-  // 文件上传
-  async uploadFile(file: File, purpose?: string): Promise<ApiResponse<FileUploadResult>> {
-    const userStore = useUserStore()
-    const url = `${API_BASE_URL}/files/upload`
+// ================================
+// 工具函数
+// ================================
+
+// 格式化Unix时间戳
+export const formatTimestamp = (timestamp: number): string => {
+  return new Date(timestamp * 1000).toLocaleString('zh-CN')
+}
+
+// 格式化金额
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('zh-CN', {
+    style: 'currency',
+    currency: 'CNY'
+  }).format(amount)
+}
+
+// 状态标签映射
+export const statusLabels = {
+  pending: '待审核',
+  approved: '已通过',
+  rejected: '已拒绝',
+  cancelled: '已取消'
+}
+
+// 产品状态标签
+export const productStatusLabels = {
+  0: '停用',
+  1: '启用',
+  2: '禁用'
+}
+
+// 用户状态标签
+export const userStatusLabels = {
+  0: '停用',
+  1: '启用',
+  2: '暂停'
+}
+
+// 角色标签
+export const roleLabels = {
+  admin: '管理员',
+  operator: '操作员',
+  auditor: '审核员'
+}
+
+// ================================
+// 别名导出 - 兼容旧版本命名
+// ================================
+export const adminLoanApprovalApi = adminLoanApi
+export const adminLeaseApprovalApi = adminLeaseApi
+// ================================
+// 操作日志API
+// ================================
+export const adminLogApi = {
+  // 获取操作日志列表
+  getOperationLogs: async (params: {
+    operator_id?: string;
+    action?: string;
+    start_date?: string;
+    end_date?: string;
+    page?: number;
+    limit?: number;
+  } = {}): Promise<PaginatedResponse<OperationLog>> => {
+    const queryParams = new URLSearchParams()
+    if (params.operator_id) queryParams.append('operator_id', params.operator_id)
+    if (params.action) queryParams.append('action', params.action)
+    if (params.start_date) queryParams.append('start_date', params.start_date)
+    if (params.end_date) queryParams.append('end_date', params.end_date)
+    if (params.page) queryParams.append('page', params.page.toString())
+    if (params.limit) queryParams.append('size', params.limit.toString())
     
-    const formData = new FormData()
-    formData.append('file', file)
-    if (purpose) {
-      formData.append('purpose', purpose)
-    }
-
-    const headers: Record<string, string> = {}
-    if (userStore.sessionId && userStore.isTokenValid()) {
-      headers.Authorization = `Bearer ${userStore.sessionId}`
-    }
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error(`上传失败: ${response.status}`)
-    }
-
-    return response.json()
+    const url = `/admin/logs${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+    return await apiRequest(url)
   }
 }
 
-// 兼容性接口定义（用于与旧代码兼容）
-export interface RegisterRequest {
-  phone: string
-  password: string
-}
-
-export interface LoginRequest {
-  phone: string
-  password: string
-}
-
-export interface UpdateUserRequest {
-  nickname?: string
-  avatar_url?: string
-  real_name?: string
-  address?: string
-}
-
-// 贷款产品接口（用于产品展示页面）
-export interface LoanProduct {
-  product_id: string
-  name: string
-  description: string
-  category: string
-  min_amount: number
-  max_amount: number
-  min_term_months: number
-  max_term_months: number
-  interest_rate_yearly: string
-  status: number
-  repayment_methods?: string[]
-  application_conditions?: string
-  required_documents?: Array<{
-    type: string
-    desc: string
-  }>
-}
-
-// 兼容性类型别名
-export type LoanApplication = LoanApproval
-export type LeaseApplication = LeaseApproval
-export type LoanApplicationRequest = LoanApprovalRequest
-export type LeaseApplicationRequest = LeaseApprovalRequest
-
-// 模拟用户数据存储
-const mockUsers = [
-  {
-    user_id: '1',
-    phone: '13800138000',
-    password: '123456',
-    nickname: '张三',
-    avatar_url: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-    real_name: '张三',
-    id_card_number: '110101199001011234',
-    address: '北京市朝阳区'
+// ================================
+// 系统配置API
+// ================================
+export const adminSystemApi = {
+  // 获取系统配置列表
+  getSystemConfigurations: async (): Promise<SystemConfig[]> => {
+    return await apiRequest('/admin/system/configurations')
   },
-  {
-    user_id: '2', 
-    phone: '13800138001',
-    password: '123456',
-    nickname: '李四',
-    avatar_url: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    real_name: '李四',
-    id_card_number: '110101199001011235',
-    address: '上海市浦东新区'
-  }
-]
 
-// 用户相关API
-export const userApi = {
-  // 注册 - 模拟实现
-  async register(data: RegisterRequest): Promise<ApiResponse<{ user_id: string }>> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // 检查手机号是否已存在
-        const existingUser = mockUsers.find(user => user.phone === data.phone)
-        if (existingUser) {
-          reject(new Error('手机号已注册'))
-          return
-        }
-        
-        // 模拟创建新用户
-        const newUser = {
-          user_id: String(mockUsers.length + 1),
-          phone: data.phone,
-          password: data.password,
-          nickname: '新用户',
-          avatar_url: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-          real_name: '',
-          id_card_number: '',
-          address: ''
-        }
-        
-        mockUsers.push(newUser)
-        
-        resolve({
-          code: 0,
-          message: '注册成功',
-          data: { user_id: newUser.user_id }
-        })
-      }, 1000) // 模拟网络延迟
+  // 更新系统配置
+  updateSystemConfiguration: async (key: string, value: string): Promise<void> => {
+    return await apiRequest('/admin/system/configurations', {
+      method: 'PUT',
+      body: JSON.stringify({ key, value })
     })
   },
 
-  // 登录 - 调用真实后端API
-  async login(data: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    try {
-      const response = await apiRequest('/login', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      })
-      
-      return {
-        code: 200,
-          message: '登录成功',
-        data: response
-      }
-    } catch (error: any) {
-      throw new Error(error.message || '登录失败')
-    }
-  },
-
-  // 获取用户信息 - 调用真实后端API
-  async getUserInfo(): Promise<ApiResponse<UserInfo>> {
-    try {
-      const response = await apiRequest('/session/info')
-      
-      // 从session信息中构造用户信息
-      const mockUserInfo = {
-        user_id: response.session.user_id,
-        phone: '13800138000', // 临时使用测试手机号
-        nickname: '测试用户',
-        avatar_url: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
-        real_name: '张三',
-        id_card_number: '110101199001011234',
-        address: '北京市朝阳区'
-      }
-      
-      return {
-        code: 200,
-          message: '获取用户信息成功',
-        data: mockUserInfo
-      }
-    } catch (error: any) {
-      throw new Error(error.message || '获取用户信息失败')
-    }
-  },
-
-  // 更新用户信息
-  updateUserInfo(data: UpdateUserRequest): Promise<ApiResponse> {
-    return apiClient.put('/users/me', data)
+  // 切换AI审批状态
+  toggleAIApproval: async (enabled: boolean): Promise<void> => {
+    return await apiRequest('/admin/system/ai-approval', {
+      method: 'PUT',
+      body: JSON.stringify({ enabled })
+    })
   }
 }
 
-// 兼容性贷款API（保持旧接口可用）
-export const loanApi = {
-  // 获取贷款产品列表 - 兼容旧接口
-  getProducts(category?: string): Promise<ApiResponse<LoanProduct[]>> {
-    const params = category ? { category } : undefined
-    return apiClient.get('/loans/products', params)
-  },
-
-  // 获取贷款产品详情 - 兼容旧接口
-  getProductDetail(productId: string): Promise<ApiResponse<LoanProduct>> {
-    return apiClient.get(`/loans/products/${productId}`)
-  },
-
-  // 提交贷款申请 - 兼容旧接口
-  submitApplication(data: LoanApplicationRequest): Promise<ApiResponse<{ application_id: string }>> {
-    return apiClient.post('/loans/applications', data)
-  },
-
-  // 获取贷款申请详情 - 兼容旧接口
-  getApplicationDetail(applicationId: string): Promise<ApiResponse<LoanApplication>> {
-    return apiClient.get(`/loans/applications/${applicationId}`)
-  },
-
-  // 获取我的贷款申请列表 - 兼容旧接口
-  getMyApplications(params?: {
-    status?: string
-    page?: number
-    limit?: number
-  }): Promise<PaginatedResponse<LoanApplication>> {
-    return apiClient.get('/loans/applications/my', params)
-  },
-
-  // 新接口的别名，保持向后兼容
-  ...loanApprovalApi
+export const adminApi = {
+  loan: adminLoanApi,
+  lease: adminLeaseApi,
+  user: adminUserApi,
+  auth: adminAuthApi,
+  leaseProduct: adminLeaseProductApi,
+  loanProduct: adminLoanProductApi,
+  log: adminLogApi,
+  system: adminSystemApi,
+  
+  // 别名方法 - 兼容旧版本调用
+  getAllLoanApprovals: adminLoanApi.getAllApplications,
+  getAllLeaseApprovals: adminLeaseApi.getAllApplications,
+  reviewLoanApproval: adminLoanApi.reviewApproval,
+  reviewLeaseApproval: adminLeaseApi.approveApplication
 }
 
-// 租赁API别名
-export const leaseApi = leaseApprovalApi
-
-// 文件服务API
-export const fileApi = {
-  // 文件上传
-  upload(file: File, purpose?: string): Promise<ApiResponse<FileUploadResult>> {
-    return apiClient.uploadFile(file, purpose)
-  }
-}
-
-// 健康检查API
-export const healthApi = {
-  check(): Promise<ApiResponse<{ status: string; service: string; version: string }>> {
-    return apiClient.get('/health')
-  }
-}
+// 类型导出
+export type { 
+  LeaseApproval,
+  LoanApproval,
+  ApplicationDetail
+} from '@/types'
 
 export default apiClient 

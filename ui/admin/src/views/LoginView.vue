@@ -60,8 +60,8 @@
         
         <div class="login-tips">
           <h4>测试账号</h4>
-          <p><strong>管理员：</strong>13452552349 / admin123</p>
-          <p><strong>备用账号：</strong>13800138000 / 123456</p>
+          <p><strong>管理员：</strong>13452552490 / 13452552490</p>
+          <p><strong>操作员：</strong>13452552491 / 13452552491</p>
         </div>
       </el-card>
     </div>
@@ -74,7 +74,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
-import { userApi } from '@/services/api'
+import AuthService from '@/services/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -106,27 +106,17 @@ const handleLogin = async () => {
     await loginFormRef.value.validate()
     loading.value = true
     
-    // 调用登录API
-    const loginResponse = await userApi.login({
-      phone: loginForm.phone,
-      password: loginForm.password
-    })
-    
-    // 设置用户登录状态
-    userStore.login(loginResponse.data)
-    
-    // 获取用户信息
-    try {
-      const userInfoResponse = await userApi.getUserInfo()
-      userStore.setUserInfo(userInfoResponse.data)
-    } catch (error) {
-      console.warn('获取用户信息失败:', error)
-    }
+    // 使用新的认证服务进行登录
+    await AuthService.login(loginForm.phone, loginForm.password)
     
     ElMessage.success('登录成功')
-    router.push('/dashboard')
+    
+    // 检查是否有重定向路径
+    const redirect = router.currentRoute.value.query.redirect as string
+    router.push(redirect || '/dashboard')
   } catch (error: any) {
-    ElMessage.error(error.message || '登录失败，请检查用户名和密码')
+    console.error('登录失败:', error)
+    ElMessage.error(error.message || '登录失败，请检查手机号和密码')
   } finally {
     loading.value = false
   }
