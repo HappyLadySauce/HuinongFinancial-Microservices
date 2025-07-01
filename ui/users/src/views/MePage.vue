@@ -151,14 +151,16 @@ const handleModuleClick = (module: string) => {
   }
 }
 
-// 加载用户信息
+// 加载用户信息 - 适配新API
 const loadUserInfo = async () => {
-  if (!userStore.isLoggedIn) return
+  if (!userStore.isLoggedIn || !userStore.userInfo?.phone) return
   
   try {
     loading.value = true
-    const response = await userApi.getUserInfo()
-    userStore.setUserInfo(response.data)
+    // 新API需要传递phone参数
+    const response = await userApi.getUserInfo(userStore.userInfo.phone)
+    // 新API直接返回用户信息，不需要.data
+    userStore.setUserInfo(response)
   } catch (error: any) {
     console.error('加载用户信息失败:', error)
     // 不显示错误消息，避免影响用户体验

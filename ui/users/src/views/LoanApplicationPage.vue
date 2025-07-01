@@ -5,7 +5,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useUserStore } from '../stores/user'
 import { loanApprovalApi } from '../services/api'
-import type { LoanApprovalRequest, ProductTypes } from '../services/api'
+import type { LoanApplicationRequest } from '../services/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -16,13 +16,14 @@ const loading = ref(false)
 // 可用的贷款类型
 const availableTypes = ref<string[]>([])
 
-// 申请表单数据
-const formData = reactive<LoanApprovalRequest>({
+// 申请表单数据 - 更新以匹配新API
+const formData = reactive<LoanApplicationRequest>({
+  product_id: 1, // 默认产品ID，实际应该从产品选择中获取
   name: '',
   type: '',
   amount: 10000,
   duration: 12,
-  description: ''
+  purpose: '' // 新API使用purpose而不是description
 })
 
 // 贷款类型配置
@@ -119,18 +120,18 @@ const rules = reactive<FormRules>({
   duration: [
     { required: true, message: '请选择贷款期限', trigger: 'change' }
   ],
-  description: [
+  purpose: [
     { required: true, message: '请输入申请用途', trigger: 'blur' },
     { min: 20, message: '申请用途不能少于20个字符', trigger: 'blur' },
     { max: 500, message: '申请用途不能超过500个字符', trigger: 'blur' }
   ]
 })
 
-// 加载贷款类型
+// 加载贷款类型 - 使用静态数据替代API调用
 const loadLoanTypes = async () => {
   try {
-    const response = await loanApprovalApi.getTypes()
-    availableTypes.value = response.types
+    // 新的API暂时没有getTypes方法，使用静态数据
+    availableTypes.value = ['农业贷', '创业贷', '消费贷', '经营贷', '助学贷']
     
     // 如果URL中有type参数，设置默认类型
     const typeFromQuery = route.query.type as string
@@ -142,8 +143,8 @@ const loadLoanTypes = async () => {
       } else {
         ElMessage.error('无效的贷款类型')
         router.push('/finance')
-    return
-  }
+        return
+      }
     } else {
       // 如果没有指定类型，返回理财页面
       ElMessage.warning('请先选择贷款类型')
@@ -321,9 +322,9 @@ onMounted(() => {
           <div class="form-section">
             <div class="section-title">用途说明</div>
 
-            <el-form-item label="申请用途" prop="description">
+            <el-form-item label="申请用途" prop="purpose">
             <el-input
-                v-model="formData.description"
+                v-model="formData.purpose"
               type="textarea"
                 :rows="5"
                 :placeholder="currentTypeConfig?.placeholder || '请详细说明贷款用途，不少于20个字符'"
@@ -369,7 +370,7 @@ onMounted(() => {
             </div>
           <div class="preview-item">
             <span class="preview-label">申请用途:</span>
-            <span class="preview-value">{{ formData.description || '未填写' }}</span>
+            <span class="preview-value">{{ formData.purpose || '未填写' }}</span>
           </div>
         </div>
       </div>

@@ -20,8 +20,13 @@ export const isAuthRequired = (path: string): boolean => {
 // 验证会话是否有效
 const validateSession = async (): Promise<boolean> => {
   try {
+    const userStore = useUserStore()
+    // 检查是否有用户信息和手机号
+    if (!userStore.userInfo?.phone) {
+      return false
+    }
     // 尝试获取当前会话信息来验证会话是否有效
-    await userApi.getUserInfo()
+    await userApi.getUserInfo(userStore.userInfo.phone)
     return true
   } catch (error) {
     console.warn('会话验证失败:', error)

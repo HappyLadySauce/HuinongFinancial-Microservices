@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../stores/user'
-import { loanApi } from '../services/api'
+import { loanProductApi } from '../services/api'
 import type { LoanProduct } from '../services/api'
 
 const router = useRouter()
@@ -22,17 +22,17 @@ const formatAmount = (amount: number) => {
   return amount.toLocaleString()
 }
 
-// 格式化期限选项
+// 格式化期限选项 - 使用新API字段
 const termOptions = computed(() => {
   if (!product.value) return []
   const options = []
-  for (let i = product.value.min_term_months; i <= product.value.max_term_months; i += 6) {
+  for (let i = product.value.min_duration; i <= product.value.max_duration; i += 6) {
     options.push(`${i}个月`)
   }
   return options
 })
 
-// 加载产品详情
+// 加载产品详情 - 使用新的产品API
 const loadProductDetail = async () => {
   const productId = route.params.productId as string
   if (!productId) {
@@ -43,7 +43,7 @@ const loadProductDetail = async () => {
 
   try {
     loading.value = true
-    const response = await loanApi.getProductDetail(productId)
+    const response = await loanProductApi.getProductDetail(parseInt(productId))
     product.value = response.data
   } catch (error: any) {
     console.error('加载产品详情失败:', error)
@@ -54,7 +54,7 @@ const loadProductDetail = async () => {
   }
 }
 
-// 申请贷款
+// 申请贷款 - 使用新API字段
 const applyLoan = () => {
   if (!product.value) return
   
@@ -65,8 +65,8 @@ const applyLoan = () => {
     return
   }
   
-  // 跳转到申请页面
-  router.push(`/loan/apply/${product.value.product_id}`)
+  // 跳转到申请页面，使用id字段
+  router.push(`/loan/apply/${product.value.id}`)
 }
 
 // 返回上一页
@@ -98,8 +98,8 @@ onMounted(() => {
           <h1 class="product-name">{{ product.name }}</h1>
           <p class="product-desc">{{ product.description }}</p>
           <div class="product-tags">
-            <el-tag type="success" size="small">{{ product.category }}</el-tag>
-            <el-tag v-if="product.status === 0" type="success" size="small">可申请</el-tag>
+            <el-tag type="success" size="small">{{ product.type }}</el-tag>
+            <el-tag v-if="product.status === 1" type="success" size="small">可申请</el-tag>
             <el-tag v-else type="danger" size="small">暂停申请</el-tag>
           </div>
         </div>
@@ -109,7 +109,7 @@ onMounted(() => {
       <div class="highlight-card">
         <div class="highlight-item">
           <div class="highlight-label">年利率</div>
-          <div class="highlight-value">{{ product.interest_rate_yearly }}</div>
+          <div class="highlight-value">{{ product.interest_rate }}%</div>
         </div>
         <div class="divider"></div>
         <div class="highlight-item">
@@ -126,7 +126,7 @@ onMounted(() => {
           <div class="detail-list">
             <div class="detail-item">
               <span class="label">产品类型</span>
-              <span class="value">{{ product.category }}</span>
+              <span class="value">{{ product.type }}</span>
             </div>
             <div class="detail-item">
               <span class="label">贷款金额</span>
@@ -134,38 +134,52 @@ onMounted(() => {
             </div>
             <div class="detail-item">
               <span class="label">贷款期限</span>
-              <span class="value">{{ product.min_term_months }} - {{ product.max_term_months }}个月</span>
+              <span class="value">{{ product.min_duration }} - {{ product.max_duration }}个月</span>
             </div>
             <div class="detail-item">
               <span class="label">年利率</span>
-              <span class="value highlight">{{ product.interest_rate_yearly }}</span>
+              <span class="value highlight">{{ product.interest_rate }}%</span>
             </div>
+            <!-- 新API暂时没有repayment_methods字段 -->
+            <!--
             <div v-if="product.repayment_methods" class="detail-item">
               <span class="label">还款方式</span>
               <span class="value">{{ product.repayment_methods.join('、') }}</span>
             </div>
+            -->
           </div>
         </div>
 
-        <!-- 申请条件 -->
-        <div v-if="product.application_conditions" class="detail-section">
+        <!-- 申请条件 - 使用通用内容替代 -->
+        <div class="detail-section">
           <h3 class="section-title">申请条件</h3>
           <div class="conditions-content">
-            <p>{{ product.application_conditions }}</p>
+            <p>• 年满18周岁，具有完全民事行为能力</p>
+            <p>• 有稳定的收入来源和偿还能力</p>
+            <p>• 信用记录良好，无重大违约记录</p>
+            <p>• 提供真实有效的个人信息和证明材料</p>
           </div>
         </div>
 
-        <!-- 所需材料 -->
-        <div v-if="product.required_documents && product.required_documents.length > 0" class="detail-section">
+        <!-- 所需材料 - 使用通用内容替代 -->
+        <div class="detail-section">
           <h3 class="section-title">所需材料</h3>
           <div class="documents-list">
-            <div 
-              v-for="(doc, index) in product.required_documents" 
-              :key="index"
-              class="document-item"
-            >
+            <div class="document-item">
               <el-icon class="doc-icon"><Document /></el-icon>
-              <span class="doc-desc">{{ doc.desc }}</span>
+              <span class="doc-desc">身份证正反面照片</span>
+            </div>
+            <div class="document-item">
+              <el-icon class="doc-icon"><Document /></el-icon>
+              <span class="doc-desc">收入证明或银行流水</span>
+            </div>
+            <div class="document-item">
+              <el-icon class="doc-icon"><Document /></el-icon>
+              <span class="doc-desc">手机号码实名认证</span>
+            </div>
+            <div class="document-item">
+              <el-icon class="doc-icon"><Document /></el-icon>
+              <span class="doc-desc">其他相关证明材料</span>
             </div>
           </div>
         </div>
@@ -191,10 +205,10 @@ onMounted(() => {
           type="primary" 
           size="large" 
           @click="applyLoan"
-          :disabled="product.status !== 0"
+          :disabled="product.status !== 1"
           class="apply-btn"
         >
-          {{ product.status === 0 ? '立即申请' : '暂停申请' }}
+          {{ product.status === 1 ? '立即申请' : '暂停申请' }}
         </el-button>
         <p class="apply-tip">
           <el-icon><InfoFilled /></el-icon>

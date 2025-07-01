@@ -5,7 +5,7 @@ import { ElMessage } from 'element-plus'
 import AppFooter from './components/footer.vue'
 import { useUserStore } from '../stores/user'
 import { loanApprovalApi } from '../services/api'
-import type { ProductTypes } from '../services/api'
+// 移除不存在的ProductTypes接口
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -86,12 +86,12 @@ const getTypeConfig = (type: string) => {
   }
 }
 
-// 加载贷款类型
+// 加载贷款类型 - 使用静态数据替代API调用
 const loadLoanTypes = async () => {
   try {
     loading.value = true
-    const response = await loanApprovalApi.getTypes()
-    loanTypes.value = response.types
+    // 新的API暂时没有getTypes方法，使用静态数据
+    loanTypes.value = ['农业贷', '创业贷', '消费贷', '经营贷', '助学贷']
   } catch (error: any) {
     console.error('加载贷款类型失败:', error)
     ElMessage.error('加载产品信息失败')
@@ -105,7 +105,7 @@ const loadMyStats = async () => {
   if (!userStore.isLoggedIn) return
   
   try {
-    const response = await loanApprovalApi.getMyApprovals({ page: 1, page_size: 100 })
+    const response = await loanApprovalApi.getMyApprovals({ page: 1, size: 100 })
     myStats.value = {
       totalApplications: response.total,
       pendingCount: response.list.filter(app => app.status === 'pending').length,

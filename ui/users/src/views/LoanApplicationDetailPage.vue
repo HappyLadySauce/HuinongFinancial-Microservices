@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../stores/user'
 import { loanApprovalApi } from '../services/api'
-import type { LoanApproval } from '../services/api'
+import type { LoanApplication } from '../services/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -12,7 +12,7 @@ const userStore = useUserStore()
 const loading = ref(false)
 
 // 申请详情
-const application = ref<LoanApproval | null>(null)
+const application = ref<LoanApplication | null>(null)
 
 // 状态映射
 const statusMap = {
@@ -50,9 +50,9 @@ const getStatusInfo = (status: string) => {
   }
 }
 
-// 格式化时间
-const formatDateTime = (dateString: string) => {
-  const date = new Date(dateString)
+// 格式化时间 - 支持Unix时间戳
+const formatDateTime = (timestamp: number) => {
+  const date = new Date(timestamp * 1000) // Unix时间戳转换为毫秒
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -73,8 +73,8 @@ const loadApplicationDetail = async () => {
 
   try {
     loading.value = true
-    const response = await loanApprovalApi.getDetail(parseInt(applicationId))
-    application.value = response
+    const response = await loanApprovalApi.getDetail(applicationId)
+    application.value = response.application_info // 新API返回格式为 { application_info: LoanApplication }
   } catch (error: any) {
     console.error('加载申请详情失败:', error)
     ElMessage.error('加载申请详情失败')
@@ -84,7 +84,7 @@ const loadApplicationDetail = async () => {
   }
 }
 
-// 删除申请
+// 删除申请 - 使用cancel方法
 const deleteApplication = async () => {
   if (!application.value || application.value.status !== 'pending') {
     ElMessage.warning('只能删除待审批的申请')
@@ -102,7 +102,8 @@ const deleteApplication = async () => {
       }
     )
 
-    await loanApprovalApi.delete(application.value.id)
+    // 新API使用cancel方法取消申请
+    await loanApprovalApi.cancel(application.value.application_id, '用户主动删除申请')
     ElMessage.success('删除成功')
     
     // 返回列表页，传递来源信息
@@ -192,6 +193,8 @@ onMounted(() => {
           </div>
         </div>
         
+        <!-- 新API暂时没有auditor字段，先隐藏 -->
+        <!--
         <div v-if="application.auditor" class="auditor-section">
           <div class="auditor-info">
             <span class="auditor-label">审批人:</span>
@@ -202,13 +205,14 @@ onMounted(() => {
             <span class="time-value">{{ formatDateTime(application.updated_at) }}</span>
         </div>
         </div>
+        -->
       </div>
 
       <!-- 基本信息 -->
       <div class="info-card">
         <div class="card-header">
           <h3 class="card-title">申请信息</h3>
-          <div class="app-id">ID: {{ application.id }}</div>
+          <div class="app-id">ID: {{ application.application_id }}</div>
         </div>
         
         <div class="info-content">
@@ -239,10 +243,12 @@ onMounted(() => {
           <div class="info-section">
             <div class="section-title">申请用途</div>
             <div class="description-content">
-              {{ application.description }}
+              {{ application.purpose }}
           </div>
           </div>
 
+          <!-- 新API暂时没有suggestions字段，先隐藏 -->
+          <!--
           <div v-if="application.suggestions" class="info-section">
             <div 
               class="section-title"
@@ -260,6 +266,7 @@ onMounted(() => {
               {{ application.suggestions }}
         </div>
       </div>
+      -->
 
           <div class="info-section">
             <div class="section-title">时间记录</div>

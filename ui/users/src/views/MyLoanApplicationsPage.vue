@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../stores/user'
 import { loanApprovalApi } from '../services/api'
-import type { LoanApproval } from '../services/api'
+import type { LoanApplication } from '../services/api'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -12,7 +12,7 @@ const loading = ref(false)
 const refreshing = ref(false)
 
 // 申请列表
-const applications = ref<LoanApproval[]>([])
+const applications = ref<LoanApplication[]>([])
 const total = ref(0)
 const page = ref(1)
 const limit = ref(10)
@@ -38,9 +38,9 @@ const hasMore = computed(() => {
   return applications.value.length < total.value
 })
 
-// 格式化时间
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
+// 格式化时间 - 支持Unix时间戳
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp * 1000) // Unix时间戳转换为毫秒
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -48,9 +48,9 @@ const formatDate = (dateString: string) => {
   })
 }
 
-// 格式化详细时间
-const formatDateTime = (dateString: string) => {
-  const date = new Date(dateString)
+// 格式化详细时间 - 支持Unix时间戳
+const formatDateTime = (timestamp: number) => {
+  const date = new Date(timestamp * 1000) // Unix时间戳转换为毫秒
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -82,7 +82,7 @@ const loadApplications = async (reset = false) => {
 
     const params = {
       page: page.value,
-      page_size: limit.value
+      size: limit.value
     }
 
     const response = await loanApprovalApi.getMyApprovals(params)
@@ -124,13 +124,13 @@ const handleStatusChange = () => {
   loadApplications(true)
 }
 
-// 查看申请详情
-const viewDetail = (applicationId: number) => {
-  router.push(`/loan/application/${applicationId}`)
+// 查看申请详情 - 使用application_id
+const viewDetail = (application_id: string) => {
+  router.push(`/loan/application/${application_id}`)
 }
 
 // 编辑申请（仅对pending状态）
-const editApplication = async (application: LoanApproval) => {
+const editApplication = async (application: LoanApplication) => {
   if (application.status !== 'pending') {
     ElMessage.warning('只能编辑待审批的申请')
     return
@@ -140,8 +140,8 @@ const editApplication = async (application: LoanApproval) => {
   ElMessage.info('编辑功能暂未实现')
 }
 
-// 删除申请
-const deleteApplication = async (application: LoanApproval) => {
+// 删除申请 - 使用cancel方法
+const deleteApplication = async (application: LoanApplication) => {
   if (application.status !== 'pending') {
     ElMessage.warning('只能删除待审批的申请')
     return
@@ -158,7 +158,8 @@ const deleteApplication = async (application: LoanApproval) => {
       }
     )
     
-    await loanApprovalApi.delete(application.id)
+    // 新API使用cancel方法取消申请
+    await loanApprovalApi.cancel(application.application_id, '用户主动删除申请')
     ElMessage.success('删除成功')
     
     // 重新加载列表
@@ -273,9 +274,9 @@ onMounted(() => {
       <div v-if="!loading" class="applications-list">
         <div 
           v-for="app in applications" 
-          :key="app.id"
+          :key="app.application_id"
           class="application-card"
-          @click="viewDetail(app.id)"
+          @click="viewDetail(app.application_id)"
         >
           <div class="card-header">
             <div class="app-title">
@@ -308,9 +309,11 @@ onMounted(() => {
             
             <div class="description-section">
               <div class="description-label">申请用途:</div>
-              <div class="description-text">{{ app.description }}</div>
+              <div class="description-text">{{ app.purpose }}</div>
             </div>
 
+            <!-- 新API可能没有suggestions和auditor字段，暂时隐藏 -->
+            <!--
             <div v-if="app.status === 'approved' && app.suggestions" class="suggestions-section">
               <div class="suggestions-label">审批意见:</div>
               <div class="suggestions-text">{{ app.suggestions }}</div>
@@ -322,6 +325,7 @@ onMounted(() => {
               <div class="rejection-text">{{ app.suggestions }}</div>
               <div v-if="app.auditor" class="auditor-info">审批人: {{ app.auditor }}</div>
             </div>
+            -->
           </div>
 
           <div class="card-footer">
@@ -357,7 +361,7 @@ onMounted(() => {
               <el-button 
                 type="primary" 
                 size="small"
-                @click="viewDetail(app.id)"
+                @click="viewDetail(app.application_id)"
               >
                 查看详情
               </el-button>

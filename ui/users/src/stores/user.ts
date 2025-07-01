@@ -12,9 +12,9 @@ export interface UserInfo {
   address: string
 }
 
-// 登录响应接口
+// 登录响应接口 - 更新为JWT token
 export interface LoginResponse {
-  session_id: string
+  token: string  // JWT token替代session_id
 }
 
 export const useUserStore = defineStore('user', {
@@ -27,13 +27,13 @@ export const useUserStore = defineStore('user', {
     }),
     // 操作
     actions: {
-        // 设置session
-        setSession(sessionId: string) {
-            this.sessionId = sessionId
+        // 设置token - 更新为JWT token处理
+        setSession(token: string) {
+            this.sessionId = token  // sessionId现在存储JWT token
             this.isLoggedIn = true
             this.loginTime = Date.now()
             // 存储到localStorage
-            localStorage.setItem('sessionId', sessionId)
+            localStorage.setItem('sessionId', token)  // 保持key名称不变以兼容
             localStorage.setItem('loginTime', this.loginTime.toString())
         },
         
@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user', {
         
         // 登录
         login(loginData: LoginResponse) {
-            this.setSession(loginData.session_id)
+            this.setSession(loginData.token)
         },
         
         // 登出
@@ -95,19 +95,34 @@ export const useUserStore = defineStore('user', {
             }
         },
         
-        // 检查session是否可能有效
+        // 检查JWT token是否可能有效
         isTokenValid(): boolean {
-            // 对于Cookie认证，主要依赖服务器验证
-            // 这里只做基本的状态检查
-            return this.isLoggedIn && this.sessionId !== ''
+            if (!this.isLoggedIn || !this.sessionId) {
+                return false
+            }
+            
+            // 简单检查token格式（JWT应该有3个部分用.分割）
+            const tokenParts = this.sessionId.split('.')
+            if (tokenParts.length !== 3) {
+                return false
+            }
+            
+            try {
+                // 检查token是否过期
+                const payload = JSON.parse(atob(tokenParts[1]))
+                const currentTime = Math.floor(Date.now() / 1000)
+                return payload.exp > currentTime
+            } catch (error) {
+                console.error('Token验证失败:', error)
+                return false
+            }
         },
         
-        // 初始化store - 从localStorage恢复状态
+        // 初始化store - 从localStorage恢复JWT token状态
         initialize() {
-            // 只恢复基本的用户信息，不自动设置登录状态
-            // 登录状态的验证将由路由守卫处理
+            // 恢复用户信息
             const userInfo = localStorage.getItem('userInfo')
-            const sessionId = localStorage.getItem('sessionId')
+            const token = localStorage.getItem('sessionId')  // sessionId现在存储JWT token
             const loginTime = localStorage.getItem('loginTime')
             
             if (userInfo) {
@@ -119,11 +134,17 @@ export const useUserStore = defineStore('user', {
                 }
             }
             
-            // 只有当所有必要信息都存在时才恢复登录状态
-            if (sessionId && loginTime && userInfo) {
-                this.sessionId = sessionId
+            // 恢复JWT token状态
+            if (token && loginTime) {
+                this.sessionId = token
                 this.loginTime = parseInt(loginTime)
                 this.isLoggedIn = true
+                
+                // 验证token有效性
+                if (!this.isTokenValid()) {
+                    console.log('JWT token已过期，清除登录状态')
+                    this.logout()
+                }
             }
         }
     },

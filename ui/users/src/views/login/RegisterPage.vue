@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { userApi } from '../../services/api'
+import { authApi } from '../../services/api'
 
 const FormRef = ref<FormInstance>()
 const router = useRouter()
@@ -63,10 +63,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     
     loading.value = true
     
-    await userApi.register({
-      phone: FormData.phone,
-      password: FormData.password
-    })
+    // 使用新的JWT注册API
+    await authApi.register(FormData.phone, FormData.password)
     
     ElMessage.success('注册成功，请登录')
     router.push('/login')

@@ -5,8 +5,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, Refresh, User } from '@element-plus/icons-vue'
 import AppFooter from './components/footer.vue'
 import { useUserStore } from '../stores/user'
-import { leaseApprovalApi } from '../services/api'
-import type { LeaseApprovalRequest, ProductTypes, LeaseApproval } from '../services/api'
+import { leaseApprovalApi, leaseProductApi } from '../services/api'
+import type { LeaseApplicationRequest, LeaseApplication } from '../services/api'
 import '../assets/icons/agri-icons.css'
 import '../assets/icons/machinery-icons.css'
 import MachineryCarousel from '../components/MachineryCarousel.vue'
@@ -19,7 +19,7 @@ import jiqi3 from '../assets/images/jiqi3.png';
 
 const router = useRouter()
 const userStore = useUserStore()
-const activeTab = ref('types')
+const activeTab = ref('equipment')
 const loading = ref(false)
 const submitting = ref(false)
 const refreshing = ref(false)
@@ -391,16 +391,53 @@ const mockMachineryData: MachineryItem[] = [
   }
 ]
 
-// 获取农机列表
+// 获取农机列表 - 使用真实的租赁产品API
 const getMachineryList = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
-    machineryList.value = mockMachineryData
+    const params = {
+      page: 1,
+      size: 20,
+      status: 1, // 只获取可用的产品
+      ...(selectedCategory.value && { type: selectedCategory.value })
+    }
+    
+    const response = await leaseProductApi.getProducts(params)
+    
+    // 将租赁产品数据转换为农机数据格式
+    machineryList.value = response.list.map(product => ({
+      id: product.product_code,
+      name: product.name,
+      description: product.description,
+      category: product.type,
+      brand: product.brand,
+      model: product.model,
+      power: `${product.machinery}马力`, // 使用machinery字段作为动力
+      workWidth: '详情咨询', // API中没有此字段，设置默认值
+      fuelType: '柴油', // 设置默认值
+      dailyPrice: product.daily_rate,
+      hourlyPrice: Math.round(product.daily_rate / 8), // 按8小时计算时租
+      available: product.available_count > 0,
+      location: '服务中心', // 设置默认值
+      contactPhone: '400-123-4567', // 设置默认值
+      images: ['/src/assets/images/jiqi1.png'], // 设置默认图片
+      specifications: {
+        '产品编码': product.product_code,
+        '品牌': product.brand,
+        '型号': product.model,
+        '日租金': `${product.daily_rate}元/天`,
+        '押金': `${product.deposit}元`,
+        '最长租期': `${product.max_duration}天`,
+        '最短租期': `${product.min_duration}天`,
+        '库存数量': `${product.inventory_count}台`,
+        '可用数量': `${product.available_count}台`
+      }
+    }))
   } catch (error) {
     console.error('获取农机列表失败:', error)
     ElMessage.error('获取农机列表失败')
+    // 如果API失败，使用模拟数据作为备用
+    machineryList.value = mockMachineryData
   } finally {
     loading.value = false
   }
@@ -423,8 +460,24 @@ const viewMachineryDetail = (machinery: MachineryItem) => {
   router.push(`/machinery/detail/${machinery.id}`)
 }
 
+// 检查库存可用性
+const checkInventoryAvailability = async (productCode: string, startDate: string, endDate: string, quantity: number = 1) => {
+  try {
+    const response = await leaseProductApi.checkInventoryAvailability({
+      product_code: productCode,
+      quantity,
+      start_date: startDate,
+      end_date: endDate
+    })
+    return response
+  } catch (error) {
+    console.error('检查库存失败:', error)
+    return { available: false, available_count: 0 }
+  }
+}
+
 // 租赁农机
-const rentMachinery = (machinery: MachineryItem) => {
+const rentMachinery = async (machinery: MachineryItem) => {
   if (!userStore.isLoggedIn) {
     ElMessage.warning('请先登录')
     router.push('/login')
@@ -436,8 +489,40 @@ const rentMachinery = (machinery: MachineryItem) => {
     return
   }
   
-  // 跳转到租赁申请页
-  router.push(`/machinery/rent/${machinery.id}`)
+  // 简单的库存检查（使用明天和后天作为示例）
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  const dayAfterTomorrow = new Date()
+  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2)
+  
+  const startDate = tomorrow.toISOString().split('T')[0]
+  const endDate = dayAfterTomorrow.toISOString().split('T')[0]
+  
+  // 检查库存
+  const inventoryCheck = await checkInventoryAvailability(machinery.id, startDate, endDate)
+  
+  if (!inventoryCheck.available) {
+    ElMessage.warning(`该设备在${startDate}至${endDate}期间暂无库存`)
+    return
+  }
+  
+  // 预填充表单数据
+  formData.product_code = machinery.id
+  formData.name = `${machinery.name}租赁申请`
+  formData.type = machinery.category
+  formData.machinery = machinery.name
+  formData.daily_rate = machinery.dailyPrice
+  formData.deposit = parseFloat(machinery.specifications['押金']?.replace('元', '') || '0')
+  formData.start_date = startDate
+  formData.end_date = endDate
+  formData.duration = 1
+  formData.total_amount = machinery.dailyPrice * 1
+  formData.contact_phone = userStore.userInfo?.phone || ''
+  
+  // 切换到申请表单
+  activeTab.value = 'apply'
+  
+  ElMessage.success(`已为您预填充${machinery.name}的租赁信息`)
 }
 
 // 联系租赁方
@@ -457,7 +542,7 @@ const selectCategory = (category: string) => {
 const availableTypes = ref<string[]>([])
 
 // 我的租赁申请
-const myApplications = ref<LeaseApproval[]>([])
+const myApplications = ref<LeaseApplication[]>([])
 
 // 租赁类型配置
 const typeConfigs = {
@@ -493,13 +578,22 @@ const typeConfigs = {
   }
 }
 
-// 申请表单数据
-const formData = reactive<LeaseApprovalRequest>({
+// 申请表单数据 - 更新字段名以匹配新API
+const formData = reactive<LeaseApplicationRequest>({
+  product_id: 1, // 默认产品ID，实际应该从产品选择中获取
+  product_code: 'FARM_MACHINERY', // 默认产品编码
   name: '',
   type: '',
-  start_at: '',
-  end_at: '',
-  description: ''
+  machinery: '',
+  start_date: '',
+  end_date: '',
+  duration: 0,
+  daily_rate: 0,
+  total_amount: 0,
+  deposit: 0,
+  delivery_address: '',
+  contact_phone: '',
+  purpose: ''
 })
 
 // 状态映射
@@ -548,18 +642,21 @@ const getStatusInfo = (status: string) => {
 
 // 计算租赁天数
 const leaseDays = computed(() => {
-  if (!formData.start_at || !formData.end_at) return 0
-  const start = new Date(formData.start_at)
-  const end = new Date(formData.end_at)
+  if (!formData.start_date || !formData.end_date) return 0
+  const start = new Date(formData.start_date)
+  const end = new Date(formData.end_date)
   const diffTime = Math.abs(end.getTime() - start.getTime())
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  // 同步更新duration字段
+  formData.duration = days
+  return days
 })
 
-// 加载租赁类型
+// 加载租赁类型 - 使用静态数据替代API调用
 const loadLeaseTypes = async () => {
   try {
-    const response = await leaseApprovalApi.getTypes()
-    availableTypes.value = response.types
+    // 新的API暂时没有getTypes方法，使用静态数据
+    availableTypes.value = ['农机租赁', '运输设备', '加工设备', '灌溉设备', '其他设备']
   } catch (error: any) {
     console.error('加载租赁类型失败:', error)
     ElMessage.error('加载租赁类型失败')
@@ -570,7 +667,7 @@ const loadLeaseTypes = async () => {
 const loadMyApplications = async () => {
   try {
     loading.value = true
-    const response = await leaseApprovalApi.getMyApprovals({ page: 1, page_size: 10 })
+    const response = await leaseApprovalApi.getMyApprovals({ page: 1, size: 10 })
     myApplications.value = response.list || []
   } catch (error: any) {
     console.error('加载我的申请失败:', error)
@@ -593,9 +690,16 @@ const selectType = (type: string) => {
 const resetForm = () => {
   formData.name = ''
   formData.type = ''
-  formData.start_at = ''
-  formData.end_at = ''
-  formData.description = ''
+  formData.machinery = ''
+  formData.start_date = ''
+  formData.end_date = ''
+  formData.duration = 0
+  formData.daily_rate = 0
+  formData.total_amount = 0
+  formData.deposit = 0
+  formData.delivery_address = ''
+  formData.contact_phone = ''
+  formData.purpose = ''
 }
 
 // 提交申请
@@ -609,19 +713,19 @@ const submitApplication = async () => {
     ElMessage.error('请选择租赁类型')
     return
   }
-  if (!formData.start_at) {
+  if (!formData.start_date) {
     ElMessage.error('请选择开始时间')
     return
   }
-  if (!formData.end_at) {
+  if (!formData.end_date) {
     ElMessage.error('请选择结束时间')
     return
   }
-  if (new Date(formData.end_at) <= new Date(formData.start_at)) {
+  if (new Date(formData.end_date) <= new Date(formData.start_date)) {
     ElMessage.error('结束时间必须晚于开始时间')
     return
   }
-  if (!formData.description.trim() || formData.description.length < 10) {
+  if (!formData.purpose.trim() || formData.purpose.length < 10) {
     ElMessage.error('请输入详细的租赁用途说明，不少于10个字符')
     return
   }
@@ -659,13 +763,10 @@ const submitApplication = async () => {
   }
 }
 
-// 查看申请详情
-const viewApplicationDetail = (applicationId: number) => {
-  router.push(`/lease/application/${applicationId}`)
-}
 
-// 删除申请
-const deleteApplication = async (application: LeaseApproval) => {
+
+// 删除申请 - 新API使用cancel方法而不是delete
+const deleteApplication = async (application: LeaseApplication) => {
   if (application.status !== 'pending') {
     ElMessage.warning('只能删除待审批的申请')
     return
@@ -682,7 +783,8 @@ const deleteApplication = async (application: LeaseApproval) => {
       }
     )
 
-    await leaseApprovalApi.delete(application.id)
+    // 新API使用cancel方法取消申请
+    await leaseApprovalApi.cancel(application.application_id, '用户主动删除申请')
     ElMessage.success('删除成功')
     
     // 重新加载列表
@@ -694,6 +796,11 @@ const deleteApplication = async (application: LeaseApproval) => {
       ElMessage.error(error.message || '删除申请失败')
     }
   }
+}
+
+// 查看申请详情
+const viewApplicationDetail = (applicationId: string) => {
+  router.push(`/lease/application/${applicationId}`)
 }
 
 // 标签页切换
@@ -711,7 +818,9 @@ onMounted(() => {
     return
   }
   
+  // 初始化数据
   loadLeaseTypes()
+  getMachineryList()
 })
 </script>
 
@@ -731,8 +840,37 @@ onMounted(() => {
     </div>
 
     <div class="page-content">
-      <!-- 用户快捷操作 -->
-      <div class="quick-actions" v-if="userStore.isLoggedIn">
+      <!-- Tab切换 -->
+      <div class="tab-container">
+        <div class="tab-header">
+          <div 
+            class="tab-item"
+            :class="{ active: activeTab === 'equipment' }"
+            @click="activeTab = 'equipment'"
+          >
+            设备列表
+          </div>
+          <div 
+            class="tab-item"
+            :class="{ active: activeTab === 'apply' }"
+            @click="activeTab = 'apply'"
+          >
+            租赁申请
+          </div>
+          <div 
+            class="tab-item"
+            :class="{ active: activeTab === 'my-applications' }"
+            @click="activeTab = 'my-applications'"
+          >
+            我的申请
+          </div>
+        </div>
+      </div>
+
+      <!-- 设备列表Tab -->
+      <div v-if="activeTab === 'equipment'" class="equipment-tab">
+        <!-- 用户快捷操作 -->
+        <div class="quick-actions" v-if="userStore.isLoggedIn">
         <div class="action-card primary" @click="router.push('/machinery/my-applications')">
           <div class="card-icon">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
@@ -925,6 +1063,208 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    </div>
+
+    <!-- 租赁申请Tab -->
+    <div v-if="activeTab === 'apply'" class="apply-tab">
+      <div class="apply-form-container">
+        <div class="form-header">
+          <h3>租赁申请</h3>
+          <p>请填写以下信息提交租赁申请</p>
+        </div>
+
+        <el-form :model="formData" label-width="100px" class="rental-form">
+          <div class="form-section">
+            <div class="section-title">基本信息</div>
+            
+            <el-form-item label="申请名称" required>
+              <el-input v-model="formData.name" placeholder="请输入申请名称" />
+            </el-form-item>
+            
+            <el-form-item label="设备类型" required>
+              <el-select v-model="formData.type" placeholder="请选择设备类型" style="width: 100%">
+                <el-option value="收割机" label="收割机" />
+                <el-option value="拖拉机" label="拖拉机" />
+                <el-option value="播种机" label="播种机" />
+                <el-option value="插秧机" label="插秧机" />
+                <el-option value="旋耕机" label="旋耕机" />
+              </el-select>
+            </el-form-item>
+            
+            <el-form-item label="设备名称" required>
+              <el-input v-model="formData.machinery" placeholder="请输入设备名称" />
+            </el-form-item>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">租期和费用</div>
+            
+            <el-form-item label="开始日期" required>
+                             <el-date-picker
+                 v-model="formData.start_date"
+                 type="date"
+                 placeholder="选择开始日期"
+                 format="YYYY-MM-DD"
+                 value-format="YYYY-MM-DD"
+                 style="width: 100%"
+                 :disabled-date="(time: Date) => time.getTime() < Date.now() - 8.64e7"
+               />
+            </el-form-item>
+            
+            <el-form-item label="结束日期" required>
+                             <el-date-picker
+                 v-model="formData.end_date"
+                 type="date"
+                 placeholder="选择结束日期"
+                 format="YYYY-MM-DD"
+                 value-format="YYYY-MM-DD"
+                 style="width: 100%"
+                 :disabled-date="(time: Date) => time.getTime() < Date.now() - 8.64e7"
+               />
+            </el-form-item>
+            
+            <el-form-item label="日租金">
+              <el-input-number
+                v-model="formData.daily_rate"
+                :precision="2"
+                :step="1"
+                :min="0"
+                style="width: 100%"
+              />
+              <div class="form-tip">租赁天数：{{ leaseDays }}天，总费用：¥{{ (formData.daily_rate * leaseDays).toFixed(2) }}</div>
+            </el-form-item>
+            
+            <el-form-item label="押金">
+              <el-input-number
+                v-model="formData.deposit"
+                :precision="2"
+                :step="1"
+                :min="0"
+                style="width: 100%"
+              />
+            </el-form-item>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">配送信息</div>
+            
+            <el-form-item label="配送地址" required>
+              <el-input 
+                v-model="formData.delivery_address" 
+                type="textarea"
+                :rows="2"
+                placeholder="请输入详细的配送地址"
+              />
+            </el-form-item>
+            
+            <el-form-item label="联系电话" required>
+              <el-input v-model="formData.contact_phone" placeholder="请输入联系电话" />
+            </el-form-item>
+          </div>
+
+          <div class="form-section">
+            <div class="section-title">租赁用途</div>
+            
+            <el-form-item label="使用用途" required>
+              <el-input 
+                v-model="formData.purpose" 
+                type="textarea"
+                :rows="3"
+                placeholder="请详细说明设备使用用途，不少于10个字符"
+                maxlength="500"
+                show-word-limit
+              />
+            </el-form-item>
+          </div>
+
+          <div class="form-actions">
+            <el-button size="large" @click="resetForm">重置表单</el-button>
+            <el-button type="primary" size="large" @click="submitApplication" :loading="submitting">
+              {{ submitting ? '提交中...' : '提交申请' }}
+            </el-button>
+          </div>
+        </el-form>
+      </div>
+    </div>
+
+    <!-- 我的申请Tab -->
+    <div v-if="activeTab === 'my-applications'" class="my-applications-tab">
+      <div class="applications-container">
+        <div class="applications-header">
+          <h3>我的租赁申请</h3>
+          <el-button @click="loadMyApplications" :loading="loading">
+            <el-icon><Refresh /></el-icon>
+            刷新
+          </el-button>
+        </div>
+
+        <div v-loading="loading" class="applications-list">
+          <div 
+            v-for="app in myApplications" 
+            :key="app.application_id"
+            class="application-card"
+          >
+            <div class="app-header">
+              <div class="app-info">
+                <h4 class="app-name">{{ app.name }}</h4>
+                <div class="app-meta">
+                  <span class="app-type">{{ app.type }}</span>
+                  <span class="app-id">ID: {{ app.application_id }}</span>
+                </div>
+              </div>
+              <div 
+                class="status-badge"
+                :class="app.status"
+              >
+                {{ getStatusInfo(app.status).text }}
+              </div>
+            </div>
+
+            <div class="app-content">
+              <div class="app-details">
+                <div class="detail-row">
+                  <span class="label">设备名称:</span>
+                  <span class="value">{{ app.machinery }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">租赁期间:</span>
+                  <span class="value">{{ app.start_date }} 至 {{ app.end_date }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">日租金:</span>
+                  <span class="value">¥{{ app.daily_rate }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">总费用:</span>
+                  <span class="value">¥{{ app.total_amount }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="app-actions">
+              <el-button size="small" @click="viewApplicationDetail(app.application_id)">
+                查看详情
+              </el-button>
+              <el-button 
+                v-if="app.status === 'pending'"
+                size="small" 
+                type="danger" 
+                @click="deleteApplication(app)"
+              >
+                取消申请
+              </el-button>
+            </div>
+          </div>
+
+          <div v-if="myApplications.length === 0 && !loading" class="empty-applications">
+            <div class="empty-icon">📋</div>
+            <div class="empty-text">暂无申请记录</div>
+            <div class="empty-desc">您还没有提交过租赁申请</div>
+            <el-button type="primary" @click="activeTab = 'apply'">立即申请</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 底部导航栏 -->
     <app-footer v-model:active-tab="activeTab" />
@@ -974,6 +1314,256 @@ onMounted(() => {
 
 .quick-actions {
   margin-bottom: 16px;
+}
+
+/* Tab样式 */
+.tab-container {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tab-header {
+  display: flex;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  color: #666;
+  font-weight: 500;
+}
+
+.tab-item.active {
+  background: #27ae60;
+  color: white;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.tab-item:hover:not(.active) {
+  background: #e8f5e8;
+  color: #27ae60;
+}
+
+/* 申请表单样式 */
+.apply-tab {
+  padding: 0;
+}
+
+.apply-form-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.form-header h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #2c3e50;
+}
+
+.form-header p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.rental-form .form-section {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.rental-form .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #27ae60;
+}
+
+.rental-form .form-tip {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.form-actions .el-button {
+  min-width: 120px;
+}
+
+/* 我的申请样式 */
+.my-applications-tab {
+  padding: 0;
+}
+
+.applications-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.applications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.applications-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.application-card {
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
+}
+
+.application-card:hover {
+  border-color: #27ae60;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.1);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.app-name {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.app-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.app-type {
+  background: #e8f5e8;
+  color: #27ae60;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.approved {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge.cancelled {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.app-details {
+  margin-bottom: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detail-row .label {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.detail-row .value {
+  color: #2c3e50;
+}
+
+.app-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.empty-applications {
+  text-align: center;
+  padding: 40px 20px;
+  color: #7f8c8d;
+}
+
+.empty-applications .empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-applications .empty-text {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.empty-applications .empty-desc {
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 
 .action-card {

@@ -6,7 +6,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../../stores/user'
 import { useRouter } from 'vue-router'
-import { userApi } from '../../services/api'
+import { authApi, userApi } from '../../services/api'
 
 // 定义ref对象表单实例
 const FormRef = ref<FormInstance>()
@@ -58,21 +58,19 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     
     loading.value = true
     
-    // 调用登录API
-    const response = await userApi.login({
-      phone: FormData.phone,
-      password: FormData.password
-    })
+    // 调用新的JWT登录API
+    const response = await authApi.login(FormData.phone, FormData.password)
     
-    // 保存登录信息
-    userStore.login(response.data)
+    // 保存JWT token
+    userStore.login(response)
     
     // 获取用户详细信息
     try {
-      const userInfoResponse = await userApi.getUserInfo()
-      userStore.setUserInfo(userInfoResponse.data)
+      const userInfoResponse = await userApi.getUserInfo(FormData.phone)
+      userStore.setUserInfo(userInfoResponse)
     } catch (error) {
       console.warn('获取用户信息失败:', error)
+      // 即使获取用户信息失败，也保持登录状态
     }
     
     ElMessage.success('登录成功')
@@ -119,8 +117,8 @@ const register = () => {
           show-icon
         >
           <template #default>
-            <p>手机号：13800138000</p>
-            <p>密码：123456</p>
+            <p>手机号：13452552490</p>
+            <p>密码：13452552490</p>
           </template>
         </el-alert>
       </div>
