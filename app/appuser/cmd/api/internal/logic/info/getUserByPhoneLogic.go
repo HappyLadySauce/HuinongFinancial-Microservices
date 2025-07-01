@@ -3,6 +3,7 @@ package info
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/appuser"
@@ -28,10 +29,12 @@ func NewGetUserByPhoneLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *types.GetUserInfoResp, err error) {
 	logx.WithContext(l.ctx).Infof("API: 获取用户信息请求, phone: %s", req.Phone)
 
-	// 调用 RPC 获取用户信息服务
-	userResp, err := l.svcCtx.AppUserRpc.GetUserByPhone(l.ctx, &appuser.GetUserInfoReq{
-		Phone: req.Phone,
-	})
+	// 调用 RPC 获取用户信息服务 - 使用熔断器
+	userResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "appuser-rpc", func() (*appuser.GetUserInfoResp, error) {
+		return l.svcCtx.AppUserRpc.GetUserByPhone(l.ctx, &appuser.GetUserInfoReq{
+			Phone: req.Phone,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 获取用户信息调用失败: %v", err)
 		return nil, err

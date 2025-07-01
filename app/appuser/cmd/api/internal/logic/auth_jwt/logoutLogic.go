@@ -3,6 +3,7 @@ package auth_jwt
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/appuser"
@@ -26,12 +27,14 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 
 // 用户登出
 func (l *LogoutLogic) Logout(req *types.LogoutReq) (resp *types.LogoutResp, err error) {
-	logx.WithContext(l.ctx).Info("API: 用户登出请求")
+	logx.WithContext(l.ctx).Infof("API: 用户登出请求")
 
-	// 调用 RPC 登出服务（不需要传递 token，从 JWT 认证上下文获取）
-	_, err = l.svcCtx.AppUserRpc.Logout(l.ctx, &appuser.LogoutReq{})
+	// 调用 RPC 登出服务 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "appuser-rpc", func() (*appuser.LogoutResp, error) {
+		return l.svcCtx.AppUserRpc.Logout(l.ctx, &appuser.LogoutReq{})
+	}, breaker.IsAcceptableError)
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("RPC 登出调用失败: %v", err)
+		logx.WithContext(l.ctx).Errorf("RPC 用户登出调用失败: %v", err)
 		return nil, err
 	}
 

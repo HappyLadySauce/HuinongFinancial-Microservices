@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanproduct"
@@ -26,18 +27,21 @@ func NewCreateLoanProductLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *CreateLoanProductLogic) CreateLoanProduct(req *types.CreateLoanProductReq) (resp *types.CreateLoanProductResp, err error) {
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LoanProductRpc.CreateLoanProduct(l.ctx, &loanproduct.CreateLoanProductReq{
-		ProductCode:  req.ProductCode,
-		Name:         req.Name,
-		Type:         req.Type,
-		MaxAmount:    req.MaxAmount,
-		MinAmount:    req.MinAmount,
-		MaxDuration:  req.MaxDuration,
-		MinDuration:  req.MinDuration,
-		InterestRate: req.InterestRate,
-		Description:  req.Description,
-	})
+	// 使用熔断器调用RPC服务
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproduct.CreateLoanProductResp, error) {
+		return l.svcCtx.LoanProductRpc.CreateLoanProduct(l.ctx, &loanproduct.CreateLoanProductReq{
+			ProductCode:  req.ProductCode,
+			Name:         req.Name,
+			Type:         req.Type,
+			MaxAmount:    req.MaxAmount,
+			MinAmount:    req.MinAmount,
+			MaxDuration:  req.MaxDuration,
+			MinDuration:  req.MinDuration,
+			InterestRate: req.InterestRate,
+			Description:  req.Description,
+		})
+	}, breaker.IsAcceptableError)
+
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

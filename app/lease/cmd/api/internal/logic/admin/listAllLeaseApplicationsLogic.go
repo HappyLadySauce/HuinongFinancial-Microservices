@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseclient"
@@ -25,14 +26,16 @@ func NewListAllLeaseApplicationsLogic(ctx context.Context, svcCtx *svc.ServiceCo
 }
 
 func (l *ListAllLeaseApplicationsLogic) ListAllLeaseApplications(req *types.ListLeaseApplicationsReq) (resp *types.ListLeaseApplicationsResp, err error) {
-	// 调用 Lease RPC 获取所有申请列表 (不传UserId，获取所有用户的申请)
-	rpcResp, err := l.svcCtx.LeaseRpc.ListLeaseApplications(l.ctx, &leaseclient.ListLeaseApplicationsReq{
-		Page:        req.Page,
-		Size:        req.Size,
-		UserId:      req.UserId, // 管理员可以指定用户ID查询
-		ProductCode: req.ProductCode,
-		Status:      req.Status,
-	})
+	// 调用 Lease RPC 获取所有申请列表 (不传UserId，获取所有用户的申请) - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "lease-rpc", func() (*leaseclient.ListLeaseApplicationsResp, error) {
+		return l.svcCtx.LeaseRpc.ListLeaseApplications(l.ctx, &leaseclient.ListLeaseApplicationsReq{
+			Page:        req.Page,
+			Size:        req.Size,
+			UserId:      req.UserId, // 管理员可以指定用户ID查询
+			ProductCode: req.ProductCode,
+			Status:      req.Status,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
 		return nil, err

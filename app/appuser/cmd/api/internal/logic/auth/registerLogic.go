@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"api/internal/breaker"
 	"rpc/appuser"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -28,11 +29,14 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
 	logx.WithContext(l.ctx).Infof("API: 用户注册请求, phone: %s", req.Phone)
 
-	// 调用 RPC 注册服务
-	registerResp, err := l.svcCtx.AppUserRpc.Register(l.ctx, &appuser.RegisterReq{
-		Phone:    req.Phone,
-		Password: req.Password,
-	})
+	// 使用熔断器调用 RPC 注册服务
+	registerResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "appuser-rpc", func() (*appuser.RegisterResp, error) {
+		return l.svcCtx.AppUserRpc.Register(l.ctx, &appuser.RegisterReq{
+			Phone:    req.Phone,
+			Password: req.Password,
+		})
+	}, breaker.IsAcceptableError)
+	
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 注册调用失败: %v", err)
 		return nil, err

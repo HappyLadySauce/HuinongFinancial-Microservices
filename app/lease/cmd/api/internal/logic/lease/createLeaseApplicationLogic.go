@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseclient"
@@ -38,30 +39,24 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLe
 		return nil, err
 	}
 
-	// 调用 Lease RPC 创建申请
-	rpcResp, err := l.svcCtx.LeaseRpc.CreateLeaseApplication(l.ctx, &leaseclient.CreateLeaseApplicationReq{
-		UserId:          userId,
-		ProductId:       req.ProductId,
-		ProductCode:     req.ProductCode,
-		Name:            req.Name,
-		Type:            req.Type,
-		Machinery:       req.Machinery,
-		StartDate:       req.StartDate,
-		EndDate:         req.EndDate,
-		Duration:        req.Duration,
-		DailyRate:       req.DailyRate,
-		TotalAmount:     req.TotalAmount,
-		Deposit:         req.Deposit,
-		DeliveryAddress: req.DeliveryAddress,
-		ContactPhone:    req.ContactPhone,
-		Purpose:         req.Purpose,
-	})
+	// 调用 Lease RPC 创建申请 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "lease-rpc", func() (*leaseclient.CreateLeaseApplicationResp, error) {
+		return l.svcCtx.LeaseRpc.CreateLeaseApplication(l.ctx, &leaseclient.CreateLeaseApplicationReq{
+			UserId:          userId,
+			ProductCode:     req.ProductCode,
+			StartDate:       req.StartDate,
+			EndDate:         req.EndDate,
+			DeliveryAddress: req.DeliveryAddress,
+			ContactPhone:    req.ContactPhone,
+			Purpose:         req.Purpose,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
 		return nil, err
 	}
 
-	// 转换 RPC 响应为 API 响应
+	// 转换响应信息 - CreateLeaseApplicationResp只包含ApplicationId
 	return &types.CreateLeaseApplicationResp{
 		ApplicationId: rpcResp.ApplicationId,
 	}, nil
@@ -69,67 +64,38 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(req *types.CreateLe
 
 // 从JWT中获取用户ID的辅助方法
 func (l *CreateLeaseApplicationLogic) getUserIdFromJWT() (int64, error) {
-	// 方法1: go-zero标准方式 - 处理json.Number类型
-	if userIdVal := l.ctx.Value("user_id"); userIdVal != nil {
-		// go-zero将JWT中的数字转换为json.Number类型
-		if jsonUid, ok := userIdVal.(json.Number); ok {
-			if int64Uid, err := jsonUid.Int64(); err == nil {
-				return int64Uid, nil
-			} else {
-				logx.WithContext(l.ctx).Errorf("JWT user_id转换失败: %v", err)
-			}
-		}
-		// 备用：尝试其他类型
-		if userId, ok := userIdVal.(float64); ok {
-			return int64(userId), nil
-		}
-		if userId, ok := userIdVal.(int64); ok {
-			return userId, nil
-		}
-		if userIdStr, ok := userIdVal.(string); ok {
-			return strconv.ParseInt(userIdStr, 10, 64)
-		}
+	// 从JWT上下文中获取用户ID
+	// 这里需要根据实际的JWT实现来获取用户ID
+	// 示例实现：从上下文中获取JWT claims
+
+	// 方式1：从HTTP请求上下文获取JWT claims
+	// 假设JWT中包含user_id字段
+	claims := l.ctx.Value("jwt_claims")
+	if claims == nil {
+		return 0, fmt.Errorf("未找到JWT认证信息")
 	}
 
-	// 方法2: 尝试从context的其他可能字段获取
-	if userIdVal := l.ctx.Value("userId"); userIdVal != nil {
-		if jsonUid, ok := userIdVal.(json.Number); ok {
-			if int64Uid, err := jsonUid.Int64(); err == nil {
-				return int64Uid, nil
-			}
-		}
-		if userId, ok := userIdVal.(float64); ok {
-			return int64(userId), nil
-		}
-		if userId, ok := userIdVal.(int64); ok {
-			return userId, nil
-		}
-		if userIdStr, ok := userIdVal.(string); ok {
-			return strconv.ParseInt(userIdStr, 10, 64)
-		}
+	// 将claims转换为map
+	claimsMap, ok := claims.(map[string]interface{})
+	if !ok {
+		return 0, fmt.Errorf("JWT claims格式错误")
 	}
 
-	// 方法3: 尝试从JWT标准字段获取 (sub字段通常包含用户ID)
-	if subVal := l.ctx.Value("sub"); subVal != nil {
-		if jsonSub, ok := subVal.(json.Number); ok {
-			if int64Sub, err := jsonSub.Int64(); err == nil {
-				return int64Sub, nil
-			}
-		}
-		if subStr, ok := subVal.(string); ok {
-			return strconv.ParseInt(subStr, 10, 64)
-		}
+	// 获取user_id
+	userIdInterface, exists := claimsMap["user_id"]
+	if !exists {
+		return 0, fmt.Errorf("JWT中缺少user_id字段")
 	}
 
-	// 调试信息：列出context中的所有可能的key
-	logx.WithContext(l.ctx).Error("无法从JWT中获取用户ID，调试context内容:")
-	// 注意：这里不能直接遍历context，但可以尝试常见的key
-	debugKeys := []string{"user_id", "userId", "uid", "sub", "id"}
-	for _, key := range debugKeys {
-		if val := l.ctx.Value(key); val != nil {
-			logx.WithContext(l.ctx).Errorf("发现key '%s': %v (类型: %T)", key, val, val)
-		}
+	// 类型转换
+	switch v := userIdInterface.(type) {
+	case float64:
+		return int64(v), nil
+	case string:
+		return strconv.ParseInt(v, 10, 64)
+	case json.Number:
+		return v.Int64()
+	default:
+		return 0, fmt.Errorf("user_id类型错误: %T", v)
 	}
-
-	return 0, fmt.Errorf("无法从JWT中获取用户ID")
 }

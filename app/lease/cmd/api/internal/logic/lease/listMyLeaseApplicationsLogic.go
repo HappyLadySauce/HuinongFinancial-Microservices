@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseclient"
@@ -35,25 +36,27 @@ func (l *ListMyLeaseApplicationsLogic) ListMyLeaseApplications(req *types.ListLe
 		return nil, err
 	}
 
-	// 调用 Lease RPC 获取申请列表
-	rpcResp, err := l.svcCtx.LeaseRpc.ListLeaseApplications(l.ctx, &leaseclient.ListLeaseApplicationsReq{
-		Page:        req.Page,
-		Size:        req.Size,
-		UserId:      userId,
-		ProductCode: req.ProductCode,
-		Status:      req.Status,
-	})
+	// 调用 Lease RPC 获取申请列表 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "lease-rpc", func() (*leaseclient.ListLeaseApplicationsResp, error) {
+		return l.svcCtx.LeaseRpc.ListLeaseApplications(l.ctx, &leaseclient.ListLeaseApplicationsReq{
+			UserId: userId,
+			Page:   req.Page,
+			Size:   req.Size,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
 		return nil, err
 	}
 
-	// 转换申请列表
-	var applications []types.LeaseApplicationInfo
+	// 转换申请信息列表
+	applications := make([]types.LeaseApplicationInfo, 0, len(rpcResp.List))
 	for _, app := range rpcResp.List {
 		applications = append(applications, types.LeaseApplicationInfo{
 			Id:              app.Id,
+			ApplicationId:   app.ApplicationId,
 			UserId:          app.UserId,
+			ApplicantName:   app.ApplicantName,
 			ProductId:       app.ProductId,
 			ProductCode:     app.ProductCode,
 			Name:            app.Name,

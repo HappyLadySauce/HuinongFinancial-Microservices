@@ -3,6 +3,7 @@ package auth_jwt
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/oauserclient"
@@ -25,8 +26,10 @@ func NewLogoutLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LogoutLogi
 }
 
 func (l *LogoutLogic) Logout(req *types.LogoutReq) (resp *types.LogoutResp, err error) {
-	// 调用 RPC 服务进行注销（不需要传递 token，从 JWT 认证上下文获取）
-	_, err = l.svcCtx.OaUserRpc.Logout(l.ctx, &oauserclient.LogoutReq{})
+	// 调用 RPC 服务进行登出 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "oauser-rpc", func() (*oauserclient.LogoutResp, error) {
+		return l.svcCtx.OaUserRpc.Logout(l.ctx, &oauserclient.LogoutReq{})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Logger.Errorf("RPC Logout failed: %v", err)
 		return nil, err

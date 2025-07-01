@@ -3,6 +3,7 @@ package info
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/oauserclient"
@@ -25,7 +26,7 @@ func NewUpdateUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 }
 
 func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp *types.UpdateUserInfoResp, err error) {
-	// 构建 RPC 请求的用户信息
+	// 数据转换：API UserInfo -> RPC UserInfo
 	rpcUserInfo := &oauserclient.UserInfo{
 		Id:        req.UserInfo.Id,
 		Phone:     req.UserInfo.Phone,
@@ -39,16 +40,18 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		UpdatedAt: req.UserInfo.UpdatedAt,
 	}
 
-	// 调用 RPC 服务更新用户信息
-	updateResp, err := l.svcCtx.OaUserRpc.UpdateUserInfo(l.ctx, &oauserclient.UpdateUserInfoReq{
-		UserInfo: rpcUserInfo,
-	})
+	// 调用 RPC 服务更新用户信息 - 使用熔断器
+	updateResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "oauser-rpc", func() (*oauserclient.UpdateUserInfoResp, error) {
+		return l.svcCtx.OaUserRpc.UpdateUserInfo(l.ctx, &oauserclient.UpdateUserInfoReq{
+			UserInfo: rpcUserInfo,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Logger.Errorf("RPC UpdateUserInfo failed: %v", err)
 		return nil, err
 	}
 
-	// 转换用户信息格式
+	// 数据转换：RPC UserInfo -> API UserInfo
 	var userInfo types.UserInfo
 	if updateResp.UserInfo != nil {
 		userInfo = types.UserInfo{
@@ -65,7 +68,7 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		}
 	}
 
-	// 转换响应格式 - 只返回 UserInfo
+	// 转换响应格式
 	return &types.UpdateUserInfoResp{
 		UserInfo: userInfo,
 	}, nil

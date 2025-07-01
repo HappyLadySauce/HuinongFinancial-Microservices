@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanclient"
@@ -36,33 +37,36 @@ func (l *ListMyLoanApplicationsLogic) ListMyLoanApplications(req *types.ListLoan
 		return nil, err
 	}
 
-	// 调用 Loan RPC 获取申请列表
-	rpcResp, err := l.svcCtx.LoanRpc.ListLoanApplications(l.ctx, &loanclient.ListLoanApplicationsReq{
-		Page:   req.Page,
-		Size:   req.Size,
-		UserId: userId,
-		Status: req.Status,
-	})
+	// 调用 Loan RPC 获取申请列表 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loan-rpc", func() (*loanclient.ListLoanApplicationsResp, error) {
+		return l.svcCtx.LoanRpc.ListLoanApplications(l.ctx, &loanclient.ListLoanApplicationsReq{
+			UserId: userId,
+			Page:   req.Page,
+			Size:   req.Size,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
 		return nil, err
 	}
 
-	// 转换申请列表
-	var applications []types.LoanApplicationInfo
+	// 转换申请信息列表
+	applications := make([]types.LoanApplicationInfo, 0, len(rpcResp.List))
 	for _, app := range rpcResp.List {
 		applications = append(applications, types.LoanApplicationInfo{
-			Id:        app.Id,
-			UserId:    app.UserId,
-			ProductId: app.ProductId,
-			Name:      app.Name,
-			Type:      app.Type,
-			Amount:    app.Amount,
-			Duration:  app.Duration,
-			Purpose:   app.Purpose,
-			Status:    app.Status,
-			CreatedAt: app.CreatedAt,
-			UpdatedAt: app.UpdatedAt,
+			Id:            app.Id,
+			ApplicationId: app.ApplicationId,
+			UserId:        app.UserId,
+			ApplicantName: app.ApplicantName,
+			ProductId:     app.ProductId,
+			Name:          app.Name,
+			Type:          app.Type,
+			Amount:        app.Amount,
+			Duration:      app.Duration,
+			Purpose:       app.Purpose,
+			Status:        app.Status,
+			CreatedAt:     app.CreatedAt,
+			UpdatedAt:     app.UpdatedAt,
 		})
 	}
 

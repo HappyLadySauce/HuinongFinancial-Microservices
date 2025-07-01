@@ -9,6 +9,7 @@ import (
 	"appuserrpc/appuserclient"
 	"loanproductrpc/loanproductservice"
 	"model"
+	"rpc/internal/breaker"
 	"rpc/internal/svc"
 	"rpc/loan"
 
@@ -37,10 +38,13 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 		return nil, err
 	}
 
-	// 1. 调用AppUser RPC验证用户信息并获取用户姓名
-	userResp, err := l.svcCtx.AppUserClient.GetUserById(l.ctx, &appuserclient.GetUserByIdReq{
-		UserId: in.UserId,
-	})
+	// 1. 使用熔断器调用AppUser RPC验证用户信息并获取用户姓名
+	userResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "appuser-rpc", func() (*appuserclient.GetUserInfoResp, error) {
+		return l.svcCtx.AppUserClient.GetUserById(l.ctx, &appuserclient.GetUserByIdReq{
+			UserId: in.UserId,
+		})
+	}, breaker.IsAcceptableError)
+
 	if err != nil {
 		l.Errorf("调用AppUser服务失败: %v", err)
 		return nil, fmt.Errorf("用户信息验证失败，请稍后重试")
@@ -52,10 +56,13 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 
 	applicantName := userResp.UserInfo.Name
 
-	// 2. 调用LoanProduct RPC验证产品信息
-	productResp, err := l.svcCtx.LoanProductClient.GetLoanProduct(l.ctx, &loanproductservice.GetLoanProductReq{
-		Id: in.ProductId,
-	})
+	// 2. 使用熔断器调用LoanProduct RPC验证产品信息
+	productResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproductservice.GetLoanProductResp, error) {
+		return l.svcCtx.LoanProductClient.GetLoanProduct(l.ctx, &loanproductservice.GetLoanProductReq{
+			Id: in.ProductId,
+		})
+	}, breaker.IsAcceptableError)
+
 	if err != nil {
 		l.Errorf("调用LoanProduct服务失败: %v", err)
 		return nil, fmt.Errorf("产品信息验证失败，请稍后重试")
@@ -73,68 +80,59 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	}
 
 	// 4. 验证申请期限是否在产品范围内
-	if int32(in.Duration) < product.MinDuration || int32(in.Duration) > product.MaxDuration {
+	if in.Duration < product.MinDuration || in.Duration > product.MaxDuration {
 		return nil, fmt.Errorf("申请期限应在%d到%d个月之间", product.MinDuration, product.MaxDuration)
 	}
 
-	// 5. 验证产品状态
-	if product.Status != 1 {
-		return nil, fmt.Errorf("产品已下架，无法申请")
-	}
-
-	// 生成申请编号
+	// 5. 生成申请ID
 	applicationId := l.generateApplicationId()
 
-	// 创建申请记录
-	now := time.Now()
+	// 6. 创建贷款申请记录
 	application := &model.LoanApplications{
 		ApplicationId: applicationId,
 		UserId:        uint64(in.UserId),
-		ApplicantName: applicantName, // 从AppUser服务获取的真实用户姓名
+		ApplicantName: applicantName,
 		ProductId:     uint64(in.ProductId),
 		Name:          in.Name,
 		Type:          in.Type,
 		Amount:        in.Amount,
 		Duration:      uint64(in.Duration),
 		Purpose:       sql.NullString{String: in.Purpose, Valid: in.Purpose != ""},
-		Status:        "pending",
-		CreatedAt:     now,
-		UpdatedAt:     now,
+		Status:        "pending", // 待审核
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
 	}
 
 	_, err = l.svcCtx.LoanApplicationsModel.Insert(l.ctx, application)
 	if err != nil {
 		l.Errorf("创建贷款申请失败: %v", err)
-		return nil, fmt.Errorf("创建申请失败")
+		return nil, fmt.Errorf("创建申请失败，请稍后重试")
 	}
-
-	l.Infof("贷款申请创建成功 - 申请编号: %s, 用户: %s (ID: %d), 产品: %s (ID: %d), 金额: %.2f, 期限: %d个月",
-		applicationId, applicantName, in.UserId, product.Name, in.ProductId, in.Amount, in.Duration)
 
 	return &loan.CreateLoanApplicationResp{
 		ApplicationId: applicationId,
 	}, nil
 }
 
-// validateCreateRequest 验证创建请求参数
+// 参数验证
 func (l *CreateLoanApplicationLogic) validateCreateRequest(in *loan.CreateLoanApplicationReq) error {
 	if in.UserId <= 0 {
-		return fmt.Errorf("用户ID不能为空")
+		return fmt.Errorf("用户ID无效")
 	}
 	if in.ProductId <= 0 {
-		return fmt.Errorf("产品ID不能为空")
-	}
-	if in.Name == "" {
-		return fmt.Errorf("申请名称不能为空")
-	}
-	if in.Type == "" {
-		return fmt.Errorf("贷款类型不能为空")
+		return fmt.Errorf("产品ID无效")
 	}
 	if in.Amount <= 0 {
 		return fmt.Errorf("申请金额必须大于0")
 	}
 	if in.Duration <= 0 {
-		return fmt.Errorf("贷款期限必须大于0")
+		return fmt.Errorf("申请期限必须大于0")
+	}
+	if in.Name == "" {
+		return fmt.Errorf("贷款名称不能为空")
+	}
+	if in.Type == "" {
+		return fmt.Errorf("贷款类型不能为空")
 	}
 	if in.Purpose == "" {
 		return fmt.Errorf("贷款用途不能为空")
@@ -142,11 +140,11 @@ func (l *CreateLoanApplicationLogic) validateCreateRequest(in *loan.CreateLoanAp
 	return nil
 }
 
-// generateApplicationId 生成申请编号
+// 生成申请ID
 func (l *CreateLoanApplicationLogic) generateApplicationId() string {
-	// 格式：LN + 年月日 + 6位随机数
+	// 生成格式：LOAN + 年月日 + 6位随机数
 	now := time.Now()
 	dateStr := now.Format("20060102")
 	randomStr := stringx.Randn(6)
-	return fmt.Sprintf("LN%s%s", dateStr, randomStr)
+	return fmt.Sprintf("LOAN%s%s", dateStr, randomStr)
 }

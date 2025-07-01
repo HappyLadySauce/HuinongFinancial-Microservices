@@ -3,6 +3,7 @@ package info
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/oauserclient"
@@ -25,16 +26,18 @@ func NewGetUserByPhoneLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *types.GetUserInfoResp, err error) {
-	// 调用 RPC 服务获取用户信息
-	getUserResp, err := l.svcCtx.OaUserRpc.GetUserByPhone(l.ctx, &oauserclient.GetUserInfoReq{
-		Phone: req.Phone,
-	})
+	// 调用 RPC 服务获取用户信息 - 使用熔断器
+	getUserResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "oauser-rpc", func() (*oauserclient.GetUserInfoResp, error) {
+		return l.svcCtx.OaUserRpc.GetUserByPhone(l.ctx, &oauserclient.GetUserInfoReq{
+			Phone: req.Phone,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Logger.Errorf("RPC GetUserByPhone failed: %v", err)
 		return nil, err
 	}
 
-	// 转换用户信息格式
+	// 数据转换：RPC UserInfo -> API UserInfo
 	var userInfo types.UserInfo
 	if getUserResp.UserInfo != nil {
 		userInfo = types.UserInfo{
@@ -51,7 +54,7 @@ func (l *GetUserByPhoneLogic) GetUserByPhone(req *types.GetUserInfoReq) (resp *t
 		}
 	}
 
-	// 转换响应格式 - 只返回 UserInfo
+	// 转换响应格式
 	return &types.GetUserInfoResp{
 		UserInfo: userInfo,
 	}, nil

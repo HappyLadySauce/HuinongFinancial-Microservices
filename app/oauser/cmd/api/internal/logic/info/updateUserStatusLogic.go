@@ -3,6 +3,7 @@ package info
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/oauserclient"
@@ -25,11 +26,13 @@ func NewUpdateUserStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *UpdateUserStatusLogic) UpdateUserStatus(req *types.UpdateUserStatusReq) (resp *types.UpdateUserStatusResp, err error) {
-	// 调用 RPC 服务更新用户状态
-	updateResp, err := l.svcCtx.OaUserRpc.UpdateUserStatus(l.ctx, &oauserclient.UpdateUserStatusReq{
-		Phone:  req.Phone,
-		Status: int32(req.Status),
-	})
+	// 调用 RPC 服务更新用户状态 - 使用熔断器
+	updateResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "oauser-rpc", func() (*oauserclient.UpdateUserStatusResp, error) {
+		return l.svcCtx.OaUserRpc.UpdateUserStatus(l.ctx, &oauserclient.UpdateUserStatusReq{
+			Phone:  req.Phone,
+			Status: int32(req.Status),
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Logger.Errorf("RPC UpdateUserStatus failed: %v", err)
 		return nil, err

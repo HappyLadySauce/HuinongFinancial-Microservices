@@ -4,6 +4,7 @@ import (
 	"appuserrpc/appuserclient"
 	"leaseproductrpc/leaseproductservice"
 	"model"
+	"rpc/internal/breaker"
 	"rpc/internal/config"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -18,6 +19,10 @@ type ServiceContext struct {
 	// RPC 客户端 - 通过consul服务发现调用其他服务
 	LeaseProductClient leaseproductservice.LeaseProductService
 	AppUserClient      appuserclient.AppUser
+
+	// 熔断器客户端
+	LeaseProductBreaker *breaker.RpcBreakerClient
+	AppUserBreaker      *breaker.RpcBreakerClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -30,5 +35,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		// 通过consul服务发现初始化RPC客户端
 		LeaseProductClient: leaseproductservice.NewLeaseProductService(zrpc.MustNewClient(c.LeaseProductRpc)),
 		AppUserClient:      appuserclient.NewAppUser(zrpc.MustNewClient(c.AppUserRpc)),
+
+		// 初始化熔断器
+		LeaseProductBreaker: breaker.NewRpcBreakerClient("leaseproduct-rpc"),
+		AppUserBreaker:      breaker.NewRpcBreakerClient("appuser-rpc"),
 	}
 }

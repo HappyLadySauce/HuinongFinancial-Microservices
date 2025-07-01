@@ -19,7 +19,7 @@ func UpdateProductStatusHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := admin.NewUpdateProductStatusLogic(r.Context(), svcCtx)
-		resp, err := l.UpdateProductStatus(&req)
+		resp, err := l.UpdateProductStatus(req.Id, &req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

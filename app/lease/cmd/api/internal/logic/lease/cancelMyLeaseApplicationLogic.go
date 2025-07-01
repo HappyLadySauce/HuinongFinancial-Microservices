@@ -3,6 +3,7 @@ package lease
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseclient"
@@ -25,11 +26,13 @@ func NewCancelMyLeaseApplicationLogic(ctx context.Context, svcCtx *svc.ServiceCo
 }
 
 func (l *CancelMyLeaseApplicationLogic) CancelMyLeaseApplication(req *types.CancelLeaseApplicationReq) (resp *types.CancelLeaseApplicationResp, err error) {
-	// 调用 Lease RPC 撤销申请
-	_, err = l.svcCtx.LeaseRpc.CancelLeaseApplication(l.ctx, &leaseclient.CancelLeaseApplicationReq{
-		ApplicationId: req.ApplicationId,
-		Reason:        req.Reason,
-	})
+	// 调用 Lease RPC 撤销申请 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "lease-rpc", func() (*leaseclient.CancelLeaseApplicationResp, error) {
+		return l.svcCtx.LeaseRpc.CancelLeaseApplication(l.ctx, &leaseclient.CancelLeaseApplicationReq{
+			ApplicationId: req.ApplicationId,
+			Reason:        req.Reason,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
 		return nil, err

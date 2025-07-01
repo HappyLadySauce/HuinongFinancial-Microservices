@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanproduct"
@@ -34,20 +35,20 @@ func (l *ListAllLoanProductsLogic) ListAllLoanProducts(req *types.ListLoanProduc
 		req.Size = 10
 	}
 
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LoanProductRpc.ListLoanProducts(l.ctx, &loanproduct.ListLoanProductsReq{
-		Page:    req.Page,
-		Size:    req.Size,
-		Type:    req.Type,
-		Status:  req.Status,
-		Keyword: req.Keyword,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproduct.ListLoanProductsResp, error) {
+		return l.svcCtx.LoanProductRpc.ListLoanProducts(l.ctx, &loanproduct.ListLoanProductsReq{
+			Page:   req.Page,
+			Size:   req.Size,
+			Status: req.Status,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err
 	}
 
-	// 转换产品列表数据
+	// 转换响应数据
 	var products []types.LoanProductInfo
 	for _, item := range rpcResp.List {
 		products = append(products, types.LoanProductInfo{

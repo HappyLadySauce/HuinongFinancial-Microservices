@@ -3,6 +3,7 @@ package info
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/appuser"
@@ -43,10 +44,12 @@ func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoReq) (resp
 		UpdatedAt:  req.UserInfo.UpdatedAt,
 	}
 
-	// 调用 RPC 更新用户信息服务
-	updateResp, err := l.svcCtx.AppUserRpc.UpdateUserInfo(l.ctx, &appuser.UpdateUserInfoReq{
-		UserInfo: rpcUserInfo,
-	})
+	// 调用 RPC 更新用户信息服务 - 使用熔断器
+	updateResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "appuser-rpc", func() (*appuser.UpdateUserInfoResp, error) {
+		return l.svcCtx.AppUserRpc.UpdateUserInfo(l.ctx, &appuser.UpdateUserInfoReq{
+			UserInfo: rpcUserInfo,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("RPC 更新用户信息调用失败: %v", err)
 		return nil, err

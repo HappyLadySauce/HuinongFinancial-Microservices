@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseclient"
@@ -41,17 +42,17 @@ func (l *ApproveLeaseApplicationLogic) ApproveLeaseApplication(req *types.Approv
 		auditorName = "系统管理员"
 	}
 
-	// 调用 Lease RPC 审批申请
-	_, err = l.svcCtx.LeaseRpc.ApproveLeaseApplication(l.ctx, &leaseclient.ApproveLeaseApplicationReq{
-		ApplicationId:    req.ApplicationId,
-		AuditorId:        auditorId,
-		AuditorName:      auditorName,
-		Action:           req.Action,
-		Suggestions:      req.Suggestions,
-		ApprovedDuration: req.ApprovedDuration,
-		ApprovedAmount:   req.ApprovedAmount,
-		ApprovedDeposit:  req.ApprovedDeposit,
-	})
+	// 调用 Lease RPC 审批申请 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "lease-rpc", func() (*leaseclient.ApproveLeaseApplicationResp, error) {
+		return l.svcCtx.LeaseRpc.ApproveLeaseApplication(l.ctx, &leaseclient.ApproveLeaseApplicationReq{
+			ApplicationId:   req.ApplicationId,
+			AuditorId:       auditorId,
+			AuditorName:     auditorName,
+			Action:          req.Action,
+			Suggestions:     req.Suggestions,
+			ApprovedDeposit: req.ApprovedDeposit,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Lease RPC失败: %v", err)
 		return nil, err

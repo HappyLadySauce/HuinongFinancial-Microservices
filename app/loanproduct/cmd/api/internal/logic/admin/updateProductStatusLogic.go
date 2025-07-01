@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanproduct"
@@ -26,23 +27,24 @@ func NewUpdateProductStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	}
 }
 
-func (l *UpdateProductStatusLogic) UpdateProductStatus(req *types.UpdateProductStatusReq) (resp *types.UpdateProductStatusResp, err error) {
+func (l *UpdateProductStatusLogic) UpdateProductStatus(idStr string, req *types.UpdateProductStatusReq) (resp *types.UpdateProductStatusResp, err error) {
 	// 将字符串ID转换为int64
-	id, err := strconv.ParseInt(req.Id, 10, 64)
+	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
-	// 调用RPC服务
-	_, err = l.svcCtx.LoanProductRpc.UpdateProductStatus(l.ctx, &loanproduct.UpdateProductStatusReq{
-		Id:     id,
-		Status: req.Status,
-	})
+	// 调用RPC服务 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproduct.UpdateProductStatusResp, error) {
+		return l.svcCtx.LoanProductRpc.UpdateProductStatus(l.ctx, &loanproduct.UpdateProductStatusReq{
+			Id:     id,
+			Status: req.Status,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err
 	}
 
-	// 返回响应
 	return &types.UpdateProductStatusResp{}, nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/oauserclient"
@@ -28,11 +29,12 @@ func NewDeleteUserLogic(ctx context.Context, svcCtx *svc.ServiceContext, r *http
 }
 
 func (l *DeleteUserLogic) DeleteUser(req *types.DeleteUserReq) (resp *types.DeleteUserResp, err error) {
-	// 调用 RPC 服务删除用户（现在从 JWT 认证上下文获取调用者信息）
-	_, err = l.svcCtx.OaUserRpc.DeleteUser(l.ctx, &oauserclient.DeleteUserReq{
-		Phone:       req.Phone,
-		CallerToken: "", // 空字符串，RPC 层会从认证上下文获取调用者信息
-	})
+	// 调用 RPC 服务删除用户 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "oauser-rpc", func() (*oauserclient.DeleteUserResp, error) {
+		return l.svcCtx.OaUserRpc.DeleteUser(l.ctx, &oauserclient.DeleteUserReq{
+			Phone: req.Phone,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Logger.Errorf("RPC DeleteUser failed: %v", err)
 		return nil, err

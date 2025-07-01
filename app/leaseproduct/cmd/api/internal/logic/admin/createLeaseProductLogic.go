@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseproduct"
@@ -26,21 +27,23 @@ func NewCreateLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *CreateLeaseProductLogic) CreateLeaseProduct(req *types.CreateLeaseProductReq) (resp *types.CreateLeaseProductResp, err error) {
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LeaseProductRpc.CreateLeaseProduct(l.ctx, &leaseproduct.CreateLeaseProductReq{
-		ProductCode:    req.ProductCode,
-		Name:           req.Name,
-		Type:           req.Type,
-		Machinery:      req.Machinery,
-		Brand:          req.Brand,
-		Model:          req.Model,
-		DailyRate:      req.DailyRate,
-		Deposit:        req.Deposit,
-		MaxDuration:    req.MaxDuration,
-		MinDuration:    req.MinDuration,
-		Description:    req.Description,
-		InventoryCount: req.InventoryCount,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "leaseproduct-rpc", func() (*leaseproduct.CreateLeaseProductResp, error) {
+		return l.svcCtx.LeaseProductRpc.CreateLeaseProduct(l.ctx, &leaseproduct.CreateLeaseProductReq{
+			ProductCode:    req.ProductCode,
+			Name:           req.Name,
+			Type:           req.Type,
+			Machinery:      req.Machinery,
+			Brand:          req.Brand,
+			Model:          req.Model,
+			DailyRate:      req.DailyRate,
+			Deposit:        req.Deposit,
+			MaxDuration:    req.MaxDuration,
+			MinDuration:    req.MinDuration,
+			Description:    req.Description,
+			InventoryCount: req.InventoryCount,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

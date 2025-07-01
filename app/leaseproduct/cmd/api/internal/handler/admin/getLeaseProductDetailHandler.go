@@ -20,7 +20,7 @@ func GetLeaseProductDetailHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := admin.NewGetLeaseProductDetailLogic(r.Context(), svcCtx)
-		resp, err := l.GetLeaseProductDetail(&req)
+		resp, err := l.GetLeaseProductDetail(req.ProductCode)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

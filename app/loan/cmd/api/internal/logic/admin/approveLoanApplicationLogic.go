@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanclient"
@@ -41,17 +42,19 @@ func (l *ApproveLoanApplicationLogic) ApproveLoanApplication(req *types.ApproveL
 		auditorName = "系统管理员"
 	}
 
-	// 调用 Loan RPC 审批申请
-	_, err = l.svcCtx.LoanRpc.ApproveLoanApplication(l.ctx, &loanclient.ApproveLoanApplicationReq{
-		ApplicationId:    req.ApplicationId,
-		AuditorId:        auditorId,
-		AuditorName:      auditorName,
-		Action:           req.Action,
-		Suggestions:      req.Suggestions,
-		ApprovedAmount:   req.ApprovedAmount,
-		ApprovedDuration: req.ApprovedDuration,
-		InterestRate:     req.InterestRate,
-	})
+	// 调用 Loan RPC 审批申请 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "loan-rpc", func() (*loanclient.ApproveLoanApplicationResp, error) {
+		return l.svcCtx.LoanRpc.ApproveLoanApplication(l.ctx, &loanclient.ApproveLoanApplicationReq{
+			ApplicationId:    req.ApplicationId,
+			AuditorId:        auditorId,
+			AuditorName:      auditorName,
+			Action:           req.Action,
+			Suggestions:      req.Suggestions,
+			ApprovedAmount:   req.ApprovedAmount,
+			ApprovedDuration: req.ApprovedDuration,
+			InterestRate:     req.InterestRate,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
 		return nil, err

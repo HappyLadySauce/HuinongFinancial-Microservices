@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanproduct"
@@ -33,10 +34,12 @@ func (l *GetLoanProductLogic) GetLoanProduct(idStr string) (resp *types.GetLoanP
 		return nil, err
 	}
 
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LoanProductRpc.GetLoanProduct(l.ctx, &loanproduct.GetLoanProductReq{
-		Id: id,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproduct.GetLoanProductResp, error) {
+		return l.svcCtx.LoanProductRpc.GetLoanProduct(l.ctx, &loanproduct.GetLoanProductReq{
+			Id: id,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

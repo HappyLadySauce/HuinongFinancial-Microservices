@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanproduct"
@@ -33,18 +34,20 @@ func (l *UpdateLoanProductLogic) UpdateLoanProduct(req *types.UpdateLoanProductR
 		return nil, err
 	}
 
-	// 调用RPC服务更新产品基本信息
-	rpcResp, err := l.svcCtx.LoanProductRpc.UpdateLoanProduct(l.ctx, &loanproduct.UpdateLoanProductReq{
-		Id:           id,
-		Name:         req.Name,
-		Type:         req.Type,
-		MaxAmount:    req.MaxAmount,
-		MinAmount:    req.MinAmount,
-		MaxDuration:  req.MaxDuration,
-		MinDuration:  req.MinDuration,
-		InterestRate: req.InterestRate,
-		Description:  req.Description,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loanproduct-rpc", func() (*loanproduct.UpdateLoanProductResp, error) {
+		return l.svcCtx.LoanProductRpc.UpdateLoanProduct(l.ctx, &loanproduct.UpdateLoanProductReq{
+			Id:           id,
+			Name:         req.Name,
+			Type:         req.Type,
+			MaxAmount:    req.MaxAmount,
+			MinAmount:    req.MinAmount,
+			MaxDuration:  req.MaxDuration,
+			MinDuration:  req.MinDuration,
+			InterestRate: req.InterestRate,
+			Description:  req.Description,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

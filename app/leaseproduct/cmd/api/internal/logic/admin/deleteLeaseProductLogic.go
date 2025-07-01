@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseproductservice"
@@ -26,12 +27,14 @@ func NewDeleteLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *DeleteLeaseProductLogic) DeleteLeaseProduct(req *types.DeleteLeaseProductReq) (resp *types.DeleteLeaseProductResp, err error) {
-	// 调用 LeaseProduct RPC 删除产品
-	_, err = l.svcCtx.LeaseProductRpc.DeleteLeaseProduct(l.ctx, &leaseproductservice.DeleteLeaseProductReq{
-		ProductCode: req.ProductCode,
-	})
+	// 调用RPC服务 - 使用熔断器
+	_, err = breaker.DoWithBreakerResultAcceptable(l.ctx, "leaseproduct-rpc", func() (*leaseproductservice.DeleteLeaseProductResp, error) {
+		return l.svcCtx.LeaseProductRpc.DeleteLeaseProduct(l.ctx, &leaseproductservice.DeleteLeaseProductReq{
+			ProductCode: req.ProductCode,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("调用LeaseProduct RPC失败: %v", err)
+		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err
 	}
 

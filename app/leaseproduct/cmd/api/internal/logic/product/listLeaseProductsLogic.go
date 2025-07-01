@@ -3,6 +3,7 @@ package product
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/leaseproduct"
@@ -34,15 +35,15 @@ func (l *ListLeaseProductsLogic) ListLeaseProducts(req *types.ListLeaseProductsR
 		req.Size = 10
 	}
 
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LeaseProductRpc.ListLeaseProducts(l.ctx, &leaseproduct.ListLeaseProductsReq{
-		Page:    req.Page,
-		Size:    req.Size,
-		Type:    req.Type,
-		Brand:   req.Brand,
-		Status:  req.Status,
-		Keyword: req.Keyword,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "leaseproduct-rpc", func() (*leaseproduct.ListLeaseProductsResp, error) {
+		return l.svcCtx.LeaseProductRpc.ListLeaseProducts(l.ctx, &leaseproduct.ListLeaseProductsReq{
+			Page:   req.Page,
+			Size:   req.Size,
+			Type:   req.Type,
+			Status: req.Status,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

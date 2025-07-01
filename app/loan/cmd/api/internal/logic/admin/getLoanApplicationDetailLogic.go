@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanclient"
@@ -25,10 +26,12 @@ func NewGetLoanApplicationDetailLogic(ctx context.Context, svcCtx *svc.ServiceCo
 }
 
 func (l *GetLoanApplicationDetailLogic) GetLoanApplicationDetail(applicationId string) (resp *types.GetLoanApplicationResp, err error) {
-	// 调用 Loan RPC 获取申请详情
-	rpcResp, err := l.svcCtx.LoanRpc.GetLoanApplication(l.ctx, &loanclient.GetLoanApplicationReq{
-		ApplicationId: applicationId,
-	})
+	// 调用 Loan RPC 获取申请详情 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loan-rpc", func() (*loanclient.GetLoanApplicationResp, error) {
+		return l.svcCtx.LoanRpc.GetLoanApplication(l.ctx, &loanclient.GetLoanApplicationReq{
+			ApplicationId: applicationId,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
 		return nil, err

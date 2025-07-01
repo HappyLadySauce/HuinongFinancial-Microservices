@@ -8,12 +8,17 @@ Auth:
   AccessSecret: "huinong-auth-access-secret"
   AccessExpire: 3600
 
-# RPC 客户端配置
+# RPC 客户端配置 + 懒加载 + 熔断优化
 # 模式：服务发现模式 (推荐：测试 / 生产环境 / K8s 分离部署)
 # 理由：支持 RPC 服务水平扩展、负载均衡和故障转移，是标准的生产级配置
 # 注意：客户端的服务发现配置使用 Target URL 格式，而不是结构化配置
 LoanRpc:
   Target: consul://consul.huinong.internal/loanrpc.rpc
+  LazyInit: true        # 懒加载：避免启动时因依赖服务未就绪而失败
+  DialTimeout: 10s      # 连接超时：给依赖服务更多启动时间
+  Timeout: 5s           # 调用超时：避免长时间等待
+  KeepaliveTime: 30s    # 保活时间：减少连接重建开销
+  NonBlock: true        # 非阻塞：启动时不等待连接建立
 
 # 链路追踪配置
 Telemetry:

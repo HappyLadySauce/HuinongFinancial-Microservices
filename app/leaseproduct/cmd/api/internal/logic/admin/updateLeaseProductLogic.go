@@ -5,6 +5,7 @@ import (
 
 	"api/internal/svc"
 	"api/internal/types"
+	"api/internal/breaker"
 	"rpc/leaseproduct"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -26,21 +27,22 @@ func NewUpdateLeaseProductLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *UpdateLeaseProductLogic) UpdateLeaseProduct(req *types.UpdateLeaseProductReq) (resp *types.UpdateLeaseProductResp, err error) {
-	// 调用RPC服务
-	rpcResp, err := l.svcCtx.LeaseProductRpc.UpdateLeaseProduct(l.ctx, &leaseproduct.UpdateLeaseProductReq{
-		ProductCode: req.ProductCode,
-		Name:        req.Name,
-		Type:        req.Type,
-		Machinery:   req.Machinery,
-		Brand:       req.Brand,
-		Model:       req.Model,
-		DailyRate:   req.DailyRate,
-		Deposit:     req.Deposit,
-		MaxDuration: req.MaxDuration,
-		MinDuration: req.MinDuration,
-		Description: req.Description,
-		Status:      req.Status,
-	})
+	// 调用RPC服务 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "leaseproduct-rpc", func() (*leaseproduct.UpdateLeaseProductResp, error) {
+		return l.svcCtx.LeaseProductRpc.UpdateLeaseProduct(l.ctx, &leaseproduct.UpdateLeaseProductReq{
+			ProductCode:    req.ProductCode,
+			Name:           req.Name,
+			Type:           req.Type,
+			Machinery:      req.Machinery,
+			Brand:          req.Brand,
+			Model:          req.Model,
+			DailyRate:      req.DailyRate,
+			Deposit:        req.Deposit,
+			MaxDuration:    req.MaxDuration,
+			MinDuration:    req.MinDuration,
+			Description:    req.Description,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		l.Errorf("调用RPC服务失败: %v", err)
 		return nil, err

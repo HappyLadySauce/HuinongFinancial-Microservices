@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"api/internal/breaker"
 	"api/internal/svc"
 	"api/internal/types"
 	"rpc/loanclient"
@@ -25,10 +26,12 @@ func NewListLoanApprovalsLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *ListLoanApprovalsLogic) ListLoanApprovals(req *types.ListLoanApprovalsReq) (resp *types.ListLoanApprovalsResp, err error) {
-	// 调用 Loan RPC 获取审批记录
-	rpcResp, err := l.svcCtx.LoanRpc.ListLoanApprovals(l.ctx, &loanclient.ListLoanApprovalsReq{
-		ApplicationId: req.ApplicationId,
-	})
+	// 调用 Loan RPC 获取审批记录 - 使用熔断器
+	rpcResp, err := breaker.DoWithBreakerResultAcceptable(l.ctx, "loan-rpc", func() (*loanclient.ListLoanApprovalsResp, error) {
+		return l.svcCtx.LoanRpc.ListLoanApprovals(l.ctx, &loanclient.ListLoanApprovalsReq{
+			ApplicationId: req.ApplicationId,
+		})
+	}, breaker.IsAcceptableError)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("调用Loan RPC失败: %v", err)
 		return nil, err
