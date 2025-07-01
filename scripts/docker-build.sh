@@ -32,13 +32,14 @@ show_help() {
     echo "  - 支持单服务和批量构建Docker镜像"
     echo "  - 支持镜像推送到私有仓库"
     echo "  - 支持一键部署到Kubernetes"
+    echo "  - 支持批量清理Docker镜像"
     echo ""
     echo "使用方法:"
     echo "  $0 [service_name] [action] [version] [options]"
     echo ""
     echo "参数说明:"
     echo "  service_name: 服务名称 (appuser|oauser|loan|loanproduct|leaseproduct|lease|all)"
-    echo "  action:       操作类型 (build|push|deploy|all)"
+    echo "  action:       操作类型 (build|push|deploy|clean|all)"
     echo "  version:      镜像版本 (默认: latest)"
     echo "  options:      构建选项"
     echo ""
@@ -46,24 +47,35 @@ show_help() {
     echo "  build    构建Docker镜像"
     echo "  push     推送镜像到仓库"
     echo "  deploy   部署到Kubernetes"
+    echo "  clean    清理Docker镜像"
     echo "  all      构建、推送、部署一条龙"
     echo ""
     echo "示例:"
     echo "  $0 appuser build v1.0.0              # 构建appuser镜像"
     echo "  $0 appuser push v1.0.0               # 推送appuser镜像"
     echo "  $0 appuser deploy v1.0.0             # 部署appuser到k8s"
+    echo "  $0 appuser clean v1.0.0              # 清理appuser v1.0.0版本镜像"
+    echo "  $0 appuser clean all                 # 清理appuser所有版本镜像"
     echo "  $0 appuser all v1.0.0                # 一键构建推送部署"
     echo "  $0 all build v1.0.0                  # 构建所有服务镜像"
+    echo "  $0 all clean v1.0.0                  # 清理所有服务v1.0.0版本镜像"
+    echo "  $0 all clean all                     # 清理所有服务所有版本镜像"
     echo "  $0 all all v1.0.0                    # 所有服务一键构建推送部署"
     echo ""
     echo "环境变量:"
     echo "  DOCKER_REGISTRY: 镜像仓库地址 (默认: $DEFAULT_REGISTRY)"
     echo "  BUILD_MODE:      构建模式 local|docker (默认: local)"
     echo "  K8S_NAMESPACE:   K8s命名空间 (默认: huinong)"
+    echo "  FORCE_CLEAN:     强制清理镜像，即使有容器在使用 (true|false，默认: false)"
     echo ""
     echo "构建模式:"
     echo "  local   本地构建二进制文件，然后打包到镜像 (推荐，速度快)"
     echo "  docker  容器内构建，环境隔离 (CI/CD推荐)"
+    echo ""
+    echo "清理选项:"
+    echo "  指定版本: 清理指定版本的镜像"
+    echo "  all版本:  清理所有版本的镜像（谨慎使用）"
+    echo "  强制清理: 设置FORCE_CLEAN=true强制删除镜像，即使有容器在使用"
     echo ""
 }
 
@@ -81,10 +93,11 @@ VERSION=${3:-$DEFAULT_VERSION}
 DOCKER_REGISTRY=${DOCKER_REGISTRY:-$DEFAULT_REGISTRY}
 BUILD_MODE=${BUILD_MODE:-"local"}
 K8S_NAMESPACE=${K8S_NAMESPACE:-"huinong"}
+FORCE_CLEAN=${FORCE_CLEAN:-"false"}
 
 # 支持的服务列表
 SERVICES=("appuser" "oauser" "loan" "loanproduct" "leaseproduct" "lease")
-ACTIONS=("build" "push" "deploy" "all")
+ACTIONS=("build" "push" "deploy" "clean" "all")
 
 # 获取项目根目录
 PROJECT_ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -334,6 +347,152 @@ deploy_to_k8s() {
     fi
 }
 
+# 清理Docker镜像
+clean_docker_images() {
+    local service=$1
+    local version=$2
+    
+    echo -e "${GREEN}清理 $service 镜像...${NC}"
+    
+    local clean_all_versions=false
+    if [[ "$version" == "all" ]]; then
+        clean_all_versions=true
+        echo -e "${YELLOW}⚠ 将清理 $service 的所有版本镜像${NC}"
+    else
+        echo -e "${BLUE}清理 $service 版本: $version${NC}"
+    fi
+    
+    local success=true
+    local cleaned_count=0
+    
+    # 清理API镜像
+    if clean_service_images "$service" "api" "$version" "$clean_all_versions"; then
+        cleaned_count=$((cleaned_count + 1))
+    else
+        success=false
+    fi
+    
+    # 清理RPC镜像
+    if clean_service_images "$service" "rpc" "$version" "$clean_all_versions"; then
+        cleaned_count=$((cleaned_count + 1))
+    else
+        success=false
+    fi
+    
+    if [[ "$success" == true ]]; then
+        echo -e "${GREEN}✓ $service 镜像清理完成 (清理了 $cleaned_count 个镜像)${NC}"
+        return 0
+    else
+        echo -e "${RED}✗ $service 镜像清理部分失败${NC}"
+        return 1
+    fi
+}
+
+# 清理指定服务类型的镜像
+clean_service_images() {
+    local service=$1
+    local service_type=$2  # api 或 rpc
+    local version=$3
+    local clean_all_versions=$4
+    
+    local image_pattern="$DOCKER_REGISTRY/$service-$service_type"
+    local images_to_clean=()
+    
+    if [[ "$clean_all_versions" == true ]]; then
+        # 获取所有版本的镜像
+        mapfile -t images_to_clean < <(docker images "$image_pattern" --format "{{.Repository}}:{{.Tag}}" 2>/dev/null | grep -v "<none>")
+    else
+        # 检查指定版本的镜像是否存在
+        local image_name="$image_pattern:$version"
+        if docker images -q "$image_name" &>/dev/null; then
+            images_to_clean=("$image_name")
+        fi
+    fi
+    
+    if [[ ${#images_to_clean[@]} -eq 0 ]]; then
+        echo -e "${YELLOW}  未找到 $service-$service_type 的镜像需要清理${NC}"
+        return 0
+    fi
+    
+    echo -e "${CYAN}  发现 ${#images_to_clean[@]} 个 $service-$service_type 镜像需要清理${NC}"
+    
+    local success=true
+    for image in "${images_to_clean[@]}"; do
+        echo -e "${CYAN}    清理镜像: $image${NC}"
+        
+        # 检查是否有容器在使用此镜像
+        local containers_using_image
+        containers_using_image=$(docker ps -a --filter "ancestor=$image" --format "{{.ID}}" 2>/dev/null)
+        
+        if [[ -n "$containers_using_image" ]]; then
+            echo -e "${YELLOW}    ⚠ 发现容器正在使用此镜像:${NC}"
+            docker ps -a --filter "ancestor=$image" --format "table {{.ID}}\t{{.Status}}\t{{.Names}}" 2>/dev/null
+            
+            if [[ "$FORCE_CLEAN" == "true" ]]; then
+                echo -e "${RED}    强制清理模式：停止并删除相关容器${NC}"
+                # 停止运行中的容器
+                docker ps --filter "ancestor=$image" --format "{{.ID}}" 2>/dev/null | xargs -r docker stop
+                # 删除所有相关容器
+                echo "$containers_using_image" | xargs -r docker rm
+            else
+                echo -e "${YELLOW}    跳过清理 (设置 FORCE_CLEAN=true 强制清理)${NC}"
+                continue
+            fi
+        fi
+        
+        # 删除镜像
+        if docker rmi "$image" 2>/dev/null; then
+            echo -e "${GREEN}    ✓ 成功删除镜像: $image${NC}"
+        else
+            echo -e "${RED}    ✗ 删除镜像失败: $image${NC}"
+            success=false
+        fi
+    done
+    
+    return $([[ "$success" == true ]] && echo 0 || echo 1)
+}
+
+# 清理悬挂镜像
+clean_dangling_images() {
+    echo -e "${GREEN}清理悬挂镜像...${NC}"
+    
+    local dangling_images
+    dangling_images=$(docker images -f "dangling=true" -q 2>/dev/null)
+    
+    if [[ -z "$dangling_images" ]]; then
+        echo -e "${BLUE}  未发现悬挂镜像${NC}"
+        return 0
+    fi
+    
+    echo -e "${CYAN}  发现 $(echo "$dangling_images" | wc -l) 个悬挂镜像${NC}"
+    
+    if echo "$dangling_images" | xargs -r docker rmi 2>/dev/null; then
+        echo -e "${GREEN}  ✓ 悬挂镜像清理完成${NC}"
+        return 0
+    else
+        echo -e "${RED}  ✗ 悬挂镜像清理失败${NC}"
+        return 1
+    fi
+}
+
+# 显示清理统计信息
+show_cleanup_stats() {
+    local before_images=$1
+    local after_images
+    after_images=$(docker images -q | wc -l)
+    
+    local cleaned_count=$((before_images - after_images))
+    
+    echo -e "${BLUE}========== 清理统计 ==========${NC}"
+    echo -e "${BLUE}清理前镜像数量: $before_images${NC}"
+    echo -e "${BLUE}清理后镜像数量: $after_images${NC}"
+    echo -e "${GREEN}已清理镜像数量: $cleaned_count${NC}"
+    
+    # 显示剩余空间
+    echo -e "${BLUE}Docker磁盘使用情况:${NC}"
+    docker system df 2>/dev/null || true
+}
+
 # 处理单个服务
 process_service() {
     local service=$1
@@ -372,6 +531,10 @@ process_service() {
             ;;
         "deploy")
             deploy_to_k8s "$service"
+            [[ $? -ne 0 ]] && success=false
+            ;;
+        "clean")
+            clean_docker_images "$service" "$VERSION"
             [[ $? -ne 0 ]] && success=false
             ;;
         "all")
@@ -498,19 +661,50 @@ main() {
     # 检查工具
     check_tools
     
-    # 处理服务
-    if [[ "$SERVICE_NAME" == "all" ]]; then
-        process_all_services "$ACTION"
-    else
-        process_service "$SERVICE_NAME" "$ACTION"
-    fi
-    
-    local exit_code=$?
-    
-    # 显示镜像信息
-    if [[ "$ACTION" == "build" ]] || [[ "$ACTION" == "all" ]]; then
+    # 清理操作的特殊处理
+    if [[ "$ACTION" == "clean" ]]; then
+        echo -e "${YELLOW}⚠ 即将执行清理操作${NC}"
+        echo -e "${BLUE}目标: $SERVICE_NAME${NC}"
+        echo -e "${BLUE}版本: $VERSION${NC}"
+        echo -e "${BLUE}强制清理: $FORCE_CLEAN${NC}"
         echo ""
-        show_images
+        
+        # 记录清理前的镜像数量
+        local before_images
+        before_images=$(docker images -q | wc -l)
+        
+        # 处理服务
+        if [[ "$SERVICE_NAME" == "all" ]]; then
+            process_all_services "$ACTION"
+        else
+            process_service "$SERVICE_NAME" "$ACTION"
+        fi
+        
+        local exit_code=$?
+        
+        # 清理悬挂镜像
+        echo ""
+        clean_dangling_images
+        
+        # 显示清理统计
+        echo ""
+        show_cleanup_stats "$before_images"
+        
+    else
+        # 其他操作的正常处理
+        if [[ "$SERVICE_NAME" == "all" ]]; then
+            process_all_services "$ACTION"
+        else
+            process_service "$SERVICE_NAME" "$ACTION"
+        fi
+        
+        local exit_code=$?
+        
+        # 显示镜像信息
+        if [[ "$ACTION" == "build" ]] || [[ "$ACTION" == "all" ]]; then
+            echo ""
+            show_images
+        fi
     fi
     
     echo ""

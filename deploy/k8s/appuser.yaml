@@ -1,0 +1,165 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appuser-api
+  namespace: huinong
+  labels:
+    app: appuser-api
+spec:
+  selector:
+    matchLabels:
+      app: appuser-api
+  template:
+    metadata:
+      labels:
+        app: appuser-api
+    spec:
+      containers:
+        - name: appuser-api
+          image: registry.huinong.internal/huinong/appuser-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 10001
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appuser-rpc
+  namespace: huinong
+  labels:
+    app: appuser-rpc
+spec:
+  selector:
+    matchLabels:
+      app: appuser-rpc
+  template:
+    metadata:
+      labels:
+        app: appuser-rpc
+    spec:
+      containers:
+        - name: appuser-rpc
+          image: registry.huinong.internal/appuser-rpc
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 20001
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appuser-api
+  namespace: huinong
+  labels:
+    app: appuser-api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 10001
+      targetPort: 10001
+      protocol: TCP
+  selector:
+    app: appuser-api
+  sessionAffinity: ClientIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appuser-rpc
+  namespace: huinong
+  labels:
+    app: appuser-rpc
+spec:
+  type: ClusterIP
+  ports:
+    - name: rpc
+      port: 20001
+      targetPort: 20001
+      protocol: TCP
+  selector:
+    app: appuser-rpc
+  sessionAffinity: ClientIP
+
+---
+# PropagationPolicy - appuser
+# 描述: Karmada多云传播策略配置
+# 创建时间: 2025/7/1 19:51:35
+# 作用域: 命名空间级别
+# 资源类型: Deployment, Service
+# 目标集群: branch, master
+
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+# 策略元数据配置
+metadata:
+  name: appuser
+  namespace: huinong
+  labels:
+    app: appuser
+# 策略规格配置
+spec:
+  # 资源选择器 - 指定要传播的Kubernetes资源
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: appuser-api
+      namespace: huinong
+    - apiVersion: v1
+      kind: Service
+      name: appuser-api
+      namespace: huinong
+  # 调度配置 - 定义资源如何分发到目标集群
+  placement:
+    # 目标集群列表
+    clusterAffinity:
+      clusterNames:
+        - branch
+        - master
+    # 副本调度策略
+    replicaScheduling:
+      replicaDivisionPreference: Weighted
+      replicaSchedulingType: Divided
+      weightPreference:
+        staticWeightList:
+          - targetCluster:
+              clusterNames:
+                - branch
+            weight: 1
+          - targetCluster:
+              clusterNames:
+                - master
+            weight: 2
+  preemption: Always
+  # 高级配置选项
+  conflictResolution: Overwrite

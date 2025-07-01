@@ -1,0 +1,8 @@
+# 密钥登录 karmada-master
+karmada-master:
+  host: 10.10.10.2
+  port: 22
+  user: root
+
+scp-files:
+  deploy-script: deploy-k8s.sh
