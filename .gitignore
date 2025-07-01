@@ -18,3 +18,4 @@ apache-skywalking-go-0.6.0-bin
 *.log
 
 .venv/
+__pycache__/
