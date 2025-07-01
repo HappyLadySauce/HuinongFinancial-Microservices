@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"appuserrpc/appuserclient"
+	"leaseproductrpc/leaseproductservice"
 	"model"
-	"rpc/internal/clients"
 	"rpc/internal/svc"
 	"rpc/lease"
 
@@ -37,7 +38,7 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLea
 	}
 
 	// 1. 调用AppUser RPC验证用户信息并获取用户姓名
-	userResp, err := l.svcCtx.AppUserClient.GetUserById(l.ctx, &clients.GetUserByIdReq{
+	userResp, err := l.svcCtx.AppUserClient.GetUserById(l.ctx, &appuserclient.GetUserByIdReq{
 		UserId: in.UserId,
 	})
 	if err != nil {
@@ -52,7 +53,7 @@ func (l *CreateLeaseApplicationLogic) CreateLeaseApplication(in *lease.CreateLea
 	applicantName := userResp.UserInfo.Name
 
 	// 2. 调用LeaseProduct RPC验证产品信息和库存
-	stockResp, err := l.svcCtx.LeaseProductClient.CheckInventoryAvailability(l.ctx, &clients.CheckInventoryAvailabilityReq{
+	stockResp, err := l.svcCtx.LeaseProductClient.CheckInventoryAvailability(l.ctx, &leaseproductservice.CheckInventoryAvailabilityReq{
 		ProductCode: in.ProductCode,
 		Quantity:    1,
 		StartDate:   in.StartDate,

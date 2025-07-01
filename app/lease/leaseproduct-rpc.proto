@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package leaseproduct;
+
+option go_package = "./leaseproduct";
+
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> leaseproduct-api -> leaseproduct.rpc -> redis 缓存产品信息 -> 数据库 leaseproduct (MySQL)
+//                                                                    -> other.rpc -> redis 缓存其他信息 -> 数据库 other (MySQL)
+
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20006
+// rpc 服务名:leaseproductrpc.rpc
+
+// 数据库:leaseproduct (MySQL)
+// 连接: leaseproduct:leaseproduct@tcp(10.10.10.7:3306)/leaseproduct?charset=utf8mb4&parseTime=True&loc=Local
+// 缓存:redis 缓存租赁产品信息
+
+// 服务职责:
+// 1. 租赁产品信息管理:产品创建、查询、修改、删除
+// 2. 产品状态管理:产品上下架状态控制
+// 3. 库存状态管理:库存数量查询和可用性检查
+// 4. 产品数据缓存:提供高性能的产品信息查询
+
+// -- ----------------------------
+// 租赁产品表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `lease_products`;
+// CREATE TABLE `lease_products` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '产品ID',
+//   `product_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品编码',
+//   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品名称',
+//   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '租赁类型',
+//   `machinery` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '设备名称',
+//   `brand` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '品牌',
+//   `model` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '型号',
+//   `daily_rate` decimal(10,2) NOT NULL COMMENT '日租金',
+//   `deposit` decimal(10,2) DEFAULT 0.00 COMMENT '押金',
+//   `max_duration` int UNSIGNED DEFAULT 365 COMMENT '最大租期(天)',
+//   `min_duration` int UNSIGNED DEFAULT 1 COMMENT '最小租期(天)',
+//   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品描述',
+//   `inventory_count` int UNSIGNED DEFAULT 0 COMMENT '库存数量',
+//   `available_count` int UNSIGNED DEFAULT 0 COMMENT '可用数量',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:上架 2:下架',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_product_code` (`product_code`),
+//   KEY `idx_type` (`type`),
+//   KEY `idx_brand` (`brand`),
+//   KEY `idx_status` (`status`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='租赁产品表';
+
+// === 基础数据结构 ===
+
+// 租赁产品信息
+message LeaseProductInfo {
+  int64 id = 1;                     // 产品ID
+  string productCode = 2;           // 产品编码
+  string name = 3;                  // 产品名称
+  string type = 4;                  // 租赁类型
+  string machinery = 5;             // 设备名称
+  string brand = 6;                 // 品牌
+  string model = 7;                 // 型号
+  double dailyRate = 8;             // 日租金
+  double deposit = 9;               // 押金
+  int32 maxDuration = 10;           // 最大租期(天)
+  int32 minDuration = 11;           // 最小租期(天)
+  string description = 12;          // 产品描述
+  int32 inventoryCount = 13;        // 库存数量
+  int32 availableCount = 14;        // 可用数量
+  int32 status = 15;                // 状态 1:上架 2:下架
+  int64 createdAt = 16;             // 创建时间
+  int64 updatedAt = 17;             // 更新时间
+}
+
+// 添加删除操作响应
+message DeleteLeaseProductResp {
+}
+
+// 标准响应格式
+message GetLeaseProductResp {
+  LeaseProductInfo data = 1;
+}
+
+message CreateLeaseProductResp {
+  LeaseProductInfo data = 1;
+}
+
+message UpdateLeaseProductResp {
+  LeaseProductInfo data = 1;
+}
+
+// === 请求响应结构 ===
+
+// 获取租赁产品请求
+message GetLeaseProductReq {
+  string productCode = 1;           // 产品编码
+}
+
+// 获取租赁产品列表请求
+message ListLeaseProductsReq {
+  int32 page = 1;                   // 页码
+  int32 size = 2;                   // 每页数量
+  string type = 3;                  // 产品类型
+  string brand = 4;                 // 品牌
+  int32 status = 5;                 // 状态
+  string keyword = 6;               // 关键词
+}
+
+message ListLeaseProductsResp {
+  repeated LeaseProductInfo list = 1; // 产品列表
+  int64 total = 2;                    // 总数
+}
+
+// 创建租赁产品请求
+message CreateLeaseProductReq {
+  string productCode = 1;           // 产品编码
+  string name = 2;                  // 产品名称
+  string type = 3;                  // 产品类型
+  string machinery = 4;             // 设备名称
+  string brand = 5;                 // 品牌
+  string model = 6;                 // 型号
+  double dailyRate = 7;             // 日租金
+  double deposit = 8;               // 押金
+  int32 maxDuration = 9;            // 最大租期(天)
+  int32 minDuration = 10;           // 最小租期(天)
+  string description = 11;          // 产品描述
+  int32 inventoryCount = 12;        // 库存数量
+}
+
+// 更新租赁产品请求
+message UpdateLeaseProductReq {
+  string productCode = 1;           // 产品编码
+  string name = 2;                  // 产品名称
+  string type = 3;                  // 产品类型
+  string machinery = 4;             // 设备名称
+  string brand = 5;                 // 品牌
+  string model = 6;                 // 型号
+  double dailyRate = 7;             // 日租金
+  double deposit = 8;               // 押金
+  int32 maxDuration = 9;            // 最大租期(天)
+  int32 minDuration = 10;           // 最小租期(天)
+  string description = 11;          // 产品描述
+  int32 status = 12;                // 状态
+}
+
+// 删除租赁产品请求
+message DeleteLeaseProductReq {
+  string productCode = 1;           // 产品编码
+}
+
+// 库存检查请求
+message CheckInventoryAvailabilityReq {
+  string productCode = 1;           // 产品编码
+  int32 quantity = 2;               // 数量
+  string startDate = 3;             // 开始日期
+  string endDate = 4;               // 结束日期
+}
+
+message CheckInventoryAvailabilityResp {
+  bool available = 1;               // 是否可用
+  int32 availableCount = 2;         // 可用数量
+}
+
+// === 服务定义 ===
+
+service LeaseProductService {
+  // 产品查询
+  rpc GetLeaseProduct(GetLeaseProductReq) returns (GetLeaseProductResp);
+  rpc ListLeaseProducts(ListLeaseProductsReq) returns (ListLeaseProductsResp);
+  
+  // 产品管理
+  rpc CreateLeaseProduct(CreateLeaseProductReq) returns (CreateLeaseProductResp);
+  rpc UpdateLeaseProduct(UpdateLeaseProductReq) returns (UpdateLeaseProductResp);
+  rpc DeleteLeaseProduct(DeleteLeaseProductReq) returns (DeleteLeaseProductResp);
+  
+  // 库存检查
+  rpc CheckInventoryAvailability(CheckInventoryAvailabilityReq) returns (CheckInventoryAvailabilityResp);
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go

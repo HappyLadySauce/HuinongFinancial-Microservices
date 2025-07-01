@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"appuserrpc/appuserclient"
+	"loanproductrpc/loanproductservice"
 	"model"
-	"rpc/internal/clients"
 	"rpc/internal/svc"
 	"rpc/loan"
 
@@ -37,7 +38,7 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	}
 
 	// 1. 调用AppUser RPC验证用户信息并获取用户姓名
-	userResp, err := l.svcCtx.AppUserClient.GetUserById(l.ctx, &clients.GetUserByIdReq{
+	userResp, err := l.svcCtx.AppUserClient.GetUserById(l.ctx, &appuserclient.GetUserByIdReq{
 		UserId: in.UserId,
 	})
 	if err != nil {
@@ -52,7 +53,7 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(in *loan.CreateLoanAp
 	applicantName := userResp.UserInfo.Name
 
 	// 2. 调用LoanProduct RPC验证产品信息
-	productResp, err := l.svcCtx.LoanProductClient.GetLoanProduct(l.ctx, &clients.GetLoanProductReq{
+	productResp, err := l.svcCtx.LoanProductClient.GetLoanProduct(l.ctx, &loanproductservice.GetLoanProductReq{
 		Id: in.ProductId,
 	})
 	if err != nil {

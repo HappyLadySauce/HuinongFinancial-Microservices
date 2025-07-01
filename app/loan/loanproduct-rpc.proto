@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package loanproduct;
+
+option go_package = "./loanproduct";
+
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> loanproduct-api -> loanproduct.rpc -> redis 缓存产品信息 -> 数据库 loanproduct (MySQL)
+//                                                                  -> other.rpc -> redis 缓存其他信息 -> 数据库 other (MySQL)
+
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20005
+// rpc 服务名:loanproductrpc.rpc
+
+// 数据库:loanproduct (MySQL)
+// 连接: loanproduct:loanproduct@tcp(10.10.10.6:3306)/loanproduct?charset=utf8mb4&parseTime=True&loc=Local
+// 缓存:redis 缓存贷款产品信息
+
+// 服务职责:
+// 1. 贷款产品信息管理:产品创建、查询、修改、删除
+// 2. 产品状态管理:产品上下架状态控制
+// 3. 产品数据缓存:提供高性能的产品信息查询
+
+// -- ----------------------------
+// 贷款产品表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `loan_products`;
+// CREATE TABLE `loan_products` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '产品ID',
+//   `product_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品编码',
+//   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品名称',
+//   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品类型',
+//   `max_amount` decimal(15,2) NOT NULL COMMENT '最大金额',
+//   `min_amount` decimal(15,2) DEFAULT 1000.00 COMMENT '最小金额',
+//   `max_duration` int UNSIGNED DEFAULT 60 COMMENT '最大期限(月)',
+//   `min_duration` int UNSIGNED DEFAULT 1 COMMENT '最小期限(月)',
+//   `interest_rate` decimal(5,2) NOT NULL COMMENT '年利率(%)',
+//   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '产品描述',
+//   `status` tinyint UNSIGNED DEFAULT 1 COMMENT '状态 1:上架 2:下架',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_product_code` (`product_code`),
+//   KEY `idx_type` (`type`),
+//   KEY `idx_status` (`status`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='贷款产品表';
+
+// === 基础数据结构 ===
+
+// 贷款产品信息
+message LoanProductInfo {
+    int64 id = 1;
+    string productCode = 2;
+    string name = 3;
+    string type = 4;
+    double maxAmount = 5;
+    double minAmount = 6;
+    int32 maxDuration = 7; // 最大期限(月)
+    int32 minDuration = 8; // 最小期限(月)
+    double interestRate = 9; // 年利率(%)
+    string description = 10;
+    int32 status = 11;  // 1:上架 2:下架
+    int64 createdAt = 12;
+    int64 updatedAt = 13;
+}
+
+// 添加删除操作响应
+message DeleteLoanProductResp {
+}
+
+// 添加状态更新响应  
+message UpdateProductStatusResp {
+}
+
+// 标准响应格式
+message GetLoanProductResp {
+    LoanProductInfo data = 1;
+}
+
+message CreateLoanProductResp {
+    LoanProductInfo data = 1;
+}
+
+message UpdateLoanProductResp {
+    LoanProductInfo data = 1;
+}
+
+// === 请求与响应 ===
+
+// 获取贷款产品 - 支持通过ID或产品编码查询
+message GetLoanProductReq {
+    int64 id = 1;                       // 产品ID (可选)
+    string productCode = 2;             // 产品编码 (可选)
+}
+
+// 获取贷款产品列表
+message ListLoanProductsReq {
+    int32 page = 1;
+    int32 size = 2;
+    string type = 3;
+    int32 status = 4;
+    string keyword = 5;
+}
+
+message ListLoanProductsResp {
+    repeated LoanProductInfo list = 1;   // 产品列表
+    int64 total = 2;                     // 总数
+}
+
+// 创建贷款产品
+message CreateLoanProductReq {
+    string productCode = 1;
+    string name = 2;
+    string type = 3;
+    double maxAmount = 4;
+    double minAmount = 5;
+    int32 maxDuration = 6;
+    int32 minDuration = 7;
+    double interestRate = 8;
+    string description = 9;
+}
+
+// 更新贷款产品
+message UpdateLoanProductReq {
+    int64 id = 1;
+    string name = 2;
+    string type = 3;
+    double maxAmount = 4;
+    double minAmount = 5;
+    int32 maxDuration = 6;
+    int32 minDuration = 7;
+    double interestRate = 8;
+    string description = 9;
+}
+
+// 删除贷款产品
+message DeleteLoanProductReq {
+    int64 id = 1;
+}
+
+// 更新产品状态
+message UpdateProductStatusReq {
+    int64 id = 1;
+    int32 status = 2;
+}
+
+// === 服务定义 ===
+service LoanProductService {
+    // 产品查询
+    rpc GetLoanProduct(GetLoanProductReq) returns (GetLoanProductResp);
+    rpc ListLoanProducts(ListLoanProductsReq) returns (ListLoanProductsResp);
+    
+    // 产品管理
+    rpc CreateLoanProduct(CreateLoanProductReq) returns (CreateLoanProductResp);
+    rpc UpdateLoanProduct(UpdateLoanProductReq) returns (UpdateLoanProductResp);
+    rpc DeleteLoanProduct(DeleteLoanProductReq) returns (DeleteLoanProductResp);
+    rpc UpdateProductStatus(UpdateProductStatusReq) returns (UpdateProductStatusResp);
+}
+
+// goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
+// sed -i "" 's/,omitempty//g' *.pb.go

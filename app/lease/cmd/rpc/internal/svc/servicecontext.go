@@ -1,8 +1,9 @@
 package svc
 
 import (
+	"appuserrpc/appuserclient"
+	"leaseproductrpc/leaseproductservice"
 	"model"
-	"rpc/internal/clients"
 	"rpc/internal/config"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -15,8 +16,8 @@ type ServiceContext struct {
 	LeaseApprovalsModel    model.LeaseApprovalsModel
 
 	// RPC 客户端 - 通过consul服务发现调用其他服务
-	LeaseProductClient clients.LeaseProductClient
-	AppUserClient      clients.AppUserClient
+	LeaseProductClient leaseproductservice.LeaseProductService
+	AppUserClient      appuserclient.AppUser
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -27,7 +28,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		LeaseApprovalsModel:    model.NewLeaseApprovalsModel(conn, c.CacheConf),
 
 		// 通过consul服务发现初始化RPC客户端
-		LeaseProductClient: clients.NewLeaseProductClient(zrpc.MustNewClient(c.LeaseProductRpc)),
-		AppUserClient:      clients.NewAppUserClient(zrpc.MustNewClient(c.AppUserRpc)),
+		LeaseProductClient: leaseproductservice.NewLeaseProductService(zrpc.MustNewClient(c.LeaseProductRpc)),
+		AppUserClient:      appuserclient.NewAppUser(zrpc.MustNewClient(c.AppUserRpc)),
 	}
 }

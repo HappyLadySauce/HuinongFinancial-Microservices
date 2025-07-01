@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package appuser;
+
+option go_package = "./appuser";
+
+// 服务架构:
+// 用户 -> 前端 -> nginx网关 -> appuser-api -> appuser.rpc -> redis 缓存用户信息 -> 数据库 appuser (MySQL)
+//                                                        -> other.rpc -> redis 缓存用户信息 -> 数据库 other (MySQL)
+
+// consul 注册地址:consul.huinong.internal
+// rpc 端口:20001
+// rpc 服务名:appuser.rpc
+
+// 数据库:appuser (MySQL)
+// 缓存:redis 缓存用户信息
+
+// 服务职责:
+// 1. 用户信息管理:用户信息查询、用户信息修改、用户信息删除
+// 2. 用户认证管理:用户登录管理、用户注册管理、用户注销管理、用户密码修改
+
+// -- ----------------------------
+// App用户表
+// -- ----------------------------
+// DROP TABLE IF EXISTS `app_users`;
+// CREATE TABLE `app_users` (
+//   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+//   `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+//   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '密码哈希',
+//   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户姓名',
+//   `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '昵称',
+//   `age` tinyint UNSIGNED DEFAULT 0 COMMENT '年龄',
+//   `gender` tinyint UNSIGNED DEFAULT 0 COMMENT '性别 0:未知 1:男 2:女',
+//   `occupation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '职业',
+//   `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '联系地址',
+//   `income` decimal(10,2) DEFAULT 0.00 COMMENT '月收入',
+//   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+//   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+//   PRIMARY KEY (`id`),
+//   UNIQUE KEY `uk_phone` (`phone`),
+//   KEY `idx_created_at` (`created_at`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='App用户表';
+
+// C端用户基础信息
+message UserInfo {
+    int64 id = 1;  // 用户ID
+    string phone = 2; // 手机号
+    string name = 3;  // 姓名
+    string nickname = 4;  // 昵称
+    int32 age = 5;  // 年龄
+    int32 gender = 6;  // 0:未知 1:男 2:女
+    string occupation = 7;  // 职业
+    string address = 8;  // 地址
+    double income = 9;  // 收入 单位:元
+    int64 created_at = 10;  // 创建时间
+    int64 updated_at = 11;  // 更新时间
+}
+
+// AppUser服务 - 包含用户信息管理和认证管理
+service AppUser {
+    // 用户信息管理
+    rpc GetUserByPhone(GetUserInfoReq) returns (GetUserInfoResp);
+    rpc GetUserById(GetUserByIdReq) returns (GetUserInfoResp);
+    rpc UpdateUserInfo(UpdateUserInfoReq) returns (UpdateUserInfoResp);
+    rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
+    
+    // 用户认证管理
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc Register(RegisterReq) returns (RegisterResp);
+    rpc Logout(LogoutReq) returns (LogoutResp);
+    rpc ChangePassword(ChangePasswordReq) returns (ChangePasswordResp);
+}
+
+// 通过用户ID获取用户信息 - 新增接口
+message GetUserByIdReq {
+    int64 user_id = 1;
+}
+
+// 获取用户信息
+message GetUserInfoReq {
+    string phone = 1;
+}
+
+message GetUserInfoResp {
+    UserInfo user_info = 1;
+}
+// 获取用户信息
+
+
+// 更新用户信息
+message UpdateUserInfoReq {
+    UserInfo user_info = 1;
+}
+
+message UpdateUserInfoResp {
+    UserInfo user_info = 1;
+}
+// 更新用户信息
+
+// 删除用户
+message DeleteUserReq {
+    string phone = 1;
+}
+
+message DeleteUserResp {
+}
+// 删除用户
+
+
+//登录
+message LoginReq {
+    string phone = 1;
+    string password = 2;
+}
+
+message LoginResp {
+    string token = 1; // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
+}
+// 登录
+
+
+// 注册
+message RegisterReq {
+    string phone = 1;
+    string password = 2;
+}
+
+message RegisterResp {
+    string token = 1; // 返回纯JWT token，Postman可配置为Bearer Token自动添加前缀
+}
+// 注册
+
+
+// 注销 (从JWT上下文获取用户信息，无需传递token)
+message LogoutReq {
+    // 移除 token 字段，改为从 JWT 认证上下文中获取用户信息
+}
+
+message LogoutResp {
+}
+// 注销
+
+
+// 修改密码
+message ChangePasswordReq {
+    string phone = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message ChangePasswordResp {
+}
+// 修改密码
