@@ -101,8 +101,6 @@ message LoanApprovalInfo {
 
 // Loan服务 - 包含贷款申请管理和审批管理
 service Loan {
-    // 健康检查
-    rpc Ping(PingReq) returns (PingResp);
     
     // 贷款申请管理
     rpc CreateLoanApplication(CreateLoanApplicationReq) returns (CreateLoanApplicationResp);
@@ -197,15 +195,6 @@ message ListLoanApprovalsReq {
 message ListLoanApprovalsResp {
     repeated LoanApprovalInfo list = 1;
 }
-
-// 健康检查
-message PingReq {
-}
-
-message PingResp {
-    string status = 1; // 服务状态
-}
-// 健康检查
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
 // sed -i "" 's/,omitempty//g' *.pb.go

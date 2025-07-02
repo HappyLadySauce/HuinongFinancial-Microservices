@@ -152,22 +152,6 @@ type ListLoanApprovalsResp {
 	List []LoanApprovalInfo `json:"list"`
 }
 
-// 健康检查响应
-type PingResp {
-	Status string `json:"status"`
-}
-
-// 健康检查接口 (公开接口)
-@server (
-	group:  health
-	prefix: /
-)
-service loan {
-	// 健康检查
-	@handler Ping
-	get /ping returns (PingResp)
-}
-
 // C端用户贷款申请管理 (需要JWT认证)
 @server (
 	group:  loan

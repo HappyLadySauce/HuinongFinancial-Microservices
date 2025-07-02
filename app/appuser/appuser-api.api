@@ -1,3 +1,5 @@
+syntax = "v1"
+
 info (
 	title:   "C端用户服务API"
 	desc:    "提供C端用户的基本信息管理功能"
@@ -108,24 +110,6 @@ type ChangePasswordReq {
 	Phone       string `json:"phone"`
 	OldPassword string `json:"old_password"`
 	NewPassword string `json:"new_password"`
-}
-
-type ChangePasswordResp {}
-
-// 健康检查响应
-type PingResp {
-	Status string `json:"status"`
-}
-
-// 健康检查接口 (公开接口)
-@server (
-	group:  health
-	prefix: /
-)
-service appuser {
-	// 健康检查
-	@handler Ping
-	get /ping returns (PingResp)
 }
 
 // 用户认证管理 (公开接口)

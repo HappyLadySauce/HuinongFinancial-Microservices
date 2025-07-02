@@ -120,22 +120,6 @@ type ChangePasswordReq {
 
 type ChangePasswordResp {}
 
-// 健康检查响应
-type PingResp {
-	Status string `json:"status"`
-}
-
-// 健康检查接口 (公开接口)
-@server (
-	group:  health
-	prefix: /
-)
-service oauser {
-	// 健康检查
-	@handler Ping
-	get /ping returns (PingResp)
-}
-
 // 用户认证管理 (公开接口)
 @server (
 	group:  auth
