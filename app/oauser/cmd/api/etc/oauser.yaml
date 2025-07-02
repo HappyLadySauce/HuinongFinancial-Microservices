@@ -34,3 +34,7 @@ Log:
   Level: info
   KeepDays: 7
   Compress: true
+
+DevServer:
+  Enabled: true
+
