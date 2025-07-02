@@ -233,13 +233,19 @@ build_service() {
     # 构建模式参数
     case $BUILD_MODE in
         "release")
-            build_args+=("-ldflags=-s -w")  # 去除调试信息和符号表
+            build_args+=("-ldflags=-s -w -extldflags=-static")  # 去除调试信息和符号表，静态链接
             build_args+=("-trimpath")       # 去除文件路径信息
+            build_args+=("-tags=netgo")     # 使用纯Go网络实现
             ;;
         "debug")
             build_args+=("-gcflags=all=-N -l")  # 禁用优化和内联
+            build_args+=("-ldflags=-extldflags=-static")  # 静态链接
+            build_args+=("-tags=netgo")     # 使用纯Go网络实现
             ;;
     esac
+    
+    # 设置CGO为禁用，确保静态编译
+    export CGO_ENABLED=0
     
     # 输出参数
     build_args+=("-o" "$output_path")
@@ -263,7 +269,7 @@ build_service() {
             echo -e "${BLUE}文件大小: $file_size${NC}"
             echo -e "${BLUE}文件路径: $output_path${NC}"
         fi
-        
+                
         return 0
     else
         echo -e "${RED}✗ $service $code_type 构建失败${NC}"

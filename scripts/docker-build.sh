@@ -182,11 +182,34 @@ build_binaries() {
     return 0
 }
 
+# 端口映射配置 (与start.sh保持一致)
+declare -A SERVICE_PORTS=(
+    ["appuser-api"]="10001"
+    ["appuser-rpc"]="20001"
+    ["oauser-api"]="10002"
+    ["oauser-rpc"]="20002"
+    ["loanproduct-api"]="10003"
+    ["loanproduct-rpc"]="20003"
+    ["leaseproduct-api"]="10004"
+    ["leaseproduct-rpc"]="20004"
+    ["loan-api"]="10005"
+    ["loan-rpc"]="20005"
+    ["lease-api"]="10006"
+    ["lease-rpc"]="20006"
+)
+
 # 创建Dockerfile
 create_dockerfile() {
     local service=$1
     local service_type=$2  # api 或 rpc
     local dockerfile_path="$DOCKER_DIR/$service-$service_type.Dockerfile"
+    local service_key="$service-$service_type"
+    local port="${SERVICE_PORTS[$service_key]}"
+    
+    if [[ -z "$port" ]]; then
+        echo -e "${RED}错误: 未找到服务 $service_key 的端口配置${NC}"
+        return 1
+    fi
     
     # 创建docker目录
     mkdir -p "$DOCKER_DIR"
@@ -213,8 +236,9 @@ WORKDIR /app
 COPY bin/$service-$service_type ./$service-$service_type
 COPY app/$service/cmd/$service_type/etc ./etc
 
-# 设置权限
-RUN chmod +x ./$service-$service_type && \\
+# 创建日志目录并设置权限
+RUN mkdir -p /app/logs && \\
+    chmod +x ./$service-$service_type && \\
     chown -R appuser:appuser /app
 
 # 切换到非root用户
@@ -223,15 +247,15 @@ USER appuser
 # 根据服务类型设置端口
 EOF
 
-    # 设置端口和启动命令
+    # 设置端口和启动命令 - 使用动态端口
     if [[ "$service_type" == "api" ]]; then
         cat >> "$dockerfile_path" << EOF
-EXPOSE 10001
+EXPOSE $port
 CMD ["./$service-$service_type", "-f", "etc/$service.yaml"]
 EOF
     else
         cat >> "$dockerfile_path" << EOF
-EXPOSE 20001
+EXPOSE $port
 CMD ["./$service-$service_type", "-f", "etc/${service}rpc.yaml"]
 EOF
     fi
