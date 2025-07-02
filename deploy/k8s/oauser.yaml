@@ -24,16 +24,16 @@ spec:
           # API服务健康检查配置 - 使用HTTP /ping端点
           livenessProbe:
             httpGet:
-              path: /ping
-              port: 10002
+              path: /healthz
+              port: 6060
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /ping
-              port: 10002
+              path: /healthz
+              port: 6060
             initialDelaySeconds: 15
             periodSeconds: 5
             timeoutSeconds: 3
