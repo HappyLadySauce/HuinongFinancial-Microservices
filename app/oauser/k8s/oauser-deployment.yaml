@@ -176,7 +176,7 @@ data:
     
     # RPC 客户端配置
     OaUserRpc:
-      Target: consul://consul.huinong.internal/oauserrpc.rpc
+      Target: consul://consul.huinong.internal/oauserrpc.rpc?wait=15s&passing=true
     
     # 日志配置
     Log:

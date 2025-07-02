@@ -13,7 +13,7 @@ Auth:
 # 理由：支持 RPC 服务水平扩展、负载均衡和故障转移，是标准的生产级配置
 # 注意：客户端的服务发现配置使用 Target URL 格式，而不是结构化配置
 AppUserRpc:
-  Target: consul://consul.huinong.internal/appuserrpc.rpc
+  Target: consul://consul.huinong.internal/appuserrpc.rpc?wait=15s&passing=true
   Lazy: true            # 懒加载：避免启动时因依赖服务未就绪而失败
   Timeout: 5000         # 调用超时：避免长时间等待 (毫秒)
   KeepaliveTime: 30s    # 保活时间：减少连接重建开销

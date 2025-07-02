@@ -125,6 +125,24 @@ spec:
   sessionAffinity: ClientIP
 
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appuser-rpc
+  namespace: huinong
+  labels:
+    app: appuser-rpc
+spec:
+  type: ClusterIP
+  ports:
+    - name: rpc
+      port: 20001
+      targetPort: 20001
+      protocol: TCP
+  selector:
+    app: appuser-rpc
+
+---
 # PropagationPolicy - appuser
 # 描述: Karmada多云传播策略配置
 # 创建时间: 2025/7/1 19:51:35
@@ -154,6 +172,10 @@ spec:
       namespace: huinong
     - apiVersion: apps/v1
       kind: Deployment
+      name: appuser-rpc
+      namespace: huinong
+    - apiVersion: v1
+      kind: Service
       name: appuser-rpc
       namespace: huinong
   # 调度配置 - 定义资源如何分发到目标集群
