@@ -22,14 +22,14 @@ OaUserRpc:
 # 链路追踪配置
 Telemetry:
   Name: oauser-api
-  Endpoint: http://127.0.0.1:14268/api/traces
+  Endpoint: http://10.10.10.6:14268/api/traces
   Sampler: 1.0
   Batcher: jaeger
 
 # 日志配置
 Log:
   ServiceName: oauser-api
-  Mode: file # 本地开发记入文件，K8s中应使用 console
+  Mode: console # 本地开发记入文件，K8s中应使用 console
   Path: logs
   Level: info
   KeepDays: 7

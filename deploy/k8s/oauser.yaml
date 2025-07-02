@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauser-api
+  namespace: huinong
+  labels:
+    app: oauser-api
+spec:
+  selector:
+    matchLabels:
+      app: oauser-api
+  template:
+    metadata:
+      labels:
+        app: oauser-api
+    spec:
+      containers:
+        - name: oauser-api
+          image: registry.huinong.internal/huinong/oauser-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 10002
+              protocol: TCP
+          # API服务健康检查配置 - 使用HTTP /ping端点
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 10002
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 10002
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauser-rpc
+  namespace: huinong
+  labels:
+    app: oauser-rpc
+spec:
+  selector:
+    matchLabels:
+      app: oauser-rpc
+  template:
+    metadata:
+      labels:
+        app: oauser-rpc
+    spec:
+      containers:
+        - name: oauser-rpc
+          image: registry.huinong.internal/huinong/oauser-rpc:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 20002
+              protocol: TCP
+          # RPC服务健康检查配置 - 使用TCP端口检查
+          livenessProbe:
+            tcpSocket:
+              port: 20002
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 20002
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauser-api
+  namespace: huinong
+  labels:
+    app: oauser-api
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 10002
+      targetPort: 10002
+      protocol: TCP
+  selector:
+    app: oauser-api
+  sessionAffinity: ClientIP
+
+---
+# PropagationPolicy - oauser
+# 描述: Karmada多云传播策略配置
+# 创建时间: 2025/7/1 19:51:35
+# 作用域: 命名空间级别
+# 资源类型: Deployment, Service
+# 目标集群: branch, master
+
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+# 策略元数据配置
+metadata:
+  name: oauser
+  namespace: huinong
+  labels:
+    app: oauser
+# 策略规格配置
+spec:
+  # 资源选择器 - 指定要传播的Kubernetes资源
+  resourceSelectors:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: oauser-api
+      namespace: huinong
+    - apiVersion: v1
+      kind: Service
+      name: oauser-api
+      namespace: huinong
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: oauser-rpc
+      namespace: huinong
+  # 调度配置 - 定义资源如何分发到目标集群
+  placement:
+    # 目标集群列表
+    clusterAffinity:
+      clusterNames:
+        - branch
+        - master
+    # 副本调度策略
+    replicaScheduling:
+      replicaDivisionPreference: Weighted
+      replicaSchedulingType: Divided
+      weightPreference:
+        staticWeightList:
+          - targetCluster:
+              clusterNames:
+                - branch
+            weight: 1
+          - targetCluster:
+              clusterNames:
+                - master
+            weight: 2
+  preemption: Always
+  # 高级配置选项
+  conflictResolution: Overwrite

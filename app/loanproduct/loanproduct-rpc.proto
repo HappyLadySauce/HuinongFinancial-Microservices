@@ -144,8 +144,20 @@ message UpdateProductStatusReq {
     int32 status = 2;
 }
 
+// 健康检查
+message PingReq {
+}
+
+message PingResp {
+    string status = 1;  // 服务状态
+}
+// 健康检查
+
 // === 服务定义 ===
 service LoanProductService {
+    // 健康检查
+    rpc Ping(PingReq) returns (PingResp);
+    
     // 产品查询
     rpc GetLoanProduct(GetLoanProductReq) returns (GetLoanProductResp);
     rpc ListLoanProducts(ListLoanProductsReq) returns (ListLoanProductsResp);

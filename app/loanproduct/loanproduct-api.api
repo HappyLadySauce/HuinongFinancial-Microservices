@@ -119,7 +119,22 @@ type (
 	UpdateProductStatusResp  {}
 	// 删除产品响应
 	DeleteLoanProductResp  {}
+	// 健康检查响应
+	PingResp {
+		Status string `json:"status"`
+	}
 )
+
+// ========== 健康检查接口 (公开接口) ==========
+@server (
+	group:  health
+	prefix: /
+)
+service loanproduct {
+	@doc "健康检查"
+	@handler Ping
+	get /ping returns (PingResp)
+}
 
 // ========== C端用户API (公开接口) ==========
 @server (

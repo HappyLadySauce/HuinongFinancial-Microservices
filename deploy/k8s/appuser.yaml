@@ -21,6 +21,23 @@ spec:
           ports:
             - containerPort: 10001
               protocol: TCP
+          # API服务健康检查配置 - 使用HTTP /ping端点
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 10001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 10001
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             requests:
               cpu: 100m
@@ -28,7 +45,7 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
-  replicas: 2
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -54,11 +71,26 @@ spec:
     spec:
       containers:
         - name: appuser-rpc
-          image: registry.huinong.internal/appuser-rpc
+          image: registry.huinong.internal/huinong/appuser-rpc:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 20001
               protocol: TCP
+          # RPC服务健康检查配置 - 使用TCP端口检查
+          livenessProbe:
+            tcpSocket:
+              port: 20001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 20001
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             requests:
               cpu: 100m
@@ -93,25 +125,6 @@ spec:
   sessionAffinity: ClientIP
 
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: appuser-rpc
-  namespace: huinong
-  labels:
-    app: appuser-rpc
-spec:
-  type: ClusterIP
-  ports:
-    - name: rpc
-      port: 20001
-      targetPort: 20001
-      protocol: TCP
-  selector:
-    app: appuser-rpc
-  sessionAffinity: ClientIP
-
----
 # PropagationPolicy - appuser
 # 描述: Karmada多云传播策略配置
 # 创建时间: 2025/7/1 19:51:35
@@ -138,6 +151,10 @@ spec:
     - apiVersion: v1
       kind: Service
       name: appuser-api
+      namespace: huinong
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: appuser-rpc
       namespace: huinong
   # 调度配置 - 定义资源如何分发到目标集群
   placement:

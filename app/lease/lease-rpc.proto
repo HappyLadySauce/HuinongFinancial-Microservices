@@ -118,6 +118,9 @@ message LeaseApprovalInfo {
 
 // Lease服务 - 包含租赁申请管理和审批管理
 service Lease {
+  // 健康检查
+  rpc Ping(PingReq) returns (PingResp);
+  
   // 租赁申请管理
   rpc CreateLeaseApplication(CreateLeaseApplicationReq) returns (CreateLeaseApplicationResp);
   rpc GetLeaseApplication(GetLeaseApplicationReq) returns (GetLeaseApplicationResp);
@@ -220,6 +223,15 @@ message ListLeaseApprovalsReq {
 message ListLeaseApprovalsResp {
   repeated LeaseApprovalInfo list = 1;
 }
+
+// 健康检查
+message PingReq {
+}
+
+message PingResp {
+    string status = 1; // 服务状态
+}
+// 健康检查
 
 // goctl rpc protoc *.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../
 // sed -i "" 's/,omitempty//g' *.pb.go

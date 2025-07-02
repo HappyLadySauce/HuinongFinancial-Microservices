@@ -4,12 +4,12 @@ API测试配置文件
 """
 
 # 服务配置
-APPUSER_BASE_URL = "http://localhost:10001"      # C端用户服务地址
-OAUSER_BASE_URL = "http://localhost:10002"       # B端用户服务地址
-LEASEPRODUCT_BASE_URL = "http://localhost:10006" # 租赁产品服务地址 (修复: 10003 -> 10006)
-LEASE_BASE_URL = "http://localhost:10004"        # 租赁业务服务地址
-LOANPRODUCT_BASE_URL = "http://localhost:10005"  # 贷款产品服务地址
-LOAN_BASE_URL = "http://localhost:10003"         # 贷款业务服务地址 (修复: 10006 -> 10003)
+APPUSER_BASE_URL = "http://backend.huinong.com"      # C端用户服务地址
+OAUSER_BASE_URL = "http://backend.huinong.com"       # B端用户服务地址
+LEASEPRODUCT_BASE_URL = "http://backend.huinong.com" # 租赁产品服务地址 (修复: 10003 -> 10006)
+LEASE_BASE_URL = "http://backend.huinong.com"        # 租赁业务服务地址
+LOANPRODUCT_BASE_URL = "http://backend.huinong.com"  # 贷款产品服务地址
+LOAN_BASE_URL = "http://backend.huinong.com"         # 贷款业务服务地址 (修复: 10006 -> 10003)
 
 # C端测试用户配置
 APPUSER_TEST_DATA = {
