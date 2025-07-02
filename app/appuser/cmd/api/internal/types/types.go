@@ -20,7 +20,7 @@ type DeleteUserResp struct {
 }
 
 type GetUserInfoReq struct {
-	Phone string `json:"phone"`
+	Phone string `form:"phone"`
 }
 
 type GetUserInfoResp struct {

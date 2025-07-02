@@ -169,7 +169,7 @@ def setup_test_data():
     leaseproduct_tester.set_token(admin_tester.token)
     
     # 先尝试获取现有产品列表
-    existing_products = leaseproduct_tester.make_request("GET", "/api/v1/lease-product/products", params={"page": 1, "size": 100})
+    existing_products = leaseproduct_tester.make_request("GET", "/api/v1/leaseproduct/products", params={"page": 1, "size": 100})
     
     lease_product_found = False
     if existing_products and "list" in existing_products:
@@ -205,7 +205,7 @@ def setup_test_data():
     loanproduct_tester.set_token(admin_tester.token)
     
     # 先尝试获取现有产品列表
-    existing_products = loanproduct_tester.make_request("GET", "/api/v1/loan-product/products", params={"page": 1, "size": 100})
+    existing_products = loanproduct_tester.make_request("GET", "/api/v1/loanproduct/products", params={"page": 1, "size": 100})
     
     loan_product_found = False
     if existing_products and "list" in existing_products:

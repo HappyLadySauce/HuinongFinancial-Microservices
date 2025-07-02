@@ -62,38 +62,40 @@ func (l *CreateLoanApplicationLogic) CreateLoanApplication(req *types.CreateLoan
 
 // 从JWT中获取用户ID的辅助方法
 func (l *CreateLoanApplicationLogic) getUserIdFromJWT() (int64, error) {
-	// 从JWT上下文中获取用户ID
-	// 这里需要根据实际的JWT实现来获取用户ID
-	// 示例实现：从上下文中获取JWT claims
-
-	// 方式1：从HTTP请求上下文获取JWT claims
-	// 假设JWT中包含user_id字段
-	claims := l.ctx.Value("jwt_claims")
-	if claims == nil {
-		return 0, fmt.Errorf("未找到JWT认证信息")
+	// 在go-zero中，JWT claims直接存储在context中
+	// 尝试获取JWT claims
+	if claims := l.ctx.Value("user_id"); claims != nil {
+		switch v := claims.(type) {
+		case int64:
+			return v, nil
+		case float64:
+			return int64(v), nil
+		case string:
+			return strconv.ParseInt(v, 10, 64)
+		case json.Number:
+			return v.Int64()
+		default:
+			return 0, fmt.Errorf("user_id类型错误: %T", v)
+		}
 	}
 
-	// 将claims转换为map
-	claimsMap, ok := claims.(map[string]interface{})
-	if !ok {
-		return 0, fmt.Errorf("JWT claims格式错误")
+	// 如果直接获取user_id失败，尝试获取完整的JWT claims
+	if rawClaims := l.ctx.Value("claims"); rawClaims != nil {
+		if claimsMap, ok := rawClaims.(map[string]interface{}); ok {
+			if userIdInterface, exists := claimsMap["user_id"]; exists {
+				switch v := userIdInterface.(type) {
+				case float64:
+					return int64(v), nil
+				case string:
+					return strconv.ParseInt(v, 10, 64)
+				case json.Number:
+					return v.Int64()
+				default:
+					return 0, fmt.Errorf("user_id类型错误: %T", v)
+				}
+			}
+		}
 	}
 
-	// 获取user_id
-	userIdInterface, exists := claimsMap["user_id"]
-	if !exists {
-		return 0, fmt.Errorf("JWT中缺少user_id字段")
-	}
-
-	// 类型转换
-	switch v := userIdInterface.(type) {
-	case float64:
-		return int64(v), nil
-	case string:
-		return strconv.ParseInt(v, 10, 64)
-	case json.Number:
-		return v.Int64()
-	default:
-		return 0, fmt.Errorf("user_id类型错误: %T", v)
-	}
+	return 0, fmt.Errorf("未找到JWT认证信息")
 }

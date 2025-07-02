@@ -52,7 +52,7 @@ type UserInfo {
 
 // 获取用户信息请求响应
 type GetUserInfoReq {
-	Phone string `json:"phone"`
+	Phone string `form:"phone"`
 }
 
 type GetUserInfoResp {

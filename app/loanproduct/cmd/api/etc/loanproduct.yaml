@@ -14,9 +14,8 @@ Auth:
 # 注意：客户端的服务发现配置使用 Target URL 格式，而不是结构化配置
 LoanProductRpc:
   Target: consul://consul.huinong.internal/loanproductrpc.rpc
-  LazyInit: true        # 懒加载：避免启动时因依赖服务未就绪而失败
-  DialTimeout: 10s      # 连接超时：给依赖服务更多启动时间
-  Timeout: 5s           # 调用超时：避免长时间等待
+  Lazy: true            # 懒加载：避免启动时因依赖服务未就绪而失败
+  Timeout: 5000         # 调用超时：避免长时间等待 (毫秒)
   KeepaliveTime: 30s    # 保活时间：减少连接重建开销
   NonBlock: true        # 非阻塞：启动时不等待连接建立
 
